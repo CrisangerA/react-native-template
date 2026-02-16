@@ -3,7 +3,7 @@ import { Colors, ThemeMode, colors } from '../colors';
 import { spacing } from '../spacing';
 import { borderRadius, BorderRadiusToken } from '../borders';
 import { typography } from '../typography';
-import { hScale } from '@theme/responsive';
+import { hScale } from '../responsive';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outlined' | 'ghost';
 export type ButtonSize = 'sm' | 'md' | 'lg';

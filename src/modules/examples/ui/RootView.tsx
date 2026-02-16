@@ -1,24 +1,27 @@
 import React, { useState, useRef } from 'react';
-import { Animated, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View, ScrollView } from 'react-native';
 
 import { Button, Text } from '@components/core';
 import { spacing, useTheme } from '@theme/index';
 import TextsView from './TextsView';
 import ButtonsView from './ButtonsView';
+import TextInputsView from './TextInputsView';
 
-type ViewType = 'landing' | 'texts' | 'buttons';
+type ViewType = 'landing' | 'texts' | 'buttons' | 'textinputs';
 
 function LandingPage({
   onNavigateToTexts,
   onNavigateToButtons,
+  onNavigateToTextInputs,
 }: {
   onNavigateToTexts: () => void;
   onNavigateToButtons: () => void;
+  onNavigateToTextInputs: () => void;
 }) {
   const { mode } = useTheme();
 
   return (
-    <View style={styles.landingContainer}>
+    <ScrollView contentContainerStyle={styles.landingContainer}>
       <View style={styles.heroSection}>
         <Text variant="h1" align="center">
           Component Library
@@ -48,6 +51,16 @@ function LandingPage({
             Ver Botones
           </Button>
         </View>
+
+        <View style={styles.card}>
+          <Text variant="h3">TextInput</Text>
+          <Text variant="bodySmall" color="textSecondary">
+            Todas las variantes de inputs y estados de formulario
+          </Text>
+          <Button variant="primary" fullWidth onPress={onNavigateToTextInputs}>
+            Ver Inputs
+          </Button>
+        </View>
       </View>
 
       <View style={styles.footer}>
@@ -55,7 +68,7 @@ function LandingPage({
           Tema actual: {mode}
         </Text>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -113,11 +126,14 @@ export default function RootView() {
         return <TextsView onBack={() => navigateTo('landing')} />;
       case 'buttons':
         return <ButtonsView onBack={() => navigateTo('landing')} />;
+      case 'textinputs':
+        return <TextInputsView onBack={() => navigateTo('landing')} />;
       default:
         return (
           <LandingPage
             onNavigateToTexts={() => navigateTo('texts')}
             onNavigateToButtons={() => navigateTo('buttons')}
+            onNavigateToTextInputs={() => navigateTo('textinputs')}
           />
         );
     }
@@ -143,9 +159,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   landingContainer: {
-    flex: 1,
     padding: spacing.lg,
     gap: spacing.xl,
+    paddingBottom: spacing['2xl'],
   },
   heroSection: {
     gap: spacing.sm,
