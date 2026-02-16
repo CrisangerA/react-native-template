@@ -1,138 +1,168 @@
-import React from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import React, { useState, useRef } from 'react';
+import { Animated, StyleSheet, View } from 'react-native';
 
 import { Button, Text } from '@components/core';
-// Theme
-import { useTheme, spacing } from '@theme/index';
+import { spacing, useTheme } from '@theme/index';
+import TextsView from './TextsView';
+import ButtonsView from './ButtonsView';
+
+type ViewType = 'landing' | 'texts' | 'buttons';
+
+function LandingPage({
+  onNavigateToTexts,
+  onNavigateToButtons,
+}: {
+  onNavigateToTexts: () => void;
+  onNavigateToButtons: () => void;
+}) {
+  const { mode } = useTheme();
+
+  return (
+    <View style={styles.landingContainer}>
+      <View style={styles.heroSection}>
+        <Text variant="h1" align="center">
+          Component Library
+        </Text>
+        <Text variant="body" align="center" color="textSecondary">
+          Explora los componentes de UI disponibles
+        </Text>
+      </View>
+
+      <View style={styles.cardsContainer}>
+        <View style={styles.card}>
+          <Text variant="h3">Text</Text>
+          <Text variant="bodySmall" color="textSecondary">
+            Todas las variantes de texto y estilos tipográficos
+          </Text>
+          <Button variant="primary" fullWidth onPress={onNavigateToTexts}>
+            Ver Textos
+          </Button>
+        </View>
+
+        <View style={styles.card}>
+          <Text variant="h3">Button</Text>
+          <Text variant="bodySmall" color="textSecondary">
+            Todas las variantes de botones y estados
+          </Text>
+          <Button variant="primary" fullWidth onPress={onNavigateToButtons}>
+            Ver Botones
+          </Button>
+        </View>
+      </View>
+
+      <View style={styles.footer}>
+        <Text variant="caption" align="center" color="textSecondary">
+          Tema actual: {mode}
+        </Text>
+      </View>
+    </View>
+  );
+}
 
 export default function RootView() {
-  const { toggleTheme, mode } = useTheme();
+  const [currentView, setCurrentView] = useState<ViewType>('landing');
+  const fadeAnim = useRef(new Animated.Value(1)).current;
+  const slideAnim = useRef(new Animated.Value(0)).current;
+
+  const animateTransition = (
+    callback: () => void,
+    direction: 'forward' | 'backward',
+  ) => {
+    const slideOutValue = direction === 'forward' ? -50 : 50;
+    const slideInValue = direction === 'forward' ? 50 : -50;
+
+    // Fade out and slide
+    Animated.parallel([
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+      Animated.timing(slideAnim, {
+        toValue: slideOutValue,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      callback();
+      // Reset and fade in from opposite direction
+      slideAnim.setValue(slideInValue);
+      Animated.parallel([
+        Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 250,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    });
+  };
+
+  const navigateTo = (view: ViewType) => {
+    const direction = view === 'landing' ? 'backward' : 'forward';
+    animateTransition(() => setCurrentView(view), direction);
+  };
+
+  const renderView = () => {
+    switch (currentView) {
+      case 'texts':
+        return <TextsView onBack={() => navigateTo('landing')} />;
+      case 'buttons':
+        return <ButtonsView onBack={() => navigateTo('landing')} />;
+      default:
+        return (
+          <LandingPage
+            onNavigateToTexts={() => navigateTo('texts')}
+            onNavigateToButtons={() => navigateTo('buttons')}
+          />
+        );
+    }
+  };
+
   return (
-    <ScrollView contentContainerStyle={styles.contentContainer}>
-      <View style={styles.section}>
-        <Text variant="h1">Componente Text</Text>
-        <Text variant="h2">Todas las variantes</Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text variant="h1">Heading 1</Text>
-        <Text variant="h2">Heading 2</Text>
-        <Text variant="h3">Heading 3</Text>
-        <Text variant="h4">Heading 4</Text>
-        <Text variant="h5">Heading 5</Text>
-        <Text variant="h6">Heading 6</Text>
-        <Text variant="body">Body text - Texto de cuerpo principal</Text>
-        <Text variant="bodySmall">Body Small - Texto de cuerpo pequeño</Text>
-        <Text variant="button">Button text</Text>
-        <Text variant="caption">Caption text</Text>
-        <Text variant="overline">Overline text</Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text variant="h1">Componente Button</Text>
-        <Text variant="h2">Todas las variaciones</Text>
-      </View>
-
-      <View style={styles.section}>
-        <Text variant="h4">Variante: Primary</Text>
-        <View style={styles.buttonRow}>
-          <Button size="sm" variant="primary">
-            Small
-          </Button>
-          <Button size="md" variant="primary">
-            Medium
-          </Button>
-          <Button size="lg" variant="primary">
-            Large
-          </Button>
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <Text variant="h4">Variante: Secondary</Text>
-        <View style={styles.buttonRow}>
-          <Button size="sm" variant="secondary">
-            Small
-          </Button>
-          <Button size="md" variant="secondary">
-            Medium
-          </Button>
-          <Button size="lg" variant="secondary">
-            Large
-          </Button>
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <Text variant="h4">Variante: Outlined</Text>
-        <View style={styles.buttonRow}>
-          <Button size="sm" variant="outlined">
-            Small
-          </Button>
-          <Button size="md" variant="outlined">
-            Medium
-          </Button>
-          <Button size="lg" variant="outlined">
-            Large
-          </Button>
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <Text variant="h4">Variante: Ghost</Text>
-        <View style={styles.buttonRow}>
-          <Button size="sm" variant="ghost">
-            Small
-          </Button>
-          <Button size="md" variant="ghost">
-            Medium
-          </Button>
-          <Button size="lg" variant="ghost">
-            Large
-          </Button>
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <Text variant="h4">Estados especiales</Text>
-        <View style={styles.buttonColumn}>
-          <Button disabled>Disabled Button</Button>
-          <Button loading>Loading Button</Button>
-          <Button fullWidth>Full Width Button</Button>
-        </View>
-      </View>
-
-      <View style={styles.section}>
-        <Button
-          variant="primary"
-          size="lg"
-          fullWidth
-          onPress={() => {
-            toggleTheme(mode === 'dark' ? 'light' : 'dark');
-          }}
-        >
-          Toggle Theme ({mode})
-        </Button>
-      </View>
-    </ScrollView>
+    <Animated.View
+      style={[
+        styles.container,
+        {
+          opacity: fadeAnim,
+          transform: [{ translateX: slideAnim }],
+        },
+      ]}
+    >
+      {renderView()}
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  contentContainer: {
-    padding: spacing.md,
+  container: {
+    flex: 1,
+  },
+  landingContainer: {
+    flex: 1,
+    padding: spacing.lg,
+    gap: spacing.xl,
+  },
+  heroSection: {
+    gap: spacing.sm,
+    marginTop: spacing.xl,
+  },
+  cardsContainer: {
     gap: spacing.lg,
+    flex: 1,
   },
-  section: {
+  card: {
     gap: spacing.md,
+    padding: spacing.lg,
+    borderRadius: 12,
+    borderWidth: 1,
   },
-  buttonRow: {
-    flexDirection: 'row',
-    gap: spacing.xs,
-    flexWrap: 'wrap',
-    justifyContent: 'space-between'
-  },
-  buttonColumn: {
-    gap: spacing.md,
+  footer: {
+    marginTop: 'auto',
+    paddingVertical: spacing.md,
   },
 });
