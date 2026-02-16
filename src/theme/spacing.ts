@@ -5,6 +5,8 @@
  * Basado en una escala de 4px para mantener ritmo visual.
  */
 
+import { wScale } from "./responsive";
+
 /**
  * Valores de espaciado disponibles
  *
@@ -20,21 +22,21 @@
  */
 export const spacing = {
   /** Extra pequeño: 4px */
-  xs: 4,
+  xs: wScale(4),
   /** Pequeño: 8px */
-  sm: 8,
+  sm: wScale(8),
   /** Mediano: 12px */
-  md: 12,
+  md: wScale(12),
   /** Base: 16px - Valor por defecto */
-  base: 16,
+  base: wScale(16),
   /** Grande: 24px */
-  lg: 24,
+  lg: wScale(24),
   /** Extra grande: 32px */
-  xl: 32,
+  xl: wScale(32),
   /** 2x Extra grande: 48px */
-  '2xl': 48,
+  '2xl': wScale(48),
   /** 3x Extra grande: 64px */
-  '3xl': 64,
+  '3xl': wScale(64),
 } as const;
 
 /**
