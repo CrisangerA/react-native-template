@@ -35,7 +35,7 @@ function ComponentCard({
 }: ComponentCardProps) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(20)).current;
-const { shadows, colors } = useTheme();
+  const { shadows, colors } = useTheme();
   React.useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -377,14 +377,8 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    //backgroundColor: 'rgba(255, 255, 255, 0.05)',
     borderRadius: borderRadius.lg,
     padding: spacing.lg,
-    // shadowColor: '#000000',
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowOpacity: 0.1,
-    // shadowRadius: 4,
-    // elevation: 3,
   },
   cardBorder: {
     borderLeftWidth: 4,
