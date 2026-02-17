@@ -16,7 +16,7 @@ import {
 } from '@theme/components/Button.styles';
 import { BorderRadiusToken } from '@theme/borders';
 import { useTheme, spacing } from '@theme/index';
-// Theme 
+// Theme
 import { Text } from './Text';
 
 interface ButtonProps extends Omit<PressableProps, 'style'> {

@@ -4,7 +4,7 @@ import { ColorVariant, ThemeMode, colors } from '../colors';
 
 interface TextStyleProps {
   variant?: TypographyVariant;
-  mode?: ThemeMode,
+  mode?: ThemeMode;
   color?: ColorVariant;
   align?: TextStyle['textAlign'];
   transform?: TextStyle['textTransform'];

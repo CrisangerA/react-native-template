@@ -5,7 +5,7 @@
  * Usa 'full' para formas circulares o píldoras.
  */
 
-import { wScale } from "./responsive";
+import { wScale } from './responsive';
 
 /**
  * Radios de borde disponibles en la aplicación

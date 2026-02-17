@@ -5,7 +5,7 @@
  * Basado en una escala de 4px para mantener ritmo visual.
  */
 
-import { wScale } from "./responsive";
+import { wScale } from './responsive';
 
 /**
  * Valores de espaciado disponibles
@@ -48,7 +48,6 @@ export type Spacing = typeof spacing;
  * Nombres de los tokens de espaciado
  */
 export type SpacingToken = keyof typeof spacing;
-
 
 /**
  * Crea un valor de espaciado multiplicando la unidad base

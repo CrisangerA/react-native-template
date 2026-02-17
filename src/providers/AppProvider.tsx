@@ -26,7 +26,7 @@ function GestureHandlerProvider({ children }: PropsWithChildren) {
   const {
     colors: { background: backgroundColor },
   } = useTheme();
-  
+
   const insets = useSafeAreaInsets();
 
   return (

@@ -8,6 +8,7 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
+    "prettier": "prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "pod-cocoa": "cd ios && bundle install",
     "pod-install": "cd ios && bundle exec pod install",
     "clean-android": "rm -rf android/build android/app/build && cd android && ./gradlew clean && cd ..",

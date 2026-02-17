@@ -5,9 +5,9 @@ import { useThemeStorage } from './theme.storage';
 const ThemeContext = createContext<Theme>(getTheme('light'));
 ThemeContext.displayName = 'ThemeContext';
 
-export default function ThemeProvider({ children }: PropsWithChildren) { 
-  const { theme, setTheme} = useThemeStorage();
-  
+export default function ThemeProvider({ children }: PropsWithChildren) {
+  const { theme, setTheme } = useThemeStorage();
+
   return (
     <ThemeContext.Provider
       value={{

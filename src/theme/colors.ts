@@ -19,7 +19,6 @@ export type CustomThemeMode = 'primary' | 'secondary' | 'premium';
  */
 export type ThemeMode = BaseThemeMode | CustomThemeMode;
 
-
 /**
  * Estructura completa de colores de un tema
  */
@@ -36,7 +35,7 @@ export interface Colors {
   textSecondary: string;
   /** Color primario del tema */
   primary: string;
-  
+
   /** Colores semánticos */
   /** Color para estados de éxito */
   success: string;
