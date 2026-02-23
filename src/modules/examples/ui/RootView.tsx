@@ -1,20 +1,22 @@
 import React, { useState, useRef } from 'react';
-import {
-  Animated,
-  StyleSheet,
-  View,
-  ScrollView,
-  TouchableOpacity,
-} from 'react-native';
+import { Animated, StyleSheet, View, ScrollView } from 'react-native';
 
-import { Text } from '@components/core';
-import { spacing, useTheme } from '@theme/index';
+import { Text, Card } from '@components/core';
+import { colors, spacing, useTheme } from '@theme/index';
 import { borderRadius } from '@theme/borders';
 import TextsView from './TextsView';
 import ButtonsView from './ButtonsView';
 import TextInputsView from './TextInputsView';
+import CardsView from './CardsView';
+import CheckboxesView from './CheckboxesView';
 
-type ViewType = 'landing' | 'texts' | 'buttons' | 'textinputs';
+type ViewType =
+  | 'landing'
+  | 'texts'
+  | 'buttons'
+  | 'textinputs'
+  | 'cards'
+  | 'checkboxes';
 
 interface ComponentCardProps {
   title: string;
@@ -35,7 +37,6 @@ function ComponentCard({
 }: ComponentCardProps) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(20)).current;
-  const { shadows, colors } = useTheme();
   React.useEffect(() => {
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -55,23 +56,17 @@ function ComponentCard({
   }, [delay]);
 
   return (
-    <TouchableOpacity
-      onPress={onPress}
-      activeOpacity={0.8}
-      style={styles.cardTouchable}
+    <Animated.View
+      style={[
+        {
+          opacity: fadeAnim,
+          transform: [{ translateY }],
+        },
+      ]}
     >
-      <Animated.View
-        style={[
-          styles.card,
-          shadows.md,
-          { backgroundColor: colors.surface },
-          styles.cardBorder,
-          {
-            opacity: fadeAnim,
-            transform: [{ translateY }],
-            borderLeftColor: color,
-          },
-        ]}
+      <Card
+        onPress={onPress}
+        style={{ ...styles.card, borderLeftColor: color }}
       >
         <View style={[styles.iconContainer, { backgroundColor: color + '15' }]}>
           <Text style={[styles.icon, { color }]}>{icon}</Text>
@@ -87,8 +82,8 @@ function ComponentCard({
         <View style={styles.arrowContainer}>
           <Text style={[styles.arrow, { color }]}>→</Text>
         </View>
-      </Animated.View>
-    </TouchableOpacity>
+      </Card>
+    </Animated.View>
   );
 }
 
@@ -96,10 +91,14 @@ function LandingPage({
   onNavigateToTexts,
   onNavigateToButtons,
   onNavigateToTextInputs,
+  onNavigateToCards,
+  onNavigateToCheckboxes,
 }: {
   onNavigateToTexts: () => void;
   onNavigateToButtons: () => void;
   onNavigateToTextInputs: () => void;
+  onNavigateToCards: () => void;
+  onNavigateToCheckboxes: () => void;
 }) {
   const { mode } = useTheme();
   const headerFadeAnim = useRef(new Animated.Value(0)).current;
@@ -143,6 +142,20 @@ function LandingPage({
       color: '#8B5CF6',
       onPress: onNavigateToTextInputs,
     },
+    {
+      title: 'Card',
+      description: 'Container component with variants & interactive mode',
+      icon: '▣',
+      color: '#F59E0B',
+      onPress: onNavigateToCards,
+    },
+    {
+      title: 'Checkbox',
+      description: 'Selectable control with variants and states',
+      icon: '☑',
+      color: '#14B8A6',
+      onPress: onNavigateToCheckboxes,
+    },
   ];
 
   return (
@@ -174,14 +187,14 @@ function LandingPage({
           color="textSecondary"
           style={styles.heroSubtitle}
         >
-          Explore and test our beautifully crafted UI components
+          Explore and test our components
         </Text>
       </Animated.View>
 
       <View style={styles.statsContainer}>
         <View style={styles.statItem}>
           <Text variant="h3" color="primary">
-            3
+            5
           </Text>
           <Text variant="caption" color="textSecondary">
             Components
@@ -289,12 +302,18 @@ export default function RootView() {
         return <ButtonsView onBack={() => navigateTo('landing')} />;
       case 'textinputs':
         return <TextInputsView onBack={() => navigateTo('landing')} />;
+      case 'cards':
+        return <CardsView onBack={() => navigateTo('landing')} />;
+      case 'checkboxes':
+        return <CheckboxesView onBack={() => navigateTo('landing')} />;
       default:
         return (
           <LandingPage
             onNavigateToTexts={() => navigateTo('texts')}
             onNavigateToButtons={() => navigateTo('buttons')}
             onNavigateToTextInputs={() => navigateTo('textinputs')}
+            onNavigateToCards={() => navigateTo('cards')}
+            onNavigateToCheckboxes={() => navigateTo('checkboxes')}
           />
         );
     }
@@ -325,8 +344,8 @@ const styles = StyleSheet.create({
   },
   heroSection: {
     alignItems: 'center',
-    marginTop: spacing['2xl'],
-    marginBottom: spacing.xl,
+    marginTop: spacing.lg,
+    marginBottom: spacing.md,
   },
   badge: {
     backgroundColor: 'rgba(59, 130, 246, 0.1)',
@@ -345,8 +364,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: spacing.xl,
-    paddingVertical: spacing.lg,
+    marginBottom: spacing.lg,
   },
   statItem: {
     alignItems: 'center',
@@ -371,16 +389,10 @@ const styles = StyleSheet.create({
   cardsContainer: {
     gap: spacing.md,
   },
-  cardTouchable: {
-    width: '100%',
-  },
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: borderRadius.lg,
-    padding: spacing.lg,
-  },
-  cardBorder: {
+    borderLeftColor: colors.light.primary,
     borderLeftWidth: 4,
   },
   iconContainer: {
