@@ -9,6 +9,7 @@ import ButtonsView from './ButtonsView';
 import TextInputsView from './TextInputsView';
 import CardsView from './CardsView';
 import CheckboxesView from './CheckboxesView';
+import ModalsView from './ModalsView';
 
 type ViewType =
   | 'landing'
@@ -16,7 +17,8 @@ type ViewType =
   | 'buttons'
   | 'textinputs'
   | 'cards'
-  | 'checkboxes';
+  | 'checkboxes'
+  | 'modals';
 
 interface ComponentCardProps {
   title: string;
@@ -93,12 +95,14 @@ function LandingPage({
   onNavigateToTextInputs,
   onNavigateToCards,
   onNavigateToCheckboxes,
+  onNavigateToModals,
 }: {
   onNavigateToTexts: () => void;
   onNavigateToButtons: () => void;
   onNavigateToTextInputs: () => void;
   onNavigateToCards: () => void;
   onNavigateToCheckboxes: () => void;
+  onNavigateToModals: () => void;
 }) {
   const { mode } = useTheme();
   const headerFadeAnim = useRef(new Animated.Value(0)).current;
@@ -156,6 +160,13 @@ function LandingPage({
       color: '#14B8A6',
       onPress: onNavigateToCheckboxes,
     },
+    {
+      title: 'Modal',
+      description: 'Overlays for dialogs and confirmations',
+      icon: '▧',
+      color: '#6366F1',
+      onPress: onNavigateToModals,
+    },
   ];
 
   return (
@@ -194,7 +205,7 @@ function LandingPage({
       <View style={styles.statsContainer}>
         <View style={styles.statItem}>
           <Text variant="h3" color="primary">
-            5
+            6
           </Text>
           <Text variant="caption" color="textSecondary">
             Components
@@ -306,6 +317,8 @@ export default function RootView() {
         return <CardsView onBack={() => navigateTo('landing')} />;
       case 'checkboxes':
         return <CheckboxesView onBack={() => navigateTo('landing')} />;
+      case 'modals':
+        return <ModalsView onBack={() => navigateTo('landing')} />;
       default:
         return (
           <LandingPage
@@ -314,6 +327,7 @@ export default function RootView() {
             onNavigateToTextInputs={() => navigateTo('textinputs')}
             onNavigateToCards={() => navigateTo('cards')}
             onNavigateToCheckboxes={() => navigateTo('checkboxes')}
+            onNavigateToModals={() => navigateTo('modals')}
           />
         );
     }

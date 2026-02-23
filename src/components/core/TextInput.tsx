@@ -21,7 +21,7 @@ import { useTheme, spacing } from '@theme/index';
 // Theme
 import { Text } from './Text';
 
-interface TextInputProps extends Omit<RNTextInputProps, 'style'> {
+export interface TextInputProps extends Omit<RNTextInputProps, 'style'> {
   label?: string;
   helperText?: string;
   error?: string;
@@ -112,7 +112,7 @@ export function TextInput(props: TextInputProps) {
         </Text>
       )}
 
-      <View style={[styles.container, baseStyles.inputContainer]}>
+      <View style={[styles.container, baseStyles.inputContainer]} pointerEvents={textInputProps.pointerEvents}>
         {leftIcon && <View style={baseStyles.leftIcon}>{leftIcon}</View>}
 
         <RNTextInput

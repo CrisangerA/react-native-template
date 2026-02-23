@@ -17,6 +17,7 @@
     "clean-node": "rm -rf node_modules bun.lockb"
   },
   "dependencies": {
+    "@react-native-community/datetimepicker": "8.6.0",
     "@react-native/new-app-screen": "0.84.0",
     "jail-monkey": "2.8.4",
     "react": "19.2.3",

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
-import { Button, Text, TextInput } from '@components/core';
+import { Button, Text, TextInput, DatePicker, Select } from '@components/core';
 import { spacing } from '@theme/index';
 
 interface TextInputsViewProps {
@@ -16,6 +16,14 @@ export default function TextInputsView({ onBack }: TextInputsViewProps) {
   const [errorText, setErrorText] = useState('');
   const [disabledText, setDisabledText] = useState('No editable');
   const [showPassword, setShowPassword] = useState(false);
+  const [dateValue, setDateValue] = useState<Date | null>(null);
+  const [timeValue, setTimeValue] = useState<Date | null>(null);
+  const [dateTimeValue, setDateTimeValue] = useState<Date | null>(null);
+  const [minDateValue, setMinDateValue] = useState<Date | null>(null);
+  const [selectedOption, setSelectedOption] = useState<{
+    label: string;
+    value: string;
+  } | null>(null);
 
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
@@ -242,6 +250,103 @@ export default function TextInputsView({ onBack }: TextInputsViewProps) {
             multiline
             numberOfLines={4}
             textAlignVertical="top"
+          />
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text variant="h3" color="primary">
+          DatePicker
+        </Text>
+        <View style={styles.inputGroup}>
+          <DatePicker
+            label="Fecha"
+            placeholder="Seleccionar fecha"
+            value={dateValue}
+            onChange={setDateValue}
+            mode="date"
+          />
+          <DatePicker
+            label="Hora"
+            placeholder="Seleccionar hora"
+            value={timeValue}
+            onChange={setTimeValue}
+            mode="time"
+          />
+          <DatePicker
+            label="Fecha y Hora"
+            placeholder="Seleccionar fecha y hora"
+            value={dateTimeValue}
+            onChange={setDateTimeValue}
+            mode="datetime"
+          />
+          <DatePicker
+            label="Con fecha mínima"
+            value={minDateValue}
+            onChange={setMinDateValue}
+            mode="date"
+            minimumDate={new Date()}
+          />
+          <DatePicker
+            label="Deshabilitado"
+            value={null}
+            onChange={() => {}}
+            mode="date"
+            disabled
+          />
+        </View>
+      </View>
+
+      <View style={styles.section}>
+        <Text variant="h3" color="primary">
+          Select
+        </Text>
+        <View style={styles.inputGroup}>
+          <Select
+            label="Seleccionar opción"
+            placeholder="Elige una opción"
+            options={[
+              { label: 'Opción 1', value: '1' },
+              { label: 'Opción 2', value: '2' },
+              { label: 'Opción 3', value: '3' },
+              { label: 'Opción 4', value: '4' },
+            ]}
+            value={selectedOption}
+            onChange={setSelectedOption}
+          />
+          <Select
+            label="Con valor seleccionado"
+            options={[
+              { label: 'Manzana', value: 'manzana' },
+              { label: 'Banano', value: 'banano' },
+              { label: 'Naranja', value: 'naranja' },
+            ]}
+            value={selectedOption}
+            onChange={setSelectedOption}
+          />
+          <Select
+            label="Con error"
+            options={[
+              { label: 'Sí', value: 'si' },
+              { label: 'No', value: 'no' },
+            ]}
+            error="Debe seleccionar una opción"
+          />
+          <Select
+            label="Deshabilitado"
+            options={[
+              { label: 'Opción 1', value: '1' },
+              { label: 'Opción 2', value: '2' },
+            ]}
+            disabled
+          />
+          <Select
+            label="Ancho completo"
+            fullWidth
+            options={[
+              { label: 'Opción muy larga 1', value: '1' },
+              { label: 'Opción muy larga 2', value: '2' },
+            ]}
           />
         </View>
       </View>
