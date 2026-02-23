@@ -1,0 +1,23 @@
+import React from 'react';
+import { Control, useController } from 'react-hook-form';
+import { Checkbox as CheckboxCore } from '@components/core';
+
+interface CheckboxProps extends React.ComponentProps<typeof CheckboxCore> {
+  control: Control<any, any>;
+  name: string;
+}
+
+export function Checkbox({ name, control, ...rest }: CheckboxProps) {
+  const {
+    field: { value, onChange },
+  } = useController({ name, control });
+
+  const handleChange = React.useCallback(
+    (checked: boolean) => {
+      onChange(checked);
+    },
+    [onChange],
+  );
+
+  return <CheckboxCore {...rest} checked={!!value} onChange={handleChange} />;
+}
