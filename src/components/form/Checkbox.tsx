@@ -2,7 +2,11 @@ import React from 'react';
 import { Control, useController } from 'react-hook-form';
 import { Checkbox as CheckboxCore } from '@components/core';
 
-interface CheckboxProps extends React.ComponentProps<typeof CheckboxCore> {
+interface CheckboxProps
+  extends Omit<
+    React.ComponentProps<typeof CheckboxCore>,
+    'checked' | 'onChange'
+  > {
   control: Control<any, any>;
   name: string;
 }

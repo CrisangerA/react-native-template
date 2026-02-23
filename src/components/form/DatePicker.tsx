@@ -9,7 +9,8 @@ import {
 
 // -----------------------------------------------------------------------------
 
-interface DatePickerProps extends DatePickerPropsCore {
+interface DatePickerProps
+  extends Omit<DatePickerPropsCore, 'value' | 'onChange'> {
   control: Control<any, any>;
   name: string;
 }

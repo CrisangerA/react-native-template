@@ -1,8 +1,11 @@
 import React from 'react';
 import { Control, useController } from 'react-hook-form';
-import { Select as SelectCore, SelectProps as SelectCoreProps } from '../core/Select';
+import {
+  Select as SelectCore,
+  SelectProps as SelectCoreProps,
+} from '../core/Select';
 
-interface SelectProps extends SelectCoreProps {
+interface SelectProps extends Omit<SelectCoreProps, 'value' | 'onChange'> {
   control: Control<any, any>;
   name: string;
 }

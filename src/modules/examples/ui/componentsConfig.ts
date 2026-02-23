@@ -6,6 +6,7 @@ import TextInputsView from './TextInputsView';
 import CardsView from './CardsView';
 import CheckboxesView from './CheckboxesView';
 import ModalsView from './ModalsView';
+import UserSignInView from '@modules/authentication/ui/SignUpView';
 
 export type ViewType =
   | 'landing'
@@ -14,7 +15,8 @@ export type ViewType =
   | 'textinputs'
   | 'cards'
   | 'checkboxes'
-  | 'modals';
+  | 'modals'
+  | 'signin';
 
 export interface ComponentConfig {
   title: string;
@@ -71,6 +73,13 @@ export const COMPONENTS_CONFIG: ComponentConfig[] = [
     color: '#6366F1',
     view: 'modals',
   },
+  {
+    title: 'SignIn Form',
+    description: 'Registration form with react-hook-form & zod validation',
+    icon: '👤',
+    color: '#EC4899',
+    view: 'signin',
+  },
 ];
 
 export const VIEWS_REGISTRY: Record<
@@ -83,4 +92,5 @@ export const VIEWS_REGISTRY: Record<
   cards: CardsView,
   checkboxes: CheckboxesView,
   modals: ModalsView,
+  signin: UserSignInView,
 };

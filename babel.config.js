@@ -15,6 +15,7 @@ module.exports = {
           '@theme': './src/theme',
         },
       },
-    ]
+    ],
+    '@babel/plugin-transform-export-namespace-from'
   ],
 };
