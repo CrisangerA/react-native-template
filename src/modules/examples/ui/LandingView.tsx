@@ -1,0 +1,191 @@
+import React, { useRef } from 'react';
+import { Animated, StyleSheet, View, ScrollView } from 'react-native';
+
+import { Text } from '@components/core';
+import { spacing } from '@theme/index';
+import { borderRadius } from '@theme/borders';
+import { useTheme } from '@theme/index';
+
+import ComponentCard from './ComponentCard';
+import { COMPONENTS_CONFIG, ViewType } from './componentsConfig';
+
+interface LandingViewProps {
+  onNavigate: (view: ViewType) => void;
+}
+
+function LandingView({ onNavigate }: LandingViewProps) {
+  const { mode } = useTheme();
+  const headerFadeAnim = useRef(new Animated.Value(0)).current;
+  const headerTranslateY = useRef(new Animated.Value(-30)).current;
+
+  React.useEffect(() => {
+    Animated.parallel([
+      Animated.timing(headerFadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(headerTranslateY, {
+        toValue: 0,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start();
+  }, [headerFadeAnim, headerTranslateY]);
+
+  return (
+    <ScrollView
+      contentContainerStyle={styles.landingContainer}
+      showsVerticalScrollIndicator={false}
+    >
+      <Animated.View
+        style={[
+          styles.heroSection,
+          {
+            opacity: headerFadeAnim,
+            transform: [{ translateY: headerTranslateY }],
+          },
+        ]}
+      >
+        <View style={styles.badge}>
+          <Text variant="caption" color="primary" transform="uppercase">
+            React Native
+          </Text>
+        </View>
+        <Text variant="h1" align="center" style={styles.heroTitle}>
+          Component
+          <Text color="primary"> Library</Text>
+        </Text>
+        <Text
+          variant="body"
+          align="center"
+          color="textSecondary"
+          style={styles.heroSubtitle}
+        >
+          Explore and test our components
+        </Text>
+      </Animated.View>
+
+      <View style={styles.statsContainer}>
+        <View style={styles.statItem}>
+          <Text variant="h3" color="primary">
+            6
+          </Text>
+          <Text variant="caption" color="textSecondary">
+            Components
+          </Text>
+        </View>
+        <View style={styles.statDivider} />
+        <View style={styles.statItem}>
+          <Text variant="h3" color="primary">
+            20+
+          </Text>
+          <Text variant="caption" color="textSecondary">
+            Variants
+          </Text>
+        </View>
+        <View style={styles.statDivider} />
+        <View style={styles.statItem}>
+          <Text variant="h3" color="primary">
+            {mode === 'dark' ? '🌙' : '☀️'}
+          </Text>
+          <Text variant="caption" color="textSecondary">
+            {mode}
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.sectionHeader}>
+        <Text variant="h5" color="textSecondary" transform="uppercase">
+          Available Components
+        </Text>
+        <View style={styles.sectionLine} />
+      </View>
+
+      <View style={styles.cardsContainer}>
+        {COMPONENTS_CONFIG.map((component, index) => (
+          <ComponentCard
+            key={component.title}
+            title={component.title}
+            description={component.description}
+            icon={component.icon}
+            color={component.color}
+            delay={200 + index * 100}
+            onPress={() => onNavigate(component.view)}
+          />
+        ))}
+      </View>
+
+      <View style={styles.footer}>
+        <View style={styles.footerContent}>
+          <Text variant="caption" color="textSecondary" align="center">
+            Built with React Native • TypeScript • Jest
+          </Text>
+        </View>
+      </View>
+    </ScrollView>
+  );
+}
+
+const styles = StyleSheet.create({
+  landingContainer: {
+    padding: spacing.lg,
+    paddingBottom: spacing['3xl'],
+  },
+  heroSection: {
+    alignItems: 'center',
+    marginTop: spacing.lg,
+    marginBottom: spacing.md,
+  },
+  badge: {
+    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+    borderRadius: borderRadius.full,
+    marginBottom: spacing.md,
+  },
+  heroTitle: {
+    marginBottom: spacing.sm,
+  },
+  heroSubtitle: {
+    maxWidth: 280,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  statItem: {
+    alignItems: 'center',
+    paddingHorizontal: spacing.lg,
+  },
+  statDivider: {
+    width: 1,
+    height: 30,
+    backgroundColor: 'rgba(150, 150, 150, 0.2)',
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+  },
+  sectionLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: 'rgba(150, 150, 150, 0.2)',
+    marginLeft: spacing.md,
+  },
+  cardsContainer: {
+    gap: spacing.md,
+  },
+  footer: {
+    marginTop: spacing['2xl'],
+    paddingTop: spacing.lg,
+  },
+  footerContent: {
+    alignItems: 'center',
+  },
+});
+
+export default LandingView;
