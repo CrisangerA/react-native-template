@@ -9,15 +9,19 @@ import SecureProvider from './SecureProvider';
 import ThemeProvider from '@theme/providers/ThemeProvider';
 // Styles
 import { useTheme, commonStyles } from '@theme/index';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
+const queryClient = new QueryClient();
 export default function AppProvider({ children }: PropsWithChildren) {
   return (
     <SecureProvider>
-      <ThemeProvider>
-        <SafeAreaProvider>
-          <GestureHandlerProvider>{children}</GestureHandlerProvider>
-        </SafeAreaProvider>
-      </ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ThemeProvider>
+          <SafeAreaProvider>
+            <GestureHandlerProvider>{children}</GestureHandlerProvider>
+          </SafeAreaProvider>
+        </ThemeProvider>
+      </QueryClientProvider>
     </SecureProvider>
   );
 }
