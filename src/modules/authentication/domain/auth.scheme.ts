@@ -51,4 +51,16 @@ export const registerSchema = z
     path: ['confirmPassword'],
   });
 
+export const signInSchema = z.object({
+  email: z
+    .string()
+    .min(1, 'El email es requerido')
+    .email('Ingrese un email válido'),
+  password: z
+    .string()
+    .min(1, 'La contraseña es requerida')
+    .min(8, 'La contraseña debe tener al menos 8 caracteres'),
+});
+
 export type RegisterFormData = z.infer<typeof registerSchema>;
+export type SignInFormData = z.infer<typeof signInSchema>;

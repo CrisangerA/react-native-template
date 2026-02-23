@@ -6,7 +6,7 @@ import TextInputsView from './TextInputsView';
 import CardsView from './CardsView';
 import CheckboxesView from './CheckboxesView';
 import ModalsView from './ModalsView';
-import UserSignInView from '@modules/authentication/ui/SignUpView';
+import UserSignInView from '@modules/authentication/ui/SignInView';
 
 export type ViewType =
   | 'landing'
