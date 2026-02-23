@@ -1,0 +1,92 @@
+---
+description: TypeScript guidelines for interfaces, types, and type inference
+globs:
+  - "src/**/*.ts"
+  - "src/**/*.tsx"
+alwaysApply: false
+---
+
+# TypeScript Guidelines
+
+## Interface Definitions
+
+Always define interfaces for props:
+
+```typescript
+interface ButtonProps {
+  children: React.ReactNode;
+  variant?: 'primary' | 'secondary' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  disabled?: boolean;
+  onPress?: () => void;
+}
+```
+
+## Type Inference from Zod
+
+Use type inference from Zod schemas:
+
+```typescript
+import z from 'zod';
+
+export const registerSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8),
+});
+
+export type RegisterFormData = z.infer<typeof registerSchema>;
+```
+
+## Union Types for Variants
+
+Use union types for component variants:
+
+```typescript
+type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+type ButtonSize = 'sm' | 'md' | 'lg';
+type TextVariant = 'h1' | 'h2' | 'h3' | 'body' | 'caption';
+```
+
+## Repository Interface Pattern
+
+Define repository interfaces in domain layer:
+
+```typescript
+// domain/auth.repository.ts
+export interface AuthRepository {
+  signin(data: SignInPayload): Promise<SignInResponse | Error>;
+  signup(data: SignUpPayload): Promise<SignUpResponse | Error>;
+}
+```
+
+## Service Return Types
+
+Services return `T | Error` for proper error handling:
+
+```typescript
+async function fetchData(): Promise<Data | Error> {
+  try {
+    const response = await axiosService.get<Data>('/endpoint');
+    return response.data;
+  } catch (error) {
+    return manageAxiosError(error);
+  }
+}
+```
+
+## Export Interfaces from Model Files
+
+Export interfaces from `.model.ts` files:
+
+```typescript
+// domain/user.model.ts
+export interface UserEntity {
+  id: string;
+  email: string;
+}
+
+export interface CreateUserPayload {
+  email: string;
+  password: string;
+}
+```

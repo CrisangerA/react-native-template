@@ -1,0 +1,81 @@
+---
+description: Theme usage guidelines for colors, spacing, and design tokens
+globs:
+  - "src/**/*.tsx"
+alwaysApply: false
+---
+
+# Theme Usage
+
+## Import Theme
+
+```typescript
+import { useTheme, spacing } from '@theme/index';
+```
+
+## Using Colors
+
+```typescript
+function Component() {
+  const { colors } = useTheme();
+
+  return (
+    <View style={{ backgroundColor: colors.background }}>
+      <Text style={{ color: colors.text }}>Hello</Text>
+      <Text style={{ color: colors.textSecondary }}>Secondary text</Text>
+      <View style={{ backgroundColor: colors.primary }} />
+    </View>
+  );
+}
+```
+
+## Available Colors
+
+- `background` - Main background color
+- `text` - Primary text color
+- `textSecondary` - Secondary/muted text
+- `primary` - Primary brand color
+- `secondary` - Secondary brand color
+- `error` - Error states
+- `success` - Success states
+- `warning` - Warning states
+
+## Spacing Scale
+
+```typescript
+import { spacing } from '@theme/index';
+
+const styles = StyleSheet.create({
+  container: {
+    padding: spacing.md,      // 12px
+    marginBottom: spacing.sm, // 8px
+    gap: spacing.xs,          // 4px
+  },
+});
+```
+
+Spacing values:
+- `xs`: 4px
+- `sm`: 8px
+- `md`: 12px
+- `lg`: 24px
+- `xl`: 32px
+
+## Theme Toggle
+
+```typescript
+const { mode, toggleTheme } = useTheme();
+
+// Toggle between light/dark
+toggleTheme(mode === 'light' ? 'dark' : 'light');
+```
+
+## Dark Mode Detection
+
+```typescript
+const { isDark, mode } = useTheme();
+
+if (isDark) {
+  // Dark mode specific logic
+}
+```
