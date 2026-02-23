@@ -88,10 +88,7 @@ export default function CheckboxesView({ onBack }: CheckboxesViewProps) {
           Sin label
         </Text>
         <View style={styles.checkboxRow}>
-          <Checkbox
-            checked={checkedNoLabel}
-            onChange={setCheckedNoLabel}
-          />
+          <Checkbox checked={checkedNoLabel} onChange={setCheckedNoLabel} />
           <Checkbox checked disabled />
         </View>
       </View>

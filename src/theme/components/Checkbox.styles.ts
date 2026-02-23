@@ -47,11 +47,17 @@ function getVariantStyles(
   variant: CheckboxVariant,
   themeColors: Colors,
   disabled: boolean,
-  checked: boolean
-): { container: ViewStyle; box: ViewStyle; checkmark: TextStyle; label: TextStyle } {
+  checked: boolean,
+): {
+  container: ViewStyle;
+  box: ViewStyle;
+  checkmark: TextStyle;
+  label: TextStyle;
+} {
   const opacity = disabled ? 0.5 : 1;
-  const activeColor = variant === 'error' ? themeColors.error : themeColors.primary;
-  
+  const activeColor =
+    variant === 'error' ? themeColors.error : themeColors.primary;
+
   // Base box style
   const boxBase: ViewStyle = {
     borderWidth: 2,
@@ -84,7 +90,12 @@ export function getCheckboxStyle({
 }: CheckboxStyleProps) {
   const themeColors = colors[mode];
   const sizeConfig = getSizeStyles(size);
-  const variantStyles = getVariantStyles(variant, themeColors, disabled, checked);
+  const variantStyles = getVariantStyles(
+    variant,
+    themeColors,
+    disabled,
+    checked,
+  );
 
   return {
     container: {

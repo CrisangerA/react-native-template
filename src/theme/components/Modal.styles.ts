@@ -12,9 +12,10 @@ interface ModalStyleProps {
   borderRadius?: BorderRadiusToken;
 }
 
-function getSizeStyles(
-  size: ModalSize,
-): { width: ViewStyle['width']; padding: number } {
+function getSizeStyles(size: ModalSize): {
+  width: ViewStyle['width'];
+  padding: number;
+} {
   switch (size) {
     case 'sm':
       return {

@@ -78,11 +78,7 @@ export function Checkbox(props: CheckboxProps) {
       {...pressableProps}
     >
       <View style={styles.box}>
-        {checked && (
-          <Text style={styles.checkmark}>
-            ✓
-          </Text>
-        )}
+        {checked && <Text style={styles.checkmark}>✓</Text>}
       </View>
 
       {label && (

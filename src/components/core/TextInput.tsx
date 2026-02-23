@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { forwardRef, useState } from 'react';
 import {
   TextInput as RNTextInput,
   TextInputProps as RNTextInputProps,
@@ -35,114 +35,120 @@ export interface TextInputProps extends Omit<RNTextInputProps, 'style'> {
   inputStyle?: ViewStyle;
 }
 
-export function TextInput(props: TextInputProps) {
-  const {
-    label,
-    helperText,
-    error,
-    variant = 'default',
-    size = 'md',
-    fullWidth = false,
-    borderRadius,
-    leftIcon,
-    rightIcon,
-    containerStyle,
-    inputStyle,
-    editable = true,
-    onFocus,
-    onBlur,
-    placeholderTextColor,
-    ...textInputProps
-  } = props;
+export const TextInput = forwardRef<RNTextInput, TextInputProps>(
+  (props: TextInputProps, ref) => {
+    const {
+      label,
+      helperText,
+      error,
+      variant = 'default',
+      size = 'md',
+      fullWidth = false,
+      borderRadius,
+      leftIcon,
+      rightIcon,
+      containerStyle,
+      inputStyle,
+      editable = true,
+      onFocus,
+      onBlur,
+      placeholderTextColor,
+      ...textInputProps
+    } = props;
 
-  const theme = useTheme();
-  const [isFocused, setIsFocused] = useState(false);
+    const theme = useTheme();
+    const [isFocused, setIsFocused] = useState(false);
 
-  const isDisabled = editable === false;
-  const hasError = !!error;
+    const isDisabled = editable === false;
+    const hasError = !!error;
 
-  const state: TextInputState = isDisabled
-    ? 'disabled'
-    : hasError
-    ? 'error'
-    : isFocused
-    ? 'focus'
-    : 'default';
+    const state: TextInputState = isDisabled
+      ? 'disabled'
+      : hasError
+      ? 'error'
+      : isFocused
+      ? 'focus'
+      : 'default';
 
-  const styles = getTextInputStyle({
-    mode: theme.mode,
-    variant,
-    size,
-    state,
-    fullWidth,
-    borderRadius,
-    hasIconLeft: !!leftIcon,
-    hasIconRight: !!rightIcon,
-  });
+    const styles = getTextInputStyle({
+      mode: theme.mode,
+      variant,
+      size,
+      state,
+      fullWidth,
+      borderRadius,
+      hasIconLeft: !!leftIcon,
+      hasIconRight: !!rightIcon,
+    });
 
-  const labelStyles = getLabelStyle(theme.mode, state);
-  const errorStyles = getErrorStyle(theme.mode);
-  const helperStyles = getHelperTextStyle(theme.mode);
+    const labelStyles = getLabelStyle(theme.mode, state);
+    const errorStyles = getErrorStyle(theme.mode);
+    const helperStyles = getHelperTextStyle(theme.mode);
 
-  const handleFocus = (event: any) => {
-    setIsFocused(true);
-    onFocus?.(event);
-  };
+    const handleFocus = (event: any) => {
+      setIsFocused(true);
+      onFocus?.(event);
+    };
 
-  const handleBlur = (event: any) => {
-    setIsFocused(false);
-    onBlur?.(event);
-  };
+    const handleBlur = (event: any) => {
+      setIsFocused(false);
+      onBlur?.(event);
+    };
 
-  return (
-    <View
-      style={[
-        baseStyles.wrapper,
-        fullWidth && baseStyles.fullWidth,
-        containerStyle,
-      ]}
-    >
-      {label && (
-        <Text
-          variant="bodySmall"
-          color={hasError ? 'error' : isFocused ? 'primary' : 'textSecondary'}
-          style={labelStyles}
+    return (
+      <View
+        style={[
+          baseStyles.wrapper,
+          fullWidth && baseStyles.fullWidth,
+          containerStyle,
+        ]}
+      >
+        {label && (
+          <Text
+            variant="bodySmall"
+            color={hasError ? 'error' : isFocused ? 'primary' : 'textSecondary'}
+            style={labelStyles}
+          >
+            {label}
+          </Text>
+        )}
+
+        <View
+          style={[styles.container, baseStyles.inputContainer]}
+          pointerEvents={textInputProps.pointerEvents}
         >
-          {label}
-        </Text>
-      )}
+          {leftIcon && <View style={baseStyles.leftIcon}>{leftIcon}</View>}
 
-      <View style={[styles.container, baseStyles.inputContainer]} pointerEvents={textInputProps.pointerEvents}>
-        {leftIcon && <View style={baseStyles.leftIcon}>{leftIcon}</View>}
+          <RNTextInput
+            ref={ref}
+            style={[styles.input, inputStyle]}
+            editable={editable}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            placeholderTextColor={
+              placeholderTextColor || theme.colors.textSecondary
+            }
+            {...textInputProps}
+          />
 
-        <RNTextInput
-          style={[styles.input, inputStyle]}
-          editable={editable}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          placeholderTextColor={
-            placeholderTextColor || theme.colors.textSecondary
-          }
-          {...textInputProps}
-        />
+          {rightIcon && <View style={baseStyles.rightIcon}>{rightIcon}</View>}
+        </View>
 
-        {rightIcon && <View style={baseStyles.rightIcon}>{rightIcon}</View>}
+        {error && (
+          <Text variant="caption" color="error" style={errorStyles}>
+            {error}
+          </Text>
+        )}
+
+        {!error && helperText && (
+          <Text variant="caption" color="textSecondary" style={helperStyles}>
+            {helperText}
+          </Text>
+        )}
       </View>
-
-      {error && (
-        <Text variant="caption" color="error" style={errorStyles}>
-          {error}
-        </Text>
-      )}
-
-      {!error && helperText && (
-        <Text variant="caption" color="textSecondary" style={helperStyles}>
-          {helperText}
-        </Text>
-      )}
-    </View>
-  );
-}
+    );
+  },
+);
 
 const baseStyles = StyleSheet.create({
   wrapper: {

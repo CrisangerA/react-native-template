@@ -1,12 +1,15 @@
 import React, { PropsWithChildren } from 'react';
-import { Modal as RNModal, Pressable, View, ViewStyle, TextStyle } from 'react-native';
+import {
+  Modal as RNModal,
+  Pressable,
+  View,
+  ViewStyle,
+  TextStyle,
+} from 'react-native';
 
 import { useTheme } from '@theme/index';
 import { BorderRadiusToken } from '@theme/borders';
-import {
-  ModalSize,
-  getModalStyle,
-} from '@theme/components/Modal.styles';
+import { ModalSize, getModalStyle } from '@theme/components/Modal.styles';
 import { Text } from './Text';
 
 interface ModalProps extends PropsWithChildren {
@@ -68,7 +71,9 @@ export function Modal(props: ModalProps) {
         )}
         <View style={[styles.container, customStyle]}>
           {shouldRenderHeader && (
-            <View style={headerStyle ? [styles.header, headerStyle] : styles.header}>
+            <View
+              style={headerStyle ? [styles.header, headerStyle] : styles.header}
+            >
               {icon && (
                 <Pressable
                   onPress={onPressIcon}
@@ -79,7 +84,9 @@ export function Modal(props: ModalProps) {
                 </Pressable>
               )}
               {title && (
-                <Text style={titleStyle ? [styles.title, titleStyle] : styles.title}>
+                <Text
+                  style={titleStyle ? [styles.title, titleStyle] : styles.title}
+                >
                   {title}
                 </Text>
               )}
@@ -87,9 +94,7 @@ export function Modal(props: ModalProps) {
           )}
           <View
             style={
-              shouldRenderHeader
-                ? [styles.content, contentStyle]
-                : contentStyle
+              shouldRenderHeader ? [styles.content, contentStyle] : contentStyle
             }
           >
             {children}
