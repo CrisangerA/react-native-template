@@ -220,6 +220,14 @@ const styles = StyleSheet.create({
 });
 ```
 
+## Best Practices
+
+1. **Dependency Injection** - Domain layer should not depend on infrastructure
+2. **Single Responsibility** - Each file has one purpose
+3. **Repository Pattern** - Abstract data sources behind repository interfaces
+4. **Adapter Pattern** - Transform data between layers
+5. **Query Keys** - Use consistent query key structure for cache management
+
 ## Checklist
 
 1. Create module directory structure

@@ -112,8 +112,11 @@ src/components/
 import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useMutation } from '@tanstack/react-query';
+// Component
 import { Button } from '@components/core';
+// Theme
 import { useTheme, spacing } from '@theme/index';
+// Types
 import { SomeType } from './types';
 ```
 
