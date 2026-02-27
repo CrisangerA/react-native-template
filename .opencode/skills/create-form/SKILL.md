@@ -193,3 +193,21 @@ Always use Spanish for validation messages:
 - Show loading state in button
 - Reset form on successful submission
 - Handle errors appropriately (toast, alert)
+
+---
+
+# Project Specific (edit for other projects)
+
+## Form Stack
+
+- Form library: react-hook-form
+- Validation: @hookform/resolvers/zod
+- Form components: `@components/form`
+
+## Validation Messages
+
+Use Spanish for validation messages:
+- `'El campo es requerido'`
+- `'Email inválido'`
+- `'Mínimo {min} caracteres'`
+- `'El valor debe ser un número'`

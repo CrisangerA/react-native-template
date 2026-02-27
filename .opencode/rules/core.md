@@ -1,3 +1,8 @@
+---
+alwaysApply: true
+description: Core architecture rules for React Native projects with Clean Architecture. Edit this file to adapt it to your project.
+---
+
 # Architecture
 
 React Native v0.84.0 project with **Clean Architecture**.
@@ -29,7 +34,7 @@ import { Button } from '@components/core';
 import { TextInput } from '@components/form';
 // Theme
 import { useTheme, spacing } from '@theme/index';
-// COnfig
+// Config
 import { API_ROUTES } from '@config/api.routes';
 // Modules
 import authService from '@modules/authentication/infrastructure/auth.service';
@@ -43,3 +48,10 @@ import authService from '@modules/authentication/infrastructure/auth.service';
 - **Storage**: react-native-mmkv
 - **Navigation**: Custom navigator (no React Navigation)
 - **UI**: react-native-gesture-handler, react-native-safe-area-context
+
+## Layer Rules
+
+1. **ui**: (Components and views) consumes hooks from application. MUST NOT import from infrastructure.
+2. **application**: (Hooks) depends on domain and infrastructure.
+3. **infrastructure**: (API services) implements repositories and HTTP calls.
+4. **domain**: (Types, models, schemas) pure TypeScript, no framework dependencies.

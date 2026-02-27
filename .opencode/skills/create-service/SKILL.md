@@ -108,3 +108,24 @@ src/modules/{feature}/
 └── infrastructure/
     └── {feature}.service.ts     # Service implementation
 ```
+
+---
+
+# Project Specific (edit for other projects)
+
+## HTTP Client
+
+- Axios instance: `@modules/network/infrastructure/axios.service`
+- Error handler: `manageAxiosError` from `@modules/network/domain/network.error`
+
+## API Routes
+
+- Routes defined in: `@config/api.routes`
+
+## Error Pattern
+
+Services MUST NOT throw exceptions. Return `Error` type instead:
+
+```typescript
+async someMethod(): Promise<T | Error>
+```

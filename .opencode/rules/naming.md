@@ -1,3 +1,8 @@
+---
+alwaysApply: true
+description: Naming conventions for React Native projects. Follow these patterns consistently.
+---
+
 # Naming Conventions
 
 | Element           | Convention           | Example                             |

@@ -144,3 +144,23 @@ src/modules/{feature}/
 - Use slices for large stores: `create<State>()((...a) =>(...sliceA, ...sliceB))`
 - Keep stores focused on single responsibility
 - Use selectors for optimized re-renders: `useStore((state) => state.specificField)`
+
+---
+
+# Project Specific (edit for other projects)
+
+## Store Location
+
+- Feature stores: `src/modules/{feature}/application/{feature}.store.ts`
+- Global stores: `src/stores/` (if needed)
+
+## Persistence
+
+- Storage: react-native-mmkv
+- Import from: `@config/storage`
+
+## NOT for Server State
+
+For server state (API data), use React Query in `application/` layer:
+- Queries: `{feature}.queries.ts`
+- Mutations: `{feature}.mutations.ts`

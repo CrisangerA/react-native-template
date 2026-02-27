@@ -95,3 +95,24 @@ import { Animated } from 'react-native';
 // Internal
 import { useTheme } from '@theme/index';
 ```
+
+---
+
+# Project Specific (edit for other projects)
+
+## Location
+
+- Feature-specific hooks: `src/modules/{feature}/ui/hooks/`
+- Global hooks: `src/hooks/` (if needed)
+
+## NOT for Server State
+
+For server state, use React Query hooks in `application/` layer:
+- Queries: `{feature}.queries.ts`
+- Mutations: `{feature}.mutations.ts`
+
+## NOT for Global State
+
+For global state, use Zustand stores:
+- Location: `src/modules/{feature}/application/{feature}.store.ts`
+- See: `create-store` skill

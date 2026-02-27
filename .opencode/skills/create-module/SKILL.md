@@ -238,3 +238,28 @@ const styles = StyleSheet.create({
 6. Implement service in `infrastructure/{feature}.service.ts`
 7. Create React Query hooks in `application/`
 8. Create UI components in `ui/`
+
+---
+
+# Project Specific (edit for other projects)
+
+## Stack
+
+- Validation: Zod
+- Data fetching: @tanstack/react-query
+- HTTP: Axios
+- Error pattern: `manageAxiosError` (returns Error, no throw)
+
+## Path Aliases
+
+- `@modules` - Feature modules
+- `@components` - Shared components
+- `@theme` - Theme tokens and hooks
+- `@config` - App configuration
+
+## Validation Messages
+
+Use Spanish for validation messages:
+- `'El campo es requerido'`
+- `'Email inválido'`
+- `'Mínimo {min} caracteres'`

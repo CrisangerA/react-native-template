@@ -142,3 +142,24 @@ import { someExternal } from 'some-package';
 // Internal
 import { useAuthStore } from '@modules/auth/application/auth.store';
 ```
+
+---
+
+# Project Specific (edit for other projects)
+
+## Provider Location
+
+All providers in: `src/providers/`
+
+## Main Providers
+
+- `AppProvider.tsx` - Main wrapper combining all providers
+- `ThemeProvider.tsx` - Theme context with useTheme hook
+
+## Provider Order
+
+In AppProvider, wrap in this order (innermost first):
+1. NavigationContainer
+2. ThemeProvider
+3. QueryClientProvider
+4. SafeAreaProvider

@@ -121,3 +121,19 @@ import { SomeType } from './types';
 ```
 
 Order: React → React Native → External libs → Internal aliases → Relative imports
+
+---
+
+# Project Specific (edit for other projects)
+
+## Theme Configuration
+
+- Theme location: `src/theme/`
+- Hook: `useTheme()` from `@theme/index`
+- Tokens: `colors`, `spacing`, `typography`, `borders`, `shadows`
+
+## Component Aliases
+
+- `@components/core` - Base UI components
+- `@components/form` - Form-integrated components
+- `@components/layout` - Layout components

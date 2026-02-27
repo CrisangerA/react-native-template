@@ -1,3 +1,8 @@
+---
+alwaysApply: true
+description: Available commands for development, testing, and building. Reference for AI agents.
+---
+
 # Commands
 
 ```bash
