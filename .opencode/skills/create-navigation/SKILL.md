@@ -3,183 +3,516 @@ name: create-navigation
 description: Create navigation structure with React Navigation. Use when setting up app navigation, stacks, or routes.
 ---
 
-# Create Navigation
+# React Navigation Template
 
-Create navigation structure following React Navigation patterns with TypeScript support.
+## Objetivo
 
-## When to Use
+Guía reusable para implementar react-navigation en proyectos React Native con TypeScript, siguiendo patrones extraídos de DevsuBank y extendidos a stacks, tabs y drawer.
 
-- Setting up app navigation for the first time
-- Adding new navigation stacks
-- Creating route definitions
-- Adding navigation hooks
+## Patrón base detectado en DevsuBank
 
-## Navigation Structure
+- Contenedor raíz con `NavigationContainer` y `navigationRef`.
+- Rutas y params centralizados en `src/navigation/config/routes.ts` con `as const` y tipos derivados.
+- Navegadores por módulo en `src/navigation/stacks/`.
+- Hook tipado de navegación en `src/navigation/hooks/`.
+- Pantallas tipadas con `RouteProp`.
+- Uso de alias de paths en imports (`@navigation/*`).
+
+Referencias: [RootNavigation.tsx](file:///Users/crisanger/Documents/PROJECTS/DEVSU/DevsuBank/src/navigation/RootNavigation.tsx), [routes.ts](file:///Users/crisanger/Documents/PROJECTS/DEVSU/DevsuBank/src/navigation/config/routes.ts), [ProductsStackNavigation.tsx](file:///Users/crisanger/Documents/PROJECTS/DEVSU/DevsuBank/src/navigation/stacks/ProductsStackNavigation.tsx), [useNavigation.tsx](file:///Users/crisanger/Documents/PROJECTS/DEVSU/DevsuBank/src/navigation/hooks/useNavigation.tsx), [ProductsFormView.tsx](file:///Users/crisanger/Documents/PROJECTS/DEVSU/DevsuBank/src/modules/products/ui/views/ProductsFormView.tsx), [ProductDetailView.tsx](file:///Users/crisanger/Documents/PROJECTS/DEVSU/DevsuBank/src/modules/products/ui/views/ProductDetailView.tsx)
+
+## Estructura recomendada de carpetas
+
+Basada en `src/navigation/` de DevsuBank y extendida para tabs y drawer:
 
 ```
-src/navigation/
-├── RootNavigation.tsx      # Main navigation container
-├── config/
-│   └── routes.ts           # Route definitions and param types
-├── stacks/
-│   └── {Feature}StackNavigation.tsx  # Stack navigators
-└── hooks/
-    └── useNavigation.tsx   # Typed navigation hooks
+src/
+  navigation/
+    config/
+      routes.ts
+      linking.ts
+      guards.ts
+      state.ts
+    hooks/
+      useNavigation.tsx
+      useRouteParams.ts
+    stacks/
+      RootStackNavigation.tsx
+      ProductsStackNavigation.tsx
+    tabs/
+      MainTabsNavigation.tsx
+    drawers/
+      MainDrawerNavigation.tsx
+    RootNavigation.tsx
 ```
 
-## Implementation
+## Paso a paso de implementación
 
-### 1. Route Definitions (`config/routes.ts`)
+### 1) Instalar dependencias de navegación
 
-```typescript
-import { Product } from '@modules/products/domain/product.model';
+En un proyecto nuevo, instala lo necesario según el tipo de navegador que uses:
 
-export const ProductsRoutes = {
+- `@react-navigation/native`
+- `@react-navigation/native-stack`
+- Opcionales:
+  - `@react-navigation/bottom-tabs`
+  - `@react-navigation/drawer`
+
+También instala y configura `react-native-screens`, `react-native-gesture-handler`, `react-native-safe-area-context` y `react-native-reanimated` según la guía oficial.
+
+Checklist de dependencias:
+
+```
+@react-navigation/native
+@react-navigation/native-stack
+react-native-screens
+react-native-safe-area-context
+react-native-gesture-handler
+react-native-reanimated
+```
+
+### 2) Definir rutas y params tipados
+
+`src/navigation/config/routes.ts`
+
+```ts
+export const AppRoutes = {
   Home: 'Home',
-  Form: 'Form',
-  Detail: 'Detail',
+  Details: 'Details',
+  Settings: 'Settings',
 } as const;
 
-export type ProductsRoutes =
-  (typeof ProductsRoutes)[keyof typeof ProductsRoutes];
+export type AppRouteName = (typeof AppRoutes)[keyof typeof AppRoutes];
 
-export type ProductsStackParamsList = {
-  [ProductsRoutes.Home]: undefined;
-  [ProductsRoutes.Form]: { product?: Product };
-  [ProductsRoutes.Detail]: { product: Product };
+export type RootStackParamsList = {
+  [AppRoutes.Home]: undefined;
+  [AppRoutes.Details]: { id: string };
+  [AppRoutes.Settings]: { section?: string };
 };
 ```
 
-### 2. Stack Navigator (`stacks/{Feature}StackNavigation.tsx`)
+### 3) Crear stacks por dominio
 
-```typescript
+`src/navigation/stacks/RootStackNavigation.tsx`
+
+```tsx
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import ProductsListView from '@modules/products/ui/views/ProductsListView';
-import ProductsFormView from '@modules/products/ui/views/ProductsFormView';
-import ProductDetailView from '@modules/products/ui/views/ProductDetailView';
-import {
-  ProductsRoutes,
-  type ProductsStackParamsList,
-} from '@navigation/config/routes';
+import { AppRoutes, RootStackParamsList } from '@navigation/config/routes';
+import HomeView from '@modules/home/ui/views/HomeView';
+import DetailsView from '@modules/home/ui/views/DetailsView';
+import SettingsView from '@modules/settings/ui/views/SettingsView';
 
-const ProductsStack = createNativeStackNavigator<ProductsStackParamsList>();
+const RootStack = createNativeStackNavigator<RootStackParamsList>();
 
-export default function ProductsStackNavigation() {
+export default function RootStackNavigation() {
   return (
-    <ProductsStack.Navigator
-      screenOptions={{
-        headerShown: false,
-      }}
-    >
-      <ProductsStack.Screen
-        name={ProductsRoutes.Home}
-        component={ProductsListView}
-      />
-      <ProductsStack.Screen
-        name={ProductsRoutes.Form}
-        component={ProductsFormView}
-      />
-      <ProductsStack.Screen
-        name={ProductsRoutes.Detail}
-        component={ProductDetailView}
-      />
-    </ProductsStack.Navigator>
+    <RootStack.Navigator screenOptions={{ headerShown: false }}>
+      <RootStack.Screen name={AppRoutes.Home} component={HomeView} />
+      <RootStack.Screen name={AppRoutes.Details} component={DetailsView} />
+      <RootStack.Screen name={AppRoutes.Settings} component={SettingsView} />
+    </RootStack.Navigator>
   );
 }
 ```
 
-### 3. Navigation Hook (`hooks/useNavigation.tsx`)
+### 4) Configurar tabs y drawer (opcional)
 
-```typescript
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { ProductsStackParamsList } from '@navigation/config/routes';
+`src/navigation/tabs/MainTabsNavigation.tsx`
 
-export const useProductsNavigation = () =>
-  useNavigation<NativeStackNavigationProp<ProductsStackParamsList>>();
+```tsx
+import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { AppRoutes, RootStackParamsList } from '@navigation/config/routes';
+import HomeView from '@modules/home/ui/views/HomeView';
+import SettingsView from '@modules/settings/ui/views/SettingsView';
+
+const Tabs = createBottomTabNavigator<RootStackParamsList>();
+
+export default function MainTabsNavigation() {
+  return (
+    <Tabs.Navigator screenOptions={{ headerShown: false }}>
+      <Tabs.Screen name={AppRoutes.Home} component={HomeView} />
+      <Tabs.Screen name={AppRoutes.Settings} component={SettingsView} />
+    </Tabs.Navigator>
+  );
+}
 ```
 
-### 4. Root Navigation (`RootNavigation.tsx`)
+`src/navigation/drawers/MainDrawerNavigation.tsx`
 
-```typescript
+```tsx
+import React from 'react';
+import { createDrawerNavigator } from '@react-navigation/drawer';
+import { AppRoutes, RootStackParamsList } from '@navigation/config/routes';
+import HomeView from '@modules/home/ui/views/HomeView';
+import SettingsView from '@modules/settings/ui/views/SettingsView';
+
+const Drawer = createDrawerNavigator<RootStackParamsList>();
+
+export default function MainDrawerNavigation() {
+  return (
+    <Drawer.Navigator screenOptions={{ headerShown: false }}>
+      <Drawer.Screen name={AppRoutes.Home} component={HomeView} />
+      <Drawer.Screen name={AppRoutes.Settings} component={SettingsView} />
+    </Drawer.Navigator>
+  );
+}
+```
+
+### 5) RootNavigation con contenedor y ref
+
+`src/navigation/RootNavigation.tsx`
+
+```tsx
 import React from 'react';
 import {
   createNavigationContainerRef,
   NavigationContainer,
 } from '@react-navigation/native';
-import ProductsStackNavigation from './stacks/ProductsStackNavigation';
+import RootStackNavigation from '@navigation/stacks/RootStackNavigation';
+import { linking } from '@navigation/config/linking';
+import { onStateChange, initialState } from '@navigation/config/state';
 
-const navigationRef = createNavigationContainerRef();
+export const navigationRef = createNavigationContainerRef();
 
 export default function RootNavigation() {
   return (
-    <NavigationContainer ref={navigationRef}>
-      <ProductsStackNavigation />
+    <NavigationContainer
+      ref={navigationRef}
+      linking={linking}
+      initialState={initialState}
+      onStateChange={onStateChange}
+    >
+      <RootStackNavigation />
     </NavigationContainer>
   );
 }
 ```
 
-## Usage in Components
+### 6) Registrar navegación en el árbol de providers
 
-```typescript
-import { useProductsNavigation } from '@navigation/hooks/useNavigation';
-import { ProductsRoutes } from '@navigation/config/routes';
+`src/App.tsx`
 
-function ProductCard({ product }) {
-  const navigation = useProductsNavigation();
-
-  const handlePress = () => {
-    navigation.navigate(ProductsRoutes.Detail, { product });
-  };
-
-  return <Button onPress={handlePress} title="View Details" />;
-}
-```
-
-## Register in AppProvider
-
-Add NavigationContainer to your providers:
-
-```typescript
-// src/providers/AppProvider.tsx
+```tsx
+import AppProvider from '@providers/AppProvider';
 import RootNavigation from '@navigation/RootNavigation';
 
-export default function AppProvider() {
+export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <SafeAreaProvider>
-        <ThemeProvider>
-          <RootNavigation />
-        </ThemeProvider>
-      </SafeAreaProvider>
-    </QueryClientProvider>
+    <AppProvider>
+      <RootNavigation />
+    </AppProvider>
   );
 }
 ```
 
-## Required Dependencies
+### 7) Hooks tipados de navegación y params
 
-```bash
-npm install @react-navigation/native @react-navigation/native-stack
-npm install react-native-screens react-native-safe-area-context
+`src/navigation/hooks/useNavigation.tsx`
+
+```tsx
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamsList } from '@navigation/config/routes';
+
+export const useRootNavigation = () =>
+  useNavigation<NativeStackNavigationProp<RootStackParamsList>>();
 ```
 
-## Checklist
+`src/navigation/hooks/useRouteParams.ts`
 
-1. Create `src/navigation/` directory structure
-2. Define routes and param types in `config/routes.ts`
-3. Create stack navigator in `stacks/`
-4. Create typed navigation hook in `hooks/`
-5. Create RootNavigation container
-6. Register in AppProvider
-7. Install required dependencies
+```ts
+import { RouteProp, useRoute } from '@react-navigation/native';
+import { RootStackParamsList } from '@navigation/config/routes';
 
-## Best Practices
+export function useRouteParams<T extends keyof RootStackParamsList>() {
+  return useRoute<RouteProp<RootStackParamsList, T>>();
+}
+```
 
-- Use `as const` for route definitions
-- Type all route params explicitly
-- Use typed navigation hooks instead of `useNavigation()` directly
-- Keep route params minimal (pass IDs, fetch data in screen)
-- Export navigation ref for navigation outside components
+### 8) Tipado en pantallas
+
+```tsx
+import React from 'react';
+import { RouteProp } from '@react-navigation/native';
+import { RootStackParamsList } from '@navigation/config/routes';
+
+type DetailsViewProps = {
+  route: RouteProp<RootStackParamsList, 'Details'>;
+};
+
+export default function DetailsView({ route }: DetailsViewProps) {
+  const { id } = route.params;
+  return null;
+}
+```
+
+### 9) Guards y middleware de navegación
+
+`src/navigation/config/guards.ts`
+
+```ts
+import { NavigationContainerRef } from '@react-navigation/native';
+import { RootStackParamsList } from './routes';
+
+export type NavigationGuardContext = {
+  isAuthenticated: boolean;
+  currentRouteName?: keyof RootStackParamsList;
+};
+
+export function canNavigateToSettings(ctx: NavigationGuardContext) {
+  if (!ctx.isAuthenticated) return false;
+  return true;
+}
+```
+
+Uso en navegación (middleware ligero con `onStateChange`):
+
+```ts
+import { NavigationState } from '@react-navigation/native';
+import { AppRoutes } from './routes';
+import { canNavigateToSettings } from './guards';
+
+export function shouldBlockRoute(
+  state: NavigationState,
+  isAuthenticated: boolean,
+) {
+  const current = state.routes[state.index]?.name as
+    | keyof typeof AppRoutes
+    | undefined;
+  if (current === AppRoutes.Settings) {
+    return !canNavigateToSettings({
+      isAuthenticated,
+      currentRouteName: current,
+    });
+  }
+  return false;
+}
+```
+
+Patrón recomendado:
+
+- Evalúa `shouldBlockRoute` en `onStateChange`.
+- Si bloquea, navega a una ruta segura con `navigationRef`.
+
+### 10) Deep linking
+
+`src/navigation/config/linking.ts`
+
+```ts
+import { LinkingOptions } from '@react-navigation/native';
+import { RootStackParamsList, AppRoutes } from './routes';
+
+export const linking: LinkingOptions<RootStackParamsList> = {
+  prefixes: ['myapp://', 'https://myapp.com'],
+  config: {
+    screens: {
+      [AppRoutes.Home]: 'home',
+      [AppRoutes.Details]: 'products/:id',
+      [AppRoutes.Settings]: 'settings/:section?',
+    },
+  },
+};
+```
+
+### 11) Manejo de estado de navegación
+
+`src/navigation/config/state.ts`
+
+```ts
+import { NavigationState } from '@react-navigation/native';
+
+let cachedState: NavigationState | undefined;
+
+export const initialState = cachedState;
+
+export function onStateChange(state?: NavigationState) {
+  cachedState = state;
+}
+```
+
+Para persistencia real, reemplaza `cachedState` por un storage real del proyecto.
+
+### 12) Navegación condicional por autenticación
+
+```tsx
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import GuestRoutes from '@navigation/stacks/GuestStackNavigation';
+import PrivateRoutes from '@navigation/stacks/PrivateStackNavigation';
+import { useAuthState } from '@modules/auth/application/useAuthState';
+
+export default function RootNavigation() {
+  const isAuthenticated = useAuthState(state => state.isAuthenticated);
+
+  return (
+    <NavigationContainer>
+      {isAuthenticated ? <PrivateRoutes /> : <GuestRoutes />}
+    </NavigationContainer>
+  );
+}
+```
+
+### 13) Navegadores anidados
+
+```tsx
+import React from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import HomeView from '@modules/home/ui/views/HomeView';
+import SettingsView from '@modules/settings/ui/views/SettingsView';
+import FeedView from '@modules/home/ui/views/FeedView';
+import MessagesView from '@modules/home/ui/views/MessagesView';
+
+const Stack = createNativeStackNavigator();
+const Tabs = createBottomTabNavigator();
+
+function HomeTabs() {
+  return (
+    <Tabs.Navigator>
+      <Tabs.Screen name="Feed" component={FeedView} />
+      <Tabs.Screen name="Messages" component={MessagesView} />
+    </Tabs.Navigator>
+  );
+}
+
+export default function RootStackNavigation() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Home" component={HomeTabs} />
+      <Stack.Screen name="Settings" component={SettingsView} />
+    </Stack.Navigator>
+  );
+}
+```
+
+### 14) Acciones de navegación comunes
+
+```tsx
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamsList } from '@navigation/config/routes';
+
+type Nav = NativeStackNavigationProp<RootStackParamsList>;
+
+export function useNavActions() {
+  const navigation = useNavigation<Nav>();
+  return {
+    goHome: () => navigation.navigate('Home'),
+    openDetails: (id: string) => navigation.navigate('Details', { id }),
+    replaceDetails: (id: string) => navigation.replace('Details', { id }),
+    pushDetails: (id: string) => navigation.push('Details', { id }),
+    back: () => navigation.goBack(),
+    toTop: () => navigation.popToTop(),
+  };
+}
+```
+
+### 15) Opciones de pantalla y headers
+
+```tsx
+<Stack.Screen
+  name="Details"
+  component={DetailsView}
+  options={{
+    headerShown: true,
+    title: 'Details',
+  }}
+/>
+
+<Stack.Screen
+  name="Details"
+  component={DetailsView}
+  options={({ route }) => ({
+    title: route.params.id,
+    headerShown: false,
+  })}
+/>
+
+<Stack.Navigator
+  screenOptions={{
+    headerShown: false,
+    animation: 'slide_from_right',
+    gestureEnabled: true,
+  }}
+>
+```
+
+### 16) Estado de navegación con hooks
+
+```tsx
+import { useNavigationState } from '@react-navigation/native';
+
+export function useCurrentRouteName() {
+  return useNavigationState(state => state.routes[state.index].name);
+}
+
+export function useCanGoBack() {
+  return useNavigationState(state => state.routes.length > 1);
+}
+```
+
+### 17) Paso y lectura de parámetros
+
+```tsx
+navigation.navigate('Details', { id: '123' });
+
+function DetailsView({
+  route,
+}: {
+  route: RouteProp<RootStackParamsList, 'Details'>;
+}) {
+  const { id } = route.params;
+  return null;
+}
+
+const { params } = useRoute<RouteProp<RootStackParamsList, 'Details'>>();
+```
+
+## Mejores prácticas
+
+- Centraliza rutas y params en un único archivo con `as const`.
+- Evita strings literales de rutas en vistas y componentes.
+- Usa hooks tipados para navegación y params.
+- Separa navegadores por módulo o feature para escalar.
+- Usa `navigationRef` solo para acciones globales (logout, reset, deep links).
+- Evita lógica de negocio en navegadores; delega a guards/middleware.
+- Mantén params ligeros y pasa IDs en lugar de objetos grandes.
+- Agrega pruebas con mocks de navegadores y hooks.
+- Usa navegación condicional en el root para flujos auth/guest.
+
+## Ejemplo de uso modular en componentes
+
+```tsx
+import React from 'react';
+import { Pressable, Text } from 'react-native';
+import { useRootNavigation } from '@navigation/hooks/useNavigation';
+import { AppRoutes } from '@navigation/config/routes';
+
+export default function ProductItem({ id }: { id: string }) {
+  const navigation = useRootNavigation();
+  return (
+    <Pressable onPress={() => navigation.navigate(AppRoutes.Details, { id })}>
+      <Text>Ver detalle</Text>
+    </Pressable>
+  );
+}
+```
+
+## Pruebas recomendadas
+
+- Mock de stacks para asegurar que el contenedor renderiza.
+- Mock del hook de navegación para validar `navigate` y `goBack`.
+
+Referencias: [RootNavigation.test.tsx](file:///Users/crisanger/Documents/PROJECTS/DEVSU/DevsuBank/__tests__/navigation/RootNavigation.test.tsx), [ProductsStackNavigation.test.tsx](file:///Users/crisanger/Documents/PROJECTS/DEVSU/DevsuBank/__tests__/navigation/stacks/ProductsStackNavigation.test.tsx)
+
+## Checklist final
+
+1. Crear estructura `src/navigation/`.
+2. Definir rutas y params tipados.
+3. Crear stacks/tabs/drawer necesarios.
+4. Crear hooks tipados de navegación y params.
+5. Configurar `RootNavigation` con contenedor y ref.
+6. Registrar navegación en `App` o provider raíz.
+7. Configurar deep linking si aplica.
+8. Añadir pruebas básicas de navegación.
