@@ -38,7 +38,7 @@ export function UserFormView({
   };
 
   return (
-    <RootLayout>
+    <RootLayout scroll padding="lg">
       <View style={styles.header}>
         <Button variant="ghost" onPress={goBack}>
           Cancelar

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, FlatList, StyleSheet } from 'react-native';
 // Components
 import { Text } from '@components/core';
 import { UserItem } from './UserItem';
@@ -7,6 +7,7 @@ import { UserItem } from './UserItem';
 import { useUsers } from '@modules/users/application/user.queries';
 // Theme
 import { spacing } from '@theme/index';
+import { LoadingState } from '@components/layout';
 
 interface UserListProps {
   searchText: string;
@@ -16,14 +17,7 @@ export function UserList({ searchText }: UserListProps) {
   const { data: users, isLoading, isError, error } = useUsers({ searchText });
 
   if (isLoading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" />
-        <Text variant="body" style={styles.loadingText}>
-          Cargando usuarios...
-        </Text>
-      </View>
-    );
+    return <LoadingState message="Cargando usuarios..." />;
   }
 
   if (isError) {

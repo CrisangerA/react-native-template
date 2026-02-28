@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 // Components
 import { Text, Card, Button } from '@components/core';
+import {
+  LoadingState,
+  ErrorState,
+  EmptyState,
+  RootLayout,
+} from '@components/layout';
 import { DeleteConfirmationSheet } from './components/DeleteConfirmationSheet';
 // Application
 import { useUser } from '../application/user.queries';
@@ -37,38 +43,34 @@ export function UserDetailView({
   }
 
   if (isLoading) {
+    return <LoadingState message="Cargando usuario..." />;
+  }
+
+  if (isError) {
     return (
-      <View>
-        <View style={styles.centered}>
-          <ActivityIndicator size="large" />
-          <Text variant="body" style={styles.loadingText}>
-            Cargando...
-          </Text>
-        </View>
-      </View>
+      <ErrorState
+        title="Error al cargar"
+        message={error?.message || 'No se pudo cargar el usuario'}
+        onRetry={goBack}
+        retryLabel="Volver"
+      />
     );
   }
 
-  if (isError || !user) {
+  if (!user) {
     return (
-      <View>
-        <View style={styles.centered}>
-          <Text variant="h3" style={styles.errorTitle}>
-            Error
-          </Text>
-          <Text variant="body">
-            {error?.message || 'Usuario no encontrado'}
-          </Text>
-          <Button onPress={goBack} style={styles.button}>
-            Volver
-          </Button>
-        </View>
-      </View>
+      <EmptyState
+        title="Usuario no encontrado"
+        message="El usuario que buscas no existe o fue eliminado"
+        icon="👤"
+        onAction={goBack}
+        actionLabel="Volver"
+      />
     );
   }
 
   return (
-    <View>
+    <RootLayout padding="md">
       <View style={styles.header}>
         <Button variant="ghost" onPress={goBack}>
           Volver
@@ -108,11 +110,7 @@ export function UserDetailView({
           </Text>
         </Card>
 
-        <Button
-          variant="primary"
-          onPress={() => setShowDeleteSheet(true)}
-          style={styles.deleteButton}
-        >
+        <Button variant="primary" onPress={() => setShowDeleteSheet(true)}>
           Eliminar Usuario
         </Button>
       </View>
@@ -124,7 +122,7 @@ export function UserDetailView({
         isLoading={isDeleting}
         userName={user.name}
       />
-    </View>
+    </RootLayout>
   );
 }
 
@@ -140,29 +138,11 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     gap: spacing.md,
   },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  loadingText: {
-    marginTop: spacing.md,
-  },
-  errorTitle: {
-    color: 'red',
-  },
   card: {
     gap: spacing.xs,
   },
   infoRow: {
     gap: spacing.xs,
     marginVertical: spacing.xs,
-  },
-  deleteButton: {
-    marginTop: 'auto',
-  },
-  button: {
-    marginTop: spacing.md,
   },
 });

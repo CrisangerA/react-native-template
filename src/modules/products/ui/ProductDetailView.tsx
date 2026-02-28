@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 // Components
 import { Text, Card, Button } from '@components/core';
+import {
+  LoadingState,
+  ErrorState,
+  EmptyState,
+  RootLayout,
+} from '@components/layout';
 import { DeleteConfirmationSheet } from './components/DeleteConfirmationSheet';
 // Application
 import { useProduct } from '../application/product.queries';
@@ -37,38 +43,33 @@ export function ProductDetailView({
   }
 
   if (isLoading) {
+    return <LoadingState message="Cargando producto..." />;
+  }
+
+  if (isError) {
     return (
-      <View>
-        <View style={styles.centered}>
-          <ActivityIndicator size="large" />
-          <Text variant="body" style={styles.loadingText}>
-            Cargando...
-          </Text>
-        </View>
-      </View>
+      <ErrorState
+        title="Error al cargar"
+        message={error?.message || 'No se pudo cargar el producto'}
+        onRetry={goBack}
+        retryLabel="Volver"
+      />
     );
   }
 
-  if (isError || !product) {
+  if (!product) {
     return (
-      <View>
-        <View style={styles.centered}>
-          <Text variant="h3" style={styles.errorTitle}>
-            Error
-          </Text>
-          <Text variant="body">
-            {error?.message || 'Producto no encontrado'}
-          </Text>
-          <Button onPress={goBack} style={styles.button}>
-            Volver
-          </Button>
-        </View>
-      </View>
+      <EmptyState
+        title="Producto no encontrado"
+        message="El producto que buscas no existe o fue eliminado"
+        icon="📦"
+        onAction={goBack}
+        actionLabel="Volver"
+      />
     );
   }
-  console.log('product', product, product.name, product.description);
   return (
-    <View>
+    <RootLayout padding="md">
       <View style={styles.header}>
         <Button variant="ghost" onPress={goBack}>
           Volver
@@ -82,15 +83,11 @@ export function ProductDetailView({
         <Card style={styles.card}>
           <Text variant="h2">{product.name}</Text>
 
-          {product.description ? (
-            <Text variant="body" style={styles.description}>
-              {product.description}
-            </Text>
-          ) : null}
+          {product.description && (
+            <Text variant="body">{product.description}</Text>
+          )}
 
-          <Text variant="h3" style={styles.price}>
-            ${product.price.toFixed(2)}
-          </Text>
+          <Text variant="h3">${product.price.toFixed(2)}</Text>
         </Card>
 
         <Card style={styles.card}>
@@ -103,11 +100,7 @@ export function ProductDetailView({
           </Text>
         </Card>
 
-        <Button
-          variant="primary"
-          onPress={() => setShowDeleteSheet(true)}
-          style={styles.deleteButton}
-        >
+        <Button variant="primary" onPress={() => setShowDeleteSheet(true)}>
           Eliminar Producto
         </Button>
       </View>
@@ -119,7 +112,7 @@ export function ProductDetailView({
         isLoading={isDeleting}
         productName={product.name}
       />
-    </View>
+    </RootLayout>
   );
 }
 
@@ -135,33 +128,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     gap: spacing.md,
   },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: spacing.md,
-  },
-  loadingText: {
-    marginTop: spacing.md,
-  },
-  errorTitle: {
-    color: 'red',
-  },
   card: {
     gap: spacing.xs,
-  },
-  description: {
-    opacity: 0.7,
-    marginVertical: spacing.sm,
-  },
-  price: {
-    color: 'primary',
-    marginTop: spacing.sm,
-  },
-  deleteButton: {
-    marginTop: 'auto',
-  },
-  button: {
-    marginTop: spacing.md,
   },
 });

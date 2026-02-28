@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, FlatList, StyleSheet } from 'react-native';
 // Components
 import { Text } from '@components/core';
 import { ProductItem } from './ProductItem';
@@ -7,6 +7,7 @@ import { ProductItem } from './ProductItem';
 import { useProducts } from '@modules/products/application/product.queries';
 // Theme
 import { spacing } from '@theme/index';
+import { LoadingState } from '@components/layout';
 
 interface ProductListProps {
   searchText: string;
@@ -20,14 +21,7 @@ export function ProductList({ searchText }: ProductListProps) {
     error,
   } = useProducts({ searchText });
   if (isLoading) {
-    return (
-      <View style={styles.centered}>
-        <ActivityIndicator size="large" />
-        <Text variant="body" style={styles.loadingText}>
-          Cargando productos...
-        </Text>
-      </View>
-    );
+    return <LoadingState message="Cargando productos..." />;
   }
 
   if (isError) {

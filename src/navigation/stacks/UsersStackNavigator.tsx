@@ -5,7 +5,10 @@ import { UserFormView } from '@modules/users/ui/UserFormView';
 import { UsersListView } from '@modules/users/ui/UsersListView';
 import { UserDetailView } from '@modules/users/ui/UserDetailView';
 // Routes
-import { UsersRoutes, UsersStackParamList } from '@navigation/routes/users.routes';
+import {
+  UsersRoutes,
+  UsersStackParamList,
+} from '@navigation/routes/users.routes';
 
 const Stack = createNativeStackNavigator<UsersStackParamList>();
 
@@ -17,10 +20,7 @@ export default function UsersNavigator() {
       }}
     >
       <Stack.Screen name={UsersRoutes.UserList} component={UsersListView} />
-      <Stack.Screen
-        name={UsersRoutes.UserDetail}
-        component={UserDetailView}
-      />
+      <Stack.Screen name={UsersRoutes.UserDetail} component={UserDetailView} />
       <Stack.Screen name={UsersRoutes.UserForm} component={UserFormView} />
     </Stack.Navigator>
   );
