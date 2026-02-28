@@ -1,0 +1,23 @@
+export const FIREBASE_MESSAGES = {
+  OBJECT_NOT_FOUND: 'El archivo no fue encontrado.',
+  UNAUTHORIZED: 'No tienes permisos para realizar esta operación.',
+  QUOTA_EXCEEDED: 'Has excedido tu cuota de almacenamiento.',
+  EMAIL_ALREADY_IN_USE: 'El correo electrónico ya está en uso.',
+  INVALID_EMAIL: 'El correo electrónico no es válido.',
+  WEAK_PASSWORD: 'La contraseña debe tener al menos 6 caracteres.',
+  USER_NOT_FOUND: 'No existe un usuario con este correo electrónico.',
+  WRONG_PASSWORD: 'La contraseña es incorrecta.',
+  NETWORK_ERROR:
+    'No pudimos conectar con el servidor. Revisa tu conexión a internet.',
+  UNKNOWN_ERROR: 'Ocurrió un error inesperado. Por favor, inténtalo de nuevo.',
+  DOCUMENT_NOT_FOUND: 'El documento no fue encontrado.',
+  DOCUMENT_ALREADY_EXISTS: 'El documento ya existe.',
+  INVALID_ARGUMENT: 'Argumento inválido.',
+  DEADLINE_EXCEEDED: 'La operación tardó demasiado.',
+  PERMISSION_DENIED: 'Permiso denegado.',
+  NOT_FOUND: 'Recurso no encontrado.',
+  ALREADY_EXISTS: 'El recurso ya existe.',
+  RESOURCE_EXHAUSTED: 'Recurso agotado.',
+  CANCELLED: 'Operación cancelada.',
+  UNAVAILABLE: 'Servicio no disponible.',
+};
