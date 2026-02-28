@@ -16,6 +16,7 @@ src/
 │   ├── form/         # Form-integrated components (with react-hook-form)
 │   └── layout/       # Layout components (RootLayout)
 ├── config/           # App configuration (API routes, storage keys)
+├── navigation/       # Root navigator and global navigation types
 ├── modules/          # Feature modules (authentication, network, examples)
 │   └── {feature}/
 │       ├── domain/       # Business logic (models, repositories, adapters, schemas)
@@ -36,6 +37,8 @@ import { TextInput } from '@components/form';
 import { useTheme, spacing } from '@theme/index';
 // Config
 import { API_ROUTES } from '@config/api.routes';
+// Navigation
+import { RootNavigator } from '@navigation/index';
 // Modules
 import authService from '@modules/authentication/infrastructure/auth.service';
 ```
@@ -46,7 +49,7 @@ import authService from '@modules/authentication/infrastructure/auth.service';
 - **Forms**: react-hook-form + @hookform/resolvers + Zod
 - **Network**: Axios
 - **Storage**: react-native-mmkv
-- **Navigation**: Custom navigator (no React Navigation)
+- **Navigation**: React Navigation (Native Stack)
 - **UI**: react-native-gesture-handler, react-native-safe-area-context
 
 ## Layer Rules

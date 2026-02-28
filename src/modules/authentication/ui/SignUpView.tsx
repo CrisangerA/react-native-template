@@ -7,13 +7,9 @@ import SignUpForm from './components/signup/SignUpForm';
 import { spacing } from '@theme/index';
 import { RootLayout } from '@components/layout';
 
-interface UserSignInViewProps {
-  onBack?: () => void;
-}
-
-export default function UserSignInView({ onBack }: UserSignInViewProps) {
+export default function UserSignInView() {
   return (
-    <RootLayout onBack={onBack}>
+    <RootLayout>
       <View style={styles.header}>
         <Text variant="h1">Registro de Usuario</Text>
         <Text variant="body" color="textSecondary">

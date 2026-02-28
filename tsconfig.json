@@ -9,7 +9,8 @@
       "@config/*": ["src/config/*"],
       "@containers/*": ["src/containers/*"],
       "@modules/*": ["src/modules/*"],
-      "@theme/*": ["src/theme/*"]
+      "@theme/*": ["src/theme/*"],
+      "@navigation/*": ["src/navigation/*"]
     }
   },
   "include": ["**/*.ts", "**/*.tsx"],

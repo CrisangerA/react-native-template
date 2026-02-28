@@ -1,23 +1,12 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View, Alert } from 'react-native';
 
-import { Button, Card, Text } from '@components/core';
+import { Card, Text } from '@components/core';
 import { spacing } from '@theme/index';
 
-interface CardsViewProps {
-  onBack: () => void;
-}
-
-export default function CardsView({ onBack }: CardsViewProps) {
+export default function CardsView() {
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
-        <Button variant="ghost" size="sm" onPress={onBack}>
-          ← Volver
-        </Button>
-        <Text variant="h1">Componente Card</Text>
-      </View>
-
       <View style={styles.section}>
         <Text variant="h3" color="primary">
           Variantes
@@ -207,10 +196,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: spacing.md,
     gap: spacing.lg,
-  },
-  header: {
-    gap: spacing.sm,
-    marginBottom: spacing.md,
   },
   section: {
     gap: spacing.sm,

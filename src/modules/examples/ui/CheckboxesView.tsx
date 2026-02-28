@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { Button, Checkbox, Text } from '@components/core';
+import { Checkbox, Text } from '@components/core';
 import { spacing } from '@theme/index';
 
-interface CheckboxesViewProps {
-  onBack: () => void;
-}
-
-export default function CheckboxesView({ onBack }: CheckboxesViewProps) {
+export default function CheckboxesView() {
   const [checkedSm, setCheckedSm] = useState(true);
   const [checkedMd, setCheckedMd] = useState(false);
   const [checkedLg, setCheckedLg] = useState(true);
@@ -18,13 +14,6 @@ export default function CheckboxesView({ onBack }: CheckboxesViewProps) {
 
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
-        <Button variant="ghost" size="sm" onPress={onBack}>
-          ← Volver
-        </Button>
-        <Text variant="h1">Componente Checkbox</Text>
-      </View>
-
       <View style={styles.section}>
         <Text variant="h3" color="primary">
           Tamaños
@@ -100,10 +89,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: spacing.md,
     gap: spacing.lg,
-  },
-  header: {
-    gap: spacing.sm,
-    marginBottom: spacing.md,
   },
   section: {
     gap: spacing.sm,

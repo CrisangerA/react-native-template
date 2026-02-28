@@ -6,14 +6,16 @@ import { spacing } from '@theme/index';
 import { borderRadius } from '@theme/borders';
 import { useTheme } from '@theme/index';
 
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
 import ComponentCard from './ComponentCard';
-import { COMPONENTS_CONFIG, ViewType } from './componentsConfig';
+import { COMPONENTS_CONFIG } from './componentsConfig';
+import type { ExamplesStackParamList } from './navigation';
 
-interface LandingViewProps {
-  onNavigate: (view: ViewType) => void;
-}
-
-function LandingView({ onNavigate }: LandingViewProps) {
+function LandingView() {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<ExamplesStackParamList>>();
   const { mode } = useTheme();
   const headerFadeAnim = useRef(new Animated.Value(0)).current;
   const headerTranslateY = useRef(new Animated.Value(-30)).current;
@@ -111,7 +113,7 @@ function LandingView({ onNavigate }: LandingViewProps) {
             icon={component.icon}
             color={component.color}
             delay={200 + index * 100}
-            onPress={() => onNavigate(component.view)}
+            onPress={() => navigation.navigate(component.screen)}
           />
         ))}
       </View>

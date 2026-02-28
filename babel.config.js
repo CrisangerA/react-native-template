@@ -13,6 +13,7 @@ module.exports = {
           '@containers': './src/containers',
           '@modules': './src/modules',
           '@theme': './src/theme',
+          '@navigation': './src/navigation',
         },
       },
     ],

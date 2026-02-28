@@ -1,11 +1,9 @@
 import React, { PropsWithChildren } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 // Providers
 import SecureProvider from './SecureProvider';
+import NavigationProvider from './NavigationProvider';
 import ThemeProvider from '@theme/providers/ThemeProvider';
 // Styles
 import { useTheme, commonStyles } from '@theme/index';
@@ -18,7 +16,9 @@ export default function AppProvider({ children }: PropsWithChildren) {
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <SafeAreaProvider>
-            <GestureHandlerProvider>{children}</GestureHandlerProvider>
+            <GestureHandlerProvider>
+              <NavigationProvider>{children}</NavigationProvider>
+            </GestureHandlerProvider>
           </SafeAreaProvider>
         </ThemeProvider>
       </QueryClientProvider>
@@ -31,17 +31,11 @@ function GestureHandlerProvider({ children }: PropsWithChildren) {
     colors: { background: backgroundColor },
   } = useTheme();
 
-  const insets = useSafeAreaInsets();
-
   return (
     <GestureHandlerRootView
       style={{
         ...commonStyles.flex,
         backgroundColor,
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
-        paddingLeft: insets.left,
-        paddingRight: insets.right,
       }}
     >
       {children}

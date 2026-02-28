@@ -1,33 +1,11 @@
-import { ComponentType } from 'react';
-
-import TextsView from './TextsView';
-import ButtonsView from './ButtonsView';
-import TextInputsView from './TextInputsView';
-import CardsView from './CardsView';
-import CheckboxesView from './CheckboxesView';
-import ModalsView from './ModalsView';
-import UserSignInView from '@modules/authentication/ui/SignInView';
-
-export type ViewType =
-  | 'landing'
-  | 'texts'
-  | 'buttons'
-  | 'textinputs'
-  | 'cards'
-  | 'checkboxes'
-  | 'modals'
-  | 'signin';
+import type { ExamplesStackParamList } from './navigation';
 
 export interface ComponentConfig {
   title: string;
   description: string;
   icon: string;
   color: string;
-  view: Exclude<ViewType, 'landing'>;
-}
-
-export interface ViewProps {
-  onBack: () => void;
+  screen: keyof Omit<ExamplesStackParamList, 'Landing'>;
 }
 
 export const COMPONENTS_CONFIG: ComponentConfig[] = [
@@ -36,61 +14,48 @@ export const COMPONENTS_CONFIG: ComponentConfig[] = [
     description: 'Typography system with variants, colors & styles',
     icon: 'Aa',
     color: '#3B82F6',
-    view: 'texts',
+    screen: 'Texts',
   },
   {
     title: 'Button',
     description: 'Interactive buttons with multiple states & sizes',
-    icon: '▢',
+    icon: '\u25A2',
     color: '#10B981',
-    view: 'buttons',
+    screen: 'Buttons',
   },
   {
     title: 'TextInput',
     description: 'Form inputs with validation & icons support',
-    icon: '✎',
+    icon: '\u270E',
     color: '#8B5CF6',
-    view: 'textinputs',
+    screen: 'TextInputs',
   },
   {
     title: 'Card',
     description: 'Container component with variants & interactive mode',
-    icon: '▣',
+    icon: '\u25A3',
     color: '#F59E0B',
-    view: 'cards',
+    screen: 'Cards',
   },
   {
     title: 'Checkbox',
     description: 'Selectable control with variants and states',
-    icon: '☑',
+    icon: '\u2611',
     color: '#14B8A6',
-    view: 'checkboxes',
+    screen: 'Checkboxes',
   },
   {
     title: 'Modal',
     description: 'Overlays for dialogs and confirmations',
-    icon: '▧',
+    icon: '\u25A7',
     color: '#6366F1',
-    view: 'modals',
+    screen: 'Modals',
   },
   {
     title: 'SignIn Form',
     description: 'Registration form with react-hook-form & zod validation',
-    icon: '👤',
+    icon: '\uD83D\uDC64',
     color: '#EC4899',
-    view: 'signin',
+    screen: 'SignIn',
   },
 ];
-
-export const VIEWS_REGISTRY: Record<
-  Exclude<ViewType, 'landing'>,
-  ComponentType<ViewProps>
-> = {
-  texts: TextsView,
-  buttons: ButtonsView,
-  textinputs: TextInputsView,
-  cards: CardsView,
-  checkboxes: CheckboxesView,
-  modals: ModalsView,
-  signin: UserSignInView,
-};

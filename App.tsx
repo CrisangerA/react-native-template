@@ -5,13 +5,14 @@
  * @format
  */
 
+import 'react-native-screens';
 import AppProvider from 'src/providers/AppProvider';
-import RootView from '@modules/examples/ui/RootView';
+import { RootNavigator } from '@navigation/index';
 
 function App() {
   return (
     <AppProvider>
-      <RootView />
+      <RootNavigator />
     </AppProvider>
   );
 }

@@ -1,14 +1,10 @@
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
-import { Button, Text, TextInput, DatePicker, Select } from '@components/core';
+import { Text, TextInput, DatePicker, Select } from '@components/core';
 import { spacing } from '@theme/index';
 
-interface TextInputsViewProps {
-  onBack: () => void;
-}
-
-export default function TextInputsView({ onBack }: TextInputsViewProps) {
+export default function TextInputsView() {
   const [text1, setText1] = useState('');
   const [text2, setText2] = useState('');
   const [text4, setText4] = useState('');
@@ -27,13 +23,6 @@ export default function TextInputsView({ onBack }: TextInputsViewProps) {
 
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
-        <Button variant="ghost" size="sm" onPress={onBack}>
-          ← Volver
-        </Button>
-        <Text variant="h1">Componente TextInput</Text>
-      </View>
-
       <View style={styles.section}>
         <Text variant="h3" color="primary">
           Tamaños (Size)
@@ -358,10 +347,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: spacing.md,
     gap: spacing.lg,
-  },
-  header: {
-    gap: spacing.sm,
-    marginBottom: spacing.md,
   },
   section: {
     gap: spacing.sm,

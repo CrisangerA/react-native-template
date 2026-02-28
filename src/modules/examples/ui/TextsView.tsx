@@ -1,23 +1,12 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { Button, Text } from '@components/core';
+import { Text } from '@components/core';
 import { spacing } from '@theme/index';
 
-interface TextsViewProps {
-  onBack: () => void;
-}
-
-export default function TextsView({ onBack }: TextsViewProps) {
+export default function TextsView() {
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
-        <Button variant="ghost" size="sm" onPress={onBack}>
-          ← Volver
-        </Button>
-        <Text variant="h1">Componente Text</Text>
-      </View>
-
       <View style={styles.section}>
         <Text variant="h3" color="primary">
           Variantes de Heading
@@ -165,10 +154,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: spacing.md,
     gap: spacing.lg,
-  },
-  header: {
-    gap: spacing.sm,
-    marginBottom: spacing.md,
   },
   section: {
     gap: spacing.sm,

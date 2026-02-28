@@ -4,26 +4,15 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Modal, Text } from '@components/core';
 import { spacing } from '@theme/index';
 
-interface ModalsViewProps {
-  onBack: () => void;
-}
-
 type ActiveModal = 'basic' | 'icon' | 'sizes' | 'backdrop' | null;
 
-export default function ModalsView({ onBack }: ModalsViewProps) {
+export default function ModalsView() {
   const [activeModal, setActiveModal] = useState<ActiveModal>(null);
 
   const closeModal = () => setActiveModal(null);
 
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
-        <Button variant="ghost" size="sm" onPress={onBack}>
-          ← Volver
-        </Button>
-        <Text variant="h1">Componente Modal</Text>
-      </View>
-
       <View style={styles.section}>
         <Text variant="h3" color="primary">
           Básico
@@ -129,10 +118,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: spacing.md,
     gap: spacing.lg,
-  },
-  header: {
-    gap: spacing.sm,
-    marginBottom: spacing.md,
   },
   section: {
     gap: spacing.sm,

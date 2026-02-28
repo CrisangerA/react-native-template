@@ -35,11 +35,11 @@ Theme persistence uses Zustand + MMKV storage (`src/theme/providers/theme.storag
 
 ## Providers
 
-`AppProvider` composes (outer → inner): `SecureProvider` → `QueryClientProvider` → `ThemeProvider` → `SafeAreaProvider` → `GestureHandlerRootView`
+`AppProvider` composes (outer → inner): `SecureProvider` → `QueryClientProvider` → `ThemeProvider` → `SafeAreaProvider` → `GestureHandlerRootView` → `NavigationProvider`
 
 ## Navigation
 
-Custom state-based navigation (no React Navigation). Uses a view registry pattern with animated transitions in `src/modules/examples/ui/RootNavigator.tsx`.
+React Navigation with Native Stack. Root navigator in `src/navigation/RootNavigator.tsx` with a `RootStackParamList`. Feature stacks are nested (e.g. `ExamplesNavigator` in `src/modules/examples/ui/navigation/`). `NavigationProvider` in `src/providers/NavigationProvider.tsx` wraps `NavigationContainer` and maps the project theme to React Navigation's theme. To add a new stack: create types + navigator in the module's `ui/navigation/` folder, then register in `RootStackParamList`.
 
 ## Error Handling
 

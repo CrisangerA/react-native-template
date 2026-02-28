@@ -4,22 +4,11 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Text } from '@components/core';
 import { useTheme, spacing } from '@theme/index';
 
-interface ButtonsViewProps {
-  onBack: () => void;
-}
-
-export default function ButtonsView({ onBack }: ButtonsViewProps) {
+export default function ButtonsView() {
   const { mode, toggleTheme } = useTheme();
 
   return (
     <ScrollView contentContainerStyle={styles.contentContainer}>
-      <View style={styles.header}>
-        <Button variant="ghost" size="sm" onPress={onBack}>
-          ← Volver
-        </Button>
-        <Text variant="h1">Componente Button</Text>
-      </View>
-
       <View style={styles.section}>
         <Text variant="h3" color="primary">
           Variante: Primary
@@ -182,10 +171,6 @@ const styles = StyleSheet.create({
   contentContainer: {
     padding: spacing.md,
     gap: spacing.lg,
-  },
-  header: {
-    gap: spacing.sm,
-    marginBottom: spacing.md,
   },
   section: {
     gap: spacing.sm,

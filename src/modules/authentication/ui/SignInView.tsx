@@ -7,18 +7,14 @@ import SignInForm from './components/signin/SignInForm';
 // Theme
 import { spacing } from '@theme/index';
 
-interface SignInViewProps {
-  onBack?: () => void;
-}
-
 /**
- * Vista principal de inicio de sesión de usuario
+ * Vista principal de inicio de sesion de usuario
  */
-export default function SignInView({ onBack }: SignInViewProps) {
+export default function SignInView() {
   return (
-    <RootLayout onBack={onBack}>
+    <RootLayout>
       <View style={styles.header}>
-        <Text variant="h1">Inicio de sesión</Text>
+        <Text variant="h1">Inicio de sesion</Text>
         <Text variant="body" color="textSecondary">
           Ingrese sus credenciales para acceder a su cuenta
         </Text>
@@ -35,4 +31,3 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
 });
-
