@@ -16,7 +16,7 @@ import { productFormToPayloadAdapter } from '../domain/product.adapter';
 import {
   ProductsRoutes,
   ProductsScreenProps,
-} from '@navigation/routes/products.routes';
+} from '@navigation/routes';
 // Theme
 import { spacing } from '@theme/index';
 

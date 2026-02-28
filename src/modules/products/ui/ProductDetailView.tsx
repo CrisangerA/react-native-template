@@ -10,8 +10,8 @@ import { useProductDelete } from '../application/product.mutations';
 import {
   ProductsRoutes,
   ProductsScreenProps,
-} from '@navigation/routes/products.routes';
-import { useNavigationProducts } from '@navigation/hooks/useNavigation';
+} from '@navigation/routes';
+import { useNavigationProducts } from '@navigation/hooks';
 // Theme
 import { spacing } from '@theme/index';
 

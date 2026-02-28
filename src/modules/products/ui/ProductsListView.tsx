@@ -8,8 +8,8 @@ import { ProductList } from './components/ProductList';
 // Hooks
 import { useDebounce } from '../application/useDebounce';
 // Routes
-import { ProductsRoutes } from '@navigation/routes/products.routes';
-import { useNavigationProducts } from '@navigation/hooks/useNavigation';
+import { ProductsRoutes } from '@navigation/routes';
+import { useNavigationProducts } from '@navigation/hooks';
 // Theme
 import { spacing } from '@theme/index';
 import { RootLayout } from '@components/layout';

@@ -7,7 +7,7 @@
 
 import 'react-native-screens';
 import AppProvider from 'src/providers/AppProvider';
-import { RootNavigator } from '@navigation/index';
+import RootNavigator from '@navigation/RootNavigator';
 
 function App() {
   return (

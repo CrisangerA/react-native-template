@@ -4,8 +4,8 @@ import { Text } from '@components/core';
 import { Card } from '@components/core';
 import { useTheme, spacing } from '@theme/index';
 import type { ProductEntity } from '../../domain/product.model';
-import { ProductsRoutes } from '@navigation/routes/products.routes';
-import { useNavigationProducts } from '@navigation/hooks/useNavigation';
+import { ProductsRoutes } from '@navigation/routes';
+import { useNavigationProducts } from '@navigation/hooks';
 
 interface ProductItemProps {
   product: ProductEntity;
