@@ -1,82 +1,115 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# React Native Clean Architecture Template 🚀
 
-# Getting Started
+A robust, production-ready React Native template built with **Clean Architecture**, **TypeScript**, and **AI-First** principles. This project serves as a foundational starting point for scalable mobile applications, featuring a modular structure and pre-configured essential libraries.
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+> **Note:** This template is designed to work seamlessly with a companion **CLI tool** that extracts modular pieces (Theme, Components, Navigation, Network, Firebase, etc.) to jumpstart your development.
 
-## Step 1: Start Metro
+## 🌟 Key Features
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+- **Architecture:** 4-Layer Clean Architecture (Domain, Application, Infrastructure, UI) for separation of concerns and testability.
+- **Tech Stack:**
+  - **React Native:** v0.84.0 (New Architecture enabled)
+  - **Language:** TypeScript 5.x
+  - **Navigation:** React Navigation v7 (Native Stack)
+  - **State Management:** Zustand (Global) & TanStack Query (Server State)
+  - **Forms:** React Hook Form + Zod Validation
+  - **Storage:** MMKV (Fast, encrypted local storage)
+  - **Network:** Axios with interceptors
+  - **Backend Integration:** Firebase (Auth, Firestore, Storage) pre-configured
+- **UI Kit:** Custom core components (Buttons, Inputs, Cards) and a centralized Theme system.
+- **Testing:** Jest & React Native Testing Library setup.
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## 🧠 AI-Powered Development (.opencode)
 
-```sh
-# Using npm
-npm start
+This project includes a built-in "Second Brain" for AI agents located in the `.opencode/` directory. This serves as the Single Source of Truth for:
+- **Architectural Rules:** Enforces consistency in layers and naming.
+- **Skills:** specialized instructions for creating components, modules, services, and tests.
+- **Agents:** Specialized personas like `scaffolder`, `test-writer`, and `theme-auditor`.
 
-# OR using Yarn
-yarn start
+When working with AI assistants (like Trae, Cursor, or others), point them to `.opencode/AGENTS.md` to unlock context-aware code generation.
+
+## 📂 Project Structure
+
+The project follows a **Modular Architecture**. Each feature is a self-contained module in `src/modules/` containing its own layers:
+
+```
+src/
+├── components/       # Shared UI components (Core & Form)
+├── config/           # App-wide configuration (API, Storage)
+├── modules/          # Feature Modules
+│   ├── authentication/
+│   ├── products/     # Example CRUD module
+│   └── examples/     # UI Component Showcase
+├── navigation/       # Root navigation configuration
+├── providers/        # App-wide providers (Theme, Auth, QueryClient)
+└── theme/            # Design tokens (Colors, Typography, Spacing)
 ```
 
-## Step 2: Build and run your app
+### Module Anatomy (Clean Architecture)
+Each module (e.g., `src/modules/products/`) is divided into:
+1.  **Domain:** Entities, Repository Interfaces, Errors (Pure TS, no React/Lib dependencies).
+2.  **Application:** Use Cases, State Management (Zustand/Query), Logic.
+3.  **Infrastructure:** API calls, Database implementation, Third-party adapters.
+4.  **UI:** Screens, Components, Navigation.
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+## 🚀 Getting Started
 
-### Android
+### Prerequisites
+- Node.js (v22+ recommended)
+- Ruby (for CocoaPods)
+- JDK 17+
+- Android Studio & Xcode (for iOS)
 
-```sh
-# Using npm
-npm run android
+### Installation
 
-# OR using Yarn
-yarn android
-```
+1.  **Clone the repository:**
+    ```bash
+    git clone <your-repo-url>
+    cd rncatemplate
+    ```
 
-### iOS
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+3.  **Install iOS Pods:**
+    ```bash
+    cd ios && bundle install && bundle exec pod install && cd ..
+    # or
+    npm run pod-install
+    ```
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+### Running the App
 
-```sh
-bundle install
-```
+- **Start Metro Bundler:**
+  ```bash
+  npm start
+  ```
 
-Then, and every time you update your native dependencies, run:
+- **Run on iOS:**
+  ```bash
+  npm run ios
+  ```
 
-```sh
-bundle exec pod install
-```
+- **Run on Android:**
+  ```bash
+  npm run android
+  ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+## 🛠 Available Scripts
 
-```sh
-# Using npm
-npm run ios
+- `npm run lint`: Run ESLint.
+- `npm test`: Run Jest tests.
+- `npm run clean-android`: Deep clean Android build.
+- `npm run clean-ios`: Deep clean iOS build (DerivedData + Pods).
+- `npm run clean-watch`: Reset Watchman (fixes Metro issues).
 
-# OR using Yarn
-yarn ios
-```
+## 🧩 Included Modules
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+- **Authentication:** Complete Sign In / Sign Up flow with Firebase integration.
+- **Products:** A full CRUD example demonstrating the 4-layer architecture with listing, details, and creation forms.
+- **Examples:** A gallery of UI components to visualize the design system.
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-
-# Troubleshooting
-
-### Zod Library
-node_modules/zod/v4/classic/external.js: /Users/crisanger/Documents/PROJECTS/MOBILE/rncatemplate/node_modules/zod/v4/classic/external.js: Export namespace should be first transformed by `@babel/plugin-transform-export-namespace-from
-1. Install the library
-2. Add plugin to babel.config.js
+---
+Generated by Trae 🤖
