@@ -1,7 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
 // Components
-import { Button } from '@components/core';
 import { RootLayout } from '@components/layout';
 import { UserForm } from './components/UserForm';
 // Application
@@ -11,9 +9,6 @@ import type { UserFormData } from '../domain/user.scheme';
 import { userFormToPayloadAdapter } from '../domain/user.adapter';
 // Navigation
 import { UsersRoutes, UsersScreenProps } from '@navigation/routes';
-// Theme
-import { spacing } from '@theme/index';
-
 export function UserFormView({
   route: { params },
   navigation: { goBack },
@@ -38,13 +33,12 @@ export function UserFormView({
   };
 
   return (
-    <RootLayout scroll padding="lg">
-      <View style={styles.header}>
-        <Button variant="ghost" onPress={goBack}>
-          Cancelar
-        </Button>
-      </View>
-
+    <RootLayout
+      scroll
+      padding="lg"
+      onPress={goBack}
+      title={isEditing ? 'Edit User' : 'Create User'}
+    >
       <UserForm
         onSubmit={handleSubmit}
         isLoading={isLoading}
@@ -53,11 +47,3 @@ export function UserFormView({
     </RootLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    marginBottom: spacing.md,
-  },
-});

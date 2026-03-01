@@ -17,7 +17,7 @@ export function UsersListView() {
   const onAddUser = () => navigate(UsersRoutes.UserForm);
 
   return (
-    <RootLayout scroll={false}>
+    <RootLayout scroll={false} toolbar={false}>
       <Header
         title="Usuarios"
         onPress={onAddUser}

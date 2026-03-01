@@ -13,7 +13,10 @@ import { useNavigationUsers } from '@navigation/hooks';
 // Hooks
 import { useUserDelete } from '../../application/user.mutations';
 // Helpers
-import { getRoleVariant, formatJoinDate } from '@modules/users/domain/user.utils';
+import {
+  getRoleVariant,
+  formatJoinDate,
+} from '@modules/users/domain/user.utils';
 
 interface UserItemProps {
   user: UserEntity;
@@ -73,7 +76,7 @@ export function UserItem({ user }: UserItemProps) {
               <Text variant="caption">📅 {formatJoinDate(user.createdAt)}</Text>
             </View>
             {/* Action Buttons */}
-            <View style={[styles.row, { gap: spacing.xs}]}>
+            <View style={[styles.row, { gap: spacing.xs }]}>
               <Pressable
                 onPress={handleViewPress}
                 style={({ pressed }) => [

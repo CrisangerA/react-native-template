@@ -69,16 +69,7 @@ export function ProductDetailView({
     );
   }
   return (
-    <RootLayout padding="md">
-      <View style={styles.header}>
-        <Button variant="ghost" onPress={goBack}>
-          Volver
-        </Button>
-        <Button variant="outlined" onPress={handleEdit}>
-          Editar
-        </Button>
-      </View>
-
+    <RootLayout padding="md" onPress={goBack} title="Product Detail">
       <View style={styles.content}>
         <Card style={styles.card}>
           <Text variant="h2">{product.name}</Text>
@@ -100,6 +91,9 @@ export function ProductDetailView({
           </Text>
         </Card>
 
+        <Button variant="secondary" onPress={handleEdit}>
+          Editar Producto
+        </Button>
         <Button variant="primary" onPress={() => setShowDeleteSheet(true)}>
           Eliminar Producto
         </Button>
@@ -117,13 +111,6 @@ export function ProductDetailView({
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
   content: {
     padding: spacing.md,
     gap: spacing.md,

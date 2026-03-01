@@ -17,7 +17,7 @@ export function ProductsListView() {
   const onAddProduct = () => navigate(ProductsRoutes.ProductForm);
 
   return (
-    <RootLayout scroll={false}>
+    <RootLayout scroll={false} toolbar={false}>
       <Header
         title="Productos"
         onPress={onAddProduct}

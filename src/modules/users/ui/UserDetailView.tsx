@@ -70,16 +70,7 @@ export function UserDetailView({
   }
 
   return (
-    <RootLayout padding="md">
-      <View style={styles.header}>
-        <Button variant="ghost" onPress={goBack}>
-          Volver
-        </Button>
-        <Button variant="outlined" onPress={handleEdit}>
-          Editar
-        </Button>
-      </View>
-
+    <RootLayout padding="md" onPress={goBack} title="User Details">
       <View style={styles.content}>
         <Card style={styles.card}>
           <Text variant="h2">{user.name}</Text>
@@ -110,6 +101,9 @@ export function UserDetailView({
           </Text>
         </Card>
 
+        <Button variant="secondary" onPress={handleEdit}>
+          Editar Usuario
+        </Button>
         <Button variant="primary" onPress={() => setShowDeleteSheet(true)}>
           Eliminar Usuario
         </Button>
@@ -127,13 +121,6 @@ export function UserDetailView({
 }
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-  },
   content: {
     padding: spacing.md,
     gap: spacing.md,

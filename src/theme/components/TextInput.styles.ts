@@ -84,7 +84,7 @@ function getVariantStyles(
           borderRadius: 0,
         },
         input: {
-          color: textColor, 
+          color: textColor,
         },
       };
 

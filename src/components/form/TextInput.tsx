@@ -33,7 +33,7 @@ export const TextInput = React.forwardRef<RNTextInput, TextInputProps>(
         ref={ref}
         label={label}
         error={error?.message}
-        value={value}
+        value={value ? String(value) : ''}
         onChangeText={onChangeText}
         {...rest}
       />
