@@ -2,11 +2,16 @@ import React from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 // Components
 import { UserItem } from './UserItem';
+import {
+  EmptyState,
+  ErrorState,
+  ItemSeparatorComponent,
+  LoadingState,
+} from '@components/layout';
 // Hooks
 import { useUsers } from '@modules/users/application/user.queries';
 // Theme
 import { spacing } from '@theme/index';
-import { EmptyState, ErrorState, LoadingState } from '@components/layout';
 
 interface UserListProps {
   searchText: string;
@@ -43,6 +48,7 @@ export function UserList({ searchText }: UserListProps) {
       data={users}
       keyExtractor={item => item.id}
       renderItem={({ item }) => <UserItem user={item} />}
+      ItemSeparatorComponent={ItemSeparatorComponent}
       contentContainerStyle={styles.list}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"

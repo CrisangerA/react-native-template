@@ -2,11 +2,16 @@ import React from 'react';
 import { FlatList, StyleSheet } from 'react-native';
 // Components
 import { ProductItem } from './ProductItem';
+import {
+  EmptyState,
+  ErrorState,
+  ItemSeparatorComponent,
+  LoadingState,
+} from '@components/layout';
 // Hooks
 import { useProducts } from '@modules/products/application/product.queries';
 // Theme
 import { spacing } from '@theme/index';
-import { EmptyState, ErrorState, LoadingState } from '@components/layout';
 
 interface ProductListProps {
   searchText: string;
@@ -47,6 +52,7 @@ export function ProductList({ searchText }: ProductListProps) {
       data={products}
       keyExtractor={item => item.id}
       renderItem={({ item }) => <ProductItem product={item} />}
+      ItemSeparatorComponent={ItemSeparatorComponent}
       contentContainerStyle={styles.list}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"

@@ -125,7 +125,6 @@ export function UserItem({ user }: UserItemProps) {
 
 const styles = StyleSheet.create({
   card: {
-    marginBottom: spacing.sm,
     gap: spacing.md,
   },
   row: {
