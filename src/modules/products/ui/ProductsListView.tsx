@@ -1,9 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
 // Componentes
-import { Text } from '@components/core';
-import { Button } from '@components/core';
-import { TextInput } from '@components/core';
 import { ProductList } from './components/ProductList';
 // Hooks
 import { useDebounce } from '@hooks/useDebounce';
@@ -11,8 +7,7 @@ import { useDebounce } from '@hooks/useDebounce';
 import { ProductsRoutes } from '@navigation/routes';
 import { useNavigationProducts } from '@navigation/hooks';
 // Theme
-import { spacing } from '@theme/index';
-import { RootLayout } from '@components/layout';
+import { Header, RootLayout } from '@components/layout';
 
 export function ProductsListView() {
   const [searchText, setSearchText] = useState('');
@@ -23,34 +18,14 @@ export function ProductsListView() {
 
   return (
     <RootLayout scroll={false}>
-      <View style={styles.header}>
-        <Text variant="h1">Productos</Text>
-        <Button onPress={onAddProduct}>Agregar</Button>
-      </View>
-
-      <View style={styles.searchContainer}>
-        <TextInput
-          value={searchText}
-          onChangeText={setSearchText}
-          placeholder="Buscar productos..."
-        />
-      </View>
+      <Header
+        title="Productos"
+        onPress={onAddProduct}
+        searchText={searchText}
+        setSearchText={setSearchText}
+      />
 
       <ProductList searchText={debouncedSearch} />
     </RootLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
-  },
-  searchContainer: {
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.sm,
-  },
-});

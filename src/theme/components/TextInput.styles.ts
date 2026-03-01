@@ -84,7 +84,7 @@ function getVariantStyles(
           borderRadius: 0,
         },
         input: {
-          color: textColor,
+          color: textColor, 
         },
       };
 
@@ -93,7 +93,7 @@ function getVariantStyles(
       return {
         container: {
           backgroundColor:
-            state === 'disabled' ? disabledBackground : 'transparent',
+            state === 'disabled' ? disabledBackground : themeColors.surface,
           borderWidth: 1,
           borderColor,
         },

@@ -1,9 +1,5 @@
-import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { useState } from 'react';
 // Componentes
-import { Text } from '@components/core';
-import { Button } from '@components/core';
-import { TextInput } from '@components/core';
 import { UserList } from './components/UserList';
 // Hooks
 import { useDebounce } from '@hooks/useDebounce';
@@ -11,8 +7,7 @@ import { useDebounce } from '@hooks/useDebounce';
 import { UsersRoutes } from '@navigation/routes';
 import { useNavigationUsers } from '@navigation/hooks';
 // Theme
-import { spacing } from '@theme/index';
-import { RootLayout } from '@components/layout';
+import { Header, RootLayout } from '@components/layout';
 
 export function UsersListView() {
   const [searchText, setSearchText] = useState('');
@@ -23,34 +18,14 @@ export function UsersListView() {
 
   return (
     <RootLayout scroll={false}>
-      <View style={styles.header}>
-        <Text variant="h1">Usuarios</Text>
-        <Button onPress={onAddUser}>Agregar</Button>
-      </View>
-
-      <View style={styles.searchContainer}>
-        <TextInput
-          value={searchText}
-          onChangeText={setSearchText}
-          placeholder="Buscar usuarios..."
-        />
-      </View>
+      <Header
+        title="Usuarios"
+        onPress={onAddUser}
+        searchText={searchText}
+        setSearchText={setSearchText}
+      />
 
       <UserList searchText={debouncedSearch} />
     </RootLayout>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
-  },
-  searchContainer: {
-    paddingHorizontal: spacing.lg,
-    marginBottom: spacing.sm,
-  },
-});

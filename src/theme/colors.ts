@@ -51,8 +51,8 @@ export interface Colors {
  * Colores para el tema claro
  */
 const lightColors: Colors = {
-  background: '#FFFFFF',
-  surface: '#F8FAFC',
+  background: '#f6f6f8',
+  surface: '#ffffff',
   border: '#E2E8F0',
   text: '#0F172A',
   textSecondary: '#64748B',

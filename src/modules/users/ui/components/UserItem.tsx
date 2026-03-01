@@ -1,78 +1,146 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
 // Components
-import { Text, Card } from '@components/core';
+import { Text, Card, Avatar, Badge } from '@components/core';
+import { DeleteConfirmationSheet } from './DeleteConfirmationSheet';
 // Types
 import type { UserEntity } from '../../domain/user.model';
 // Theme
-import { useTheme, spacing } from '@theme/index';
+import { spacing } from '@theme/index';
 // Navigation
 import { UsersRoutes } from '@navigation/routes';
 import { useNavigationUsers } from '@navigation/hooks';
+// Hooks
+import { useUserDelete } from '../../application/user.mutations';
+// Helpers
+import { getRoleVariant, formatJoinDate } from '@modules/users/domain/user.utils';
 
 interface UserItemProps {
   user: UserEntity;
 }
 
 export function UserItem({ user }: UserItemProps) {
-  const theme = useTheme();
   const { navigate } = useNavigationUsers();
-  const onPress = () => navigate(UsersRoutes.UserDetail, { userId: user.id });
+  const { mutate: deleteUser, isPending } = useUserDelete();
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+  const handleCardPress = () => {
+    navigate(UsersRoutes.UserDetail, { userId: user.id });
+  };
+
+  const handleViewPress = (e: any) => {
+    e.stopPropagation();
+    navigate(UsersRoutes.UserDetail, { userId: user.id });
+  };
+
+  const handleEditPress = (e: any) => {
+    e.stopPropagation();
+    navigate(UsersRoutes.UserForm, { user });
+  };
+
+  const handleDeletePress = (e: any) => {
+    e.stopPropagation();
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = () => {
+    deleteUser(user.id, {
+      onSuccess: () => {
+        setShowDeleteModal(false);
+      },
+    });
+  };
 
   return (
-    <Pressable onPress={onPress}>
-      <Card style={styles.card}>
-        <View style={styles.content}>
-          <View style={styles.info}>
-            <Text variant="h3" style={styles.name}>
-              {user.name}
-            </Text>
-            <Text variant="body" style={styles.email}>
-              {user.email}
-            </Text>
-            <View style={styles.metaRow}>
-              <Text variant="caption" style={styles.phone}>
-                {user.phone}
-              </Text>
-              <Text
-                variant="caption"
-                style={{ color: theme.colors.primary, fontWeight: 'bold' }}
+    <>
+      <Pressable onPress={handleCardPress}>
+        <Card style={styles.card}>
+          <View style={styles.row}>
+            <View style={styles.header}>
+              <Avatar name={user.name} userId={user.id} size="md" />
+              <View>
+                <Text variant="h3">{user.name}</Text>
+                <Text variant="bodySmall" color="textSecondary">
+                  {user.email}
+                </Text>
+              </View>
+            </View>
+            <Badge label={user.role} variant={getRoleVariant(user.role)} />
+          </View>
+          <View style={styles.row}>
+            <View style={{ gap: spacing.xs }}>
+              <Text variant="caption">📞 {user.phone}</Text>
+              <Text variant="caption">📅 {formatJoinDate(user.createdAt)}</Text>
+            </View>
+            {/* Action Buttons */}
+            <View style={[styles.row, { gap: spacing.xs}]}>
+              <Pressable
+                onPress={handleViewPress}
+                style={({ pressed }) => [
+                  styles.actionButton,
+                  pressed && styles.actionButtonPressed,
+                ]}
               >
-                {user.role}
-              </Text>
+                <Text>👁️</Text>
+              </Pressable>
+
+              <Pressable
+                onPress={handleEditPress}
+                style={({ pressed }) => [
+                  styles.actionButton,
+                  pressed && styles.actionButtonPressed,
+                ]}
+              >
+                <Text>✏️</Text>
+              </Pressable>
+
+              <Pressable
+                onPress={handleDeletePress}
+                style={({ pressed }) => [
+                  styles.actionButton,
+                  pressed && styles.actionButtonPressed,
+                ]}
+              >
+                <Text>🗑️</Text>
+              </Pressable>
             </View>
           </View>
-        </View>
-      </Card>
-    </Pressable>
+        </Card>
+      </Pressable>
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationSheet
+        visible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleConfirmDelete}
+        isLoading={isPending}
+        userName={user.name}
+      />
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
     marginBottom: spacing.sm,
+    gap: spacing.md,
   },
-  content: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  info: {
-    flex: 1,
-    gap: spacing.xs,
-  },
-  name: {
-    marginBottom: spacing.xs,
-  },
-  email: {
-    opacity: 0.7,
-  },
-  metaRow: {
+  row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: spacing.xs,
   },
-  phone: {
+  header: {
+    flexDirection: 'row',
+    flex: 1,
+    gap: spacing.md,
+  },
+  actionButton: {
+    padding: spacing.xs,
+    borderRadius: 4,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionButtonPressed: {
     opacity: 0.6,
   },
 });
