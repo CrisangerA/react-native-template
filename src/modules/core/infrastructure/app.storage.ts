@@ -6,6 +6,16 @@ type ModalOpenParams = {
   onConfirm: () => Promise<void>;
 };
 
+export type ToastType = 'success' | 'error' | 'info';
+export type ToastPosition = 'top' | 'bottom';
+
+type ToastShowParams = {
+  message: string;
+  type: ToastType;
+  duration?: number;
+  position?: ToastPosition;
+};
+
 interface State {
   modal: {
     visible: boolean;
@@ -14,6 +24,15 @@ interface State {
     onConfirm: (() => Promise<void>) | null;
     open: (params: ModalOpenParams) => void;
     close: () => void;
+  };
+  toast: {
+    visible: boolean;
+    message: string;
+    type: ToastType;
+    duration: number;
+    position: ToastPosition;
+    show: (params: ToastShowParams) => void;
+    hide: () => void;
   };
 }
 
@@ -25,6 +44,15 @@ const initialState: State = {
     onConfirm: null,
     open: () => {},
     close: () => {},
+  },
+  toast: {
+    visible: false,
+    message: '',
+    type: 'info',
+    duration: 3000,
+    position: 'top',
+    show: () => {},
+    hide: () => {},
   },
 };
 
@@ -50,6 +78,36 @@ export const useAppStorage = create<State>()(set => ({
           entityName,
           entityType,
           onConfirm,
+        },
+      })),
+  },
+  toast: {
+    ...initialState.toast,
+    show: ({
+      message,
+      type,
+      duration = 3000,
+      position = 'top',
+    }: ToastShowParams) =>
+      set(state => ({
+        toast: {
+          ...state.toast,
+          visible: true,
+          message,
+          type,
+          duration,
+          position,
+        },
+      })),
+    hide: () =>
+      set(state => ({
+        toast: {
+          ...state.toast,
+          visible: false,
+          message: '',
+          type: 'info',
+          duration: 3000,
+          position: 'top',
         },
       })),
   },

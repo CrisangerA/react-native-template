@@ -2,7 +2,12 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 // Components
 import { Text, Card, Button } from '@components/core';
-import { LoadingState, ErrorState, EmptyState, RootLayout } from '@components/layout';
+import {
+  LoadingState,
+  ErrorState,
+  EmptyState,
+  RootLayout,
+} from '@components/layout';
 // Application
 import { useProduct } from '../application/product.queries';
 import { useProductDelete } from '../application/product.mutations';

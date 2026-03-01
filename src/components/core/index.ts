@@ -8,3 +8,4 @@ export * from './DatePicker';
 export { Select } from './Select';
 export { Avatar } from './Avatar';
 export { Badge } from './Badge';
+export { Toast } from './Toast';

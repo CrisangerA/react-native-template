@@ -6,7 +6,7 @@ import SecureProvider from './SecureProvider';
 import NavigationProvider from './NavigationProvider';
 import ThemeProvider from '@theme/providers/ThemeProvider';
 // Components
-import { GlobalDeleteConfirmation } from '@components/layout';
+import { GlobalDeleteConfirmation, GlobalToast } from '@modules/core/ui';
 // Styles
 import { useTheme, commonStyles } from '@theme/index';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -22,6 +22,7 @@ export default function AppProvider({ children }: PropsWithChildren) {
               <NavigationProvider>
                 {children}
                 <GlobalDeleteConfirmation />
+                <GlobalToast />
               </NavigationProvider>
             </GestureHandlerProvider>
           </SafeAreaProvider>

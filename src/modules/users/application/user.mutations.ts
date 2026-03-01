@@ -1,9 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import userService from '../infrastructure/user.service';
+import { useAppStorage } from '@modules/core/infrastructure/app.storage';
 
 export function useUserCreate() {
   const queryClient = useQueryClient();
-
+  const { show } = useAppStorage(s => s.toast);
   return useMutation({
     mutationFn: async (data: Parameters<typeof userService.create>[0]) => {
       const result = await userService.create(data);
@@ -13,6 +14,11 @@ export function useUserCreate() {
       return result;
     },
     onSuccess: () => {
+      show({
+        message: 'Usuario creado exitosamente',
+        type: 'success',
+        position: 'bottom',
+      });
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
   });
@@ -20,7 +26,7 @@ export function useUserCreate() {
 
 export function useUserUpdate() {
   const queryClient = useQueryClient();
-
+  const { show } = useAppStorage(s => s.toast);
   return useMutation({
     mutationFn: async ({
       id,
@@ -36,6 +42,11 @@ export function useUserUpdate() {
       return result;
     },
     onSuccess: (_, variables) => {
+      show({
+        message: 'Usuario actualizado exitosamente',
+        type: 'success',
+        position: 'bottom',
+      });
       queryClient.invalidateQueries({ queryKey: ['users'] });
       queryClient.invalidateQueries({
         queryKey: ['users', 'detail', variables.id],
@@ -46,7 +57,7 @@ export function useUserUpdate() {
 
 export function useUserDelete() {
   const queryClient = useQueryClient();
-
+  const { show } = useAppStorage(s => s.toast);
   return useMutation({
     mutationFn: async (id: string) => {
       const result = await userService.delete(id);
@@ -55,6 +66,11 @@ export function useUserDelete() {
       }
     },
     onSuccess: () => {
+      show({
+        message: 'Usuario eliminado exitosamente',
+        type: 'success',
+        position: 'bottom',
+      });
       queryClient.invalidateQueries({ queryKey: ['users'] });
     },
   });
