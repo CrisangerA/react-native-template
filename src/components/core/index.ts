@@ -6,3 +6,5 @@ export { Checkbox } from './Checkbox';
 export { Modal } from './Modal';
 export * from './DatePicker';
 export { Select } from './Select';
+export { Avatar } from './Avatar';
+export { Badge } from './Badge';

@@ -6,3 +6,5 @@ export * from './Checkbox.styles';
 export * from './Modal.styles';
 export * from './DatePicker.styles';
 export * from './Select.styles';
+export * from './Avatar.styles';
+export * from './Badge.styles';

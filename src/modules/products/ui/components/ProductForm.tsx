@@ -31,7 +31,7 @@ export function ProductForm({
       name: initialData?.name || '',
       description: initialData?.description || '',
       price: initialData?.price || 0,
-    }
+    },
   });
 
   return (

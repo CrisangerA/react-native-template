@@ -32,7 +32,7 @@ export function UserForm({
       email: initialData?.email || '',
       phone: initialData?.phone || '',
       role: initialData?.role || '',
-    }
+    },
   });
 
   return (
