@@ -16,8 +16,8 @@ import type { UserEntity } from '../../domain/user.model';
 // Theme
 import { spacing } from '@theme/index';
 
-const renderUserItem: ListRenderItem<UserEntity> = ({ item }) => (
-  <UserItem user={item} />
+const renderUserItem: ListRenderItem<UserEntity> = ({ item, index }) => (
+  <UserItem user={item} index={index} />
 );
 
 interface UserListProps {

@@ -1,9 +1,10 @@
 import { Easing } from 'react-native';
 
 export const ANIMATION_DURATION = {
-  fast: 150,
-  normal: 300,
-  slow: 500,
+  fast: 200,
+  normal: 400,
+  slow: 600,
+  slowest: 1000,
 } as const;
 
 export const SPRING_CONFIGS = {

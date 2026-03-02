@@ -11,7 +11,13 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function RootNavigator() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        animation: 'slide_from_right',
+        animationDuration: 2500,
+      }}
+    >
       <Stack.Screen name={RootRoutes.Examples} component={ExamplesNavigator} />
       <Stack.Screen name={RootRoutes.Products} component={ProductsNavigator} />
       <Stack.Screen name={RootRoutes.Users} component={UsersNavigator} />

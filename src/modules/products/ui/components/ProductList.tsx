@@ -16,8 +16,8 @@ import type { ProductEntity } from '../../domain/product.model';
 // Theme
 import { spacing } from '@theme/index';
 
-const renderProductItem: ListRenderItem<ProductEntity> = ({ item }) => (
-  <ProductItem product={item} />
+const renderProductItem: ListRenderItem<ProductEntity> = ({ item, index }) => (
+  <ProductItem product={item} index={index} />
 );
 
 interface ProductListProps {

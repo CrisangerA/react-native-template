@@ -1,11 +1,13 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Animated } from 'react-native';
 // Components
 import { Text, Card, Avatar, Badge } from '@components/core';
+// Hooks
+import { useFocusFadeIn } from '@theme/hooks';
 // Types
 import type { UserEntity } from '../../domain/user.model';
 // Theme
-import { spacing } from '@theme/index';
+import { ANIMATION_DURATION, spacing } from '@theme/index';
 // Navigation
 import { UsersRoutes } from '@navigation/routes';
 import { useNavigationUsers } from '@navigation/hooks';
@@ -15,18 +17,27 @@ import { formatJoinDate } from '@modules/core/domain/date.utils';
 
 interface UserItemProps {
   user: UserEntity;
+  index: number;
 }
 
-export const UserItem = React.memo(function UserItem({ user }: UserItemProps) {
+export const UserItem = React.memo(function UserItem({
+  user,
+  index,
+}: UserItemProps) {
   const { navigate } = useNavigationUsers();
+  const { animatedStyle } = useFocusFadeIn({
+    delay: index * 100,
+    duration: ANIMATION_DURATION.normal,
+  });
 
   const handleCardPress = () => {
     navigate(UsersRoutes.UserDetail, { userId: user.id });
   };
 
   return (
-    <Card style={styles.card} onPress={handleCardPress}>
-      <View style={styles.row}>
+    <Animated.View style={animatedStyle}>
+      <Card style={styles.card} onPress={handleCardPress}>
+        <View style={styles.row}>
         <View style={styles.header}>
           <Avatar name={user.name} userId={user.id} size="md" />
           <View>
@@ -38,14 +49,14 @@ export const UserItem = React.memo(function UserItem({ user }: UserItemProps) {
         </View>
         <Badge label={user.role} variant={getRoleVariant(user.role)} />
       </View>
-      <View style={styles.infoRow}>
-        <Text variant="caption">📞 {user.phone}</Text>
-        <Text variant="caption">📅 {formatJoinDate(user.createdAt)}</Text>
-      </View>
-    </Card>
+<View style={styles.infoRow}>
+          <Text variant="caption">📞 {user.phone}</Text>
+          <Text variant="caption">📅 {formatJoinDate(user.createdAt)}</Text>
+        </View>
+      </Card>
+    </Animated.View>
   );
 });
-
 const styles = StyleSheet.create({
   card: {
     gap: spacing.md,

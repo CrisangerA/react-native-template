@@ -1,4 +1,5 @@
 import React from 'react';
+import { Animated } from 'react-native';
 // Components
 import { RootLayout } from '@components/layout';
 import { ProductForm } from './components/ProductForm';
@@ -12,6 +13,9 @@ import type { ProductFormData } from '../domain/product.scheme';
 import { productFormToPayloadAdapter } from '../domain/product.adapter';
 // Navigation
 import { ProductsRoutes, ProductsScreenProps } from '@navigation/routes';
+// Theme
+import { useFocusSlideIn } from '@theme/hooks';
+import { ANIMATION_DURATION } from '@theme/animations';
 
 export function ProductFormView({
   route: { params },
@@ -24,6 +28,11 @@ export function ProductFormView({
 
   const product = params?.product;
   const isEditing = !!product;
+
+  const { animatedStyle } = useFocusSlideIn({
+    direction: 'right',
+    duration: ANIMATION_DURATION.slow,
+  });
 
   const handleSubmit = (data: ProductFormData) => {
     const payload = productFormToPayloadAdapter(data);
@@ -43,11 +52,13 @@ export function ProductFormView({
       onPress={goBack}
       title={isEditing ? 'Edit Product' : 'Create Product'}
     >
-      <ProductForm
-        onSubmit={handleSubmit}
-        isLoading={isLoading}
-        initialData={product}
-      />
+      <Animated.View style={animatedStyle}>
+        <ProductForm
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
+          initialData={product}
+        />
+      </Animated.View>
     </RootLayout>
   );
 }

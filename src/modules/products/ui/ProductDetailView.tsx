@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, Animated } from 'react-native';
 // Components
 import { Text, Card, Button } from '@components/core';
 import {
@@ -15,7 +15,8 @@ import { useProductDelete } from '../application/product.mutations';
 import { ProductsRoutes, ProductsScreenProps } from '@navigation/routes';
 import { useNavigationProducts } from '@navigation/hooks';
 // Theme
-import { spacing } from '@theme/index';
+import { useFocusFadeIn } from '@theme/hooks';
+import { ANIMATION_DURATION, spacing } from '@theme/index';
 // Store
 import { useAppStorage } from '@modules/core/infrastructure/app.storage';
 
@@ -25,6 +26,16 @@ export function ProductDetailView({
   },
 }: ProductsScreenProps<ProductsRoutes.ProductDetail>) {
   const { goBack, navigate } = useNavigationProducts();
+
+  const { animatedStyle: contentStyle } = useFocusFadeIn({
+    duration: ANIMATION_DURATION.slow,
+    offset: 20,
+  });
+  const { animatedStyle: buttonsStyle } = useFocusFadeIn({
+    duration: ANIMATION_DURATION.slow,
+    delay: 300,
+    offset: 20,
+  });
 
   const { data: product, isLoading, isError, error } = useProduct(productId);
   const { mutateAsync: deleteProductAsync } = useProductDelete();
@@ -62,7 +73,7 @@ export function ProductDetailView({
   }
   return (
     <RootLayout padding="md" onPress={goBack} title="Product Detail">
-      <View style={styles.content}>
+      <Animated.View style={[styles.content, contentStyle]}>
         <Card style={styles.card}>
           <Text variant="h2">{product.name}</Text>
 
@@ -83,26 +94,29 @@ export function ProductDetailView({
           </Text>
         </Card>
 
-        <Button variant="secondary" onPress={handleEdit}>
-          Editar Producto
-        </Button>
-        <Button
-          variant="primary"
-          onPress={() =>
-            open({
-              entityName: product.name,
-              entityType: 'producto',
-              onConfirm: async () => {
-                await deleteProductAsync(productId);
-                close();
-                goBack();
-              },
-            })
-          }
-        >
-          Eliminar Producto
-        </Button>
-      </View>
+        <Animated.View style={buttonsStyle}>
+          <Button variant="secondary" onPress={handleEdit} style={styles.button}>
+            Editar Producto
+          </Button>
+          <Button
+            variant="primary"
+            style={styles.button}
+            onPress={() =>
+              open({
+                entityName: product.name,
+                entityType: 'producto',
+                onConfirm: async () => {
+                  await deleteProductAsync(productId);
+                  close();
+                  goBack();
+                },
+              })
+            }
+          >
+            Eliminar Producto
+          </Button>
+        </Animated.View>
+      </Animated.View>
     </RootLayout>
   );
 }
@@ -114,5 +128,8 @@ const styles = StyleSheet.create({
   },
   card: {
     gap: spacing.xs,
+  },
+  button: {
+    marginBottom: spacing.sm,
   },
 });

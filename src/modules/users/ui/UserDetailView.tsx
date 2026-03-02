@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Animated } from 'react-native';
 // Components
 import { Text, Card, Button } from '@components/core';
 import {
@@ -15,7 +15,8 @@ import { useUserDelete } from '../application/user.mutations';
 import { UsersRoutes, UsersScreenProps } from '@navigation/routes';
 import { useNavigationUsers } from '@navigation/hooks';
 // Theme
-import { spacing } from '@theme/index';
+import { useFocusFadeIn } from '@theme/hooks';
+import { ANIMATION_DURATION, spacing } from '@theme/index';
 // Store
 import { useAppStorage } from '@modules/core/infrastructure/app.storage';
 
@@ -25,6 +26,16 @@ export function UserDetailView({
   },
 }: UsersScreenProps<UsersRoutes.UserDetail>) {
   const { goBack, navigate } = useNavigationUsers();
+
+  const { animatedStyle: contentStyle } = useFocusFadeIn({
+    duration: ANIMATION_DURATION.slow,
+    offset: 20,
+  });
+  const { animatedStyle: buttonsStyle } = useFocusFadeIn({
+    duration: ANIMATION_DURATION.normal,
+    delay: 300,
+    offset: 20,
+  });
 
   const { data: user, isLoading, isError, error } = useUser(userId);
   const { mutateAsync: deleteUserAsync } = useUserDelete();
@@ -63,7 +74,7 @@ export function UserDetailView({
 
   return (
     <RootLayout padding="md" onPress={goBack} title="User Details">
-      <View style={styles.content}>
+      <Animated.View style={[styles.content, contentStyle]}>
         <Card style={styles.card}>
           <Text variant="h2">{user.name}</Text>
 
@@ -93,26 +104,29 @@ export function UserDetailView({
           </Text>
         </Card>
 
-        <Button variant="secondary" onPress={handleEdit}>
-          Editar Usuario
-        </Button>
-        <Button
-          variant="primary"
-          onPress={() =>
-            open({
-              entityName: user.name,
-              entityType: 'usuario',
-              onConfirm: async () => {
-                await deleteUserAsync(userId);
-                close();
-                goBack();
-              },
-            })
-          }
-        >
-          Eliminar Usuario
-        </Button>
-      </View>
+        <Animated.View style={buttonsStyle}>
+          <Button variant="secondary" onPress={handleEdit} style={styles.button}>
+            Editar Usuario
+          </Button>
+          <Button
+            variant="primary"
+            style={styles.button}
+            onPress={() =>
+              open({
+                entityName: user.name,
+                entityType: 'usuario',
+                onConfirm: async () => {
+                  await deleteUserAsync(userId);
+                  close();
+                  goBack();
+                },
+              })
+            }
+          >
+            Eliminar Usuario
+          </Button>
+        </Animated.View>
+      </Animated.View>
     </RootLayout>
   );
 }
@@ -128,5 +142,8 @@ const styles = StyleSheet.create({
   infoRow: {
     gap: spacing.xs,
     marginVertical: spacing.xs,
+  },
+  button: {
+    marginBottom: spacing.sm,
   },
 });
