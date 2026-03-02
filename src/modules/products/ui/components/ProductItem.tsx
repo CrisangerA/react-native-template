@@ -26,12 +26,13 @@ export const ProductItem = React.memo(function ProductItem({
     duration: ANIMATION_DURATION.normal,
   });
 
-  const onPress = () =>
+  const handleCardPress = () => {
     navigate(ProductsRoutes.ProductDetail, { productId: product.id });
+  };
 
   return (
     <Animated.View style={animatedStyle}>
-      <Card onPress={onPress}>
+      <Card onPress={handleCardPress}>
         <View style={styles.info}>
           <Text variant="h3">{product.name}</Text>
           {product.description ? (

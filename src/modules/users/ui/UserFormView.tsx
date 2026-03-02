@@ -47,7 +47,7 @@ export function UserFormView({
       scroll
       padding="lg"
       onPress={goBack}
-      title={isEditing ? 'Edit User' : 'Create User'}
+      title={isEditing ? 'Editar Usuario' : 'Crear Usuario'}
     >
       <Animated.View style={animatedStyle}>
         <UserForm

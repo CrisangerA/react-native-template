@@ -32,7 +32,7 @@ export function UserDetailView({
     offset: 20,
   });
   const { animatedStyle: buttonsStyle } = useFocusFadeIn({
-    duration: ANIMATION_DURATION.normal,
+    duration: ANIMATION_DURATION.slow,
     delay: 300,
     offset: 20,
   });
@@ -73,7 +73,7 @@ export function UserDetailView({
   }
 
   return (
-    <RootLayout padding="md" onPress={goBack} title="User Details">
+    <RootLayout padding="md" onPress={goBack} title="Detalle de Usuario">
       <Animated.View style={[styles.content, contentStyle]}>
         <Card style={styles.card}>
           <Text variant="h2">{user.name}</Text>

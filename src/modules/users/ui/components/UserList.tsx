@@ -35,7 +35,7 @@ export function UserList({ searchText }: UserListProps) {
     return (
       <ErrorState
         title="Error al cargar"
-        message={error?.message || 'No se pudo cargar el usuario'}
+        message={error?.message || 'No se pudieron cargar los usuarios'}
       />
     );
   }

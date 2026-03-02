@@ -39,7 +39,7 @@ export function ProductList({ searchText }: ProductListProps) {
     return (
       <ErrorState
         title="Error al cargar"
-        message={error?.message || 'No se pudo cargar el producto'}
+        message={error?.message || 'No se pudieron cargar los productos'}
       />
     );
   }

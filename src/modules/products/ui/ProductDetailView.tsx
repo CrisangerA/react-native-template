@@ -72,7 +72,7 @@ export function ProductDetailView({
     );
   }
   return (
-    <RootLayout padding="md" onPress={goBack} title="Product Detail">
+    <RootLayout padding="md" onPress={goBack} title="Detalle de Producto">
       <Animated.View style={[styles.content, contentStyle]}>
         <Card style={styles.card}>
           <Text variant="h2">{product.name}</Text>

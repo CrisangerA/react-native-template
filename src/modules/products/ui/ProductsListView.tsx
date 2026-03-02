@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 // Componentes
 import { ProductList } from './components/ProductList';
 // Hooks

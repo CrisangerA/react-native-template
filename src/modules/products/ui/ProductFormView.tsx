@@ -50,7 +50,7 @@ export function ProductFormView({
       scroll
       padding="lg"
       onPress={goBack}
-      title={isEditing ? 'Edit Product' : 'Create Product'}
+      title={isEditing ? 'Editar Producto' : 'Crear Producto'}
     >
       <Animated.View style={animatedStyle}>
         <ProductForm
