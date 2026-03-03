@@ -1,95 +1,248 @@
-# Skill: Optimización y Performance en React Native
+# Performance Skill — Optimization Enforcer
 
 ## 1. Metadata
 
--   **Nombre**: `react-native-performance`
--   **Descripción**: Define reglas y buenas prácticas para asegurar una aplicación fluida (60 FPS) y eficiente.
--   **Propósito**: Evitar cuellos de botella en la UI, fugas de memoria y sobreconsumo de batería.
--   **Categoría**: Performance, Calidad, UX
+| Field | Value |
+|---|---|
+| **Name** | `performance-optimization` |
+| **Description** | Enforces FlashList over FlatList, React.memo for list items, search debouncing, focus-based animations, stable render functions, and React Query caching patterns. |
+| **Purpose** | Maintain 60 FPS UI performance, minimize unnecessary re-renders, and optimize memory usage in list-heavy mobile screens. |
+| **Category** | Performance, Quality, UX |
 
 ## 2. Trigger
 
--   **Cuándo**: Al implementar listas, animaciones, usar imágenes, o manejar grandes volúmenes de datos.
--   **Contexto**: Componentes de lista (`FlatList`, `SectionList`), hooks (`useCallback`, `useMemo`), y carga de assets.
--   **Observa**: Renderizados innecesarios, key extractors, y optimización de imágenes.
+| Condition | Detail |
+|---|---|
+| **Activated when** | Implementing lists, adding animations, optimizing renders, handling search |
+| **Context** | List components, animation hooks, memoization, image loading |
+| **Observed paths** | `*List.tsx`, `*Item.tsx`, `src/theme/hooks/`, any file with `FlashList` or `Animated` |
 
-## 3. Responsabilidades
+## 3. Responsibilities
 
--   **Valida**: El uso correcto de `FlashList` (recomendado) o `FlatList` optimizado.
--   **Recomienda**: Memoizar funciones pasadas como props (`useCallback`) y cálculos costosos (`useMemo`).
--   **Previene**: Funciones anónimas en render (`renderItem={() => ...}`), objetos inline en estilos, y renders bloqueantes.
--   **Optimiza**: La carga de imágenes (`Expo Image` / `FastImage`) y el layout inicial.
+### Validates
+- FlashList used instead of FlatList for all list rendering
+- `renderItem` defined outside component body (stable reference)
+- List items wrapped in `React.memo`
+- Search inputs debounced with `useDebounce(value, 500)`
+- Animations use `useFocusFadeIn`/`useFocusSlideIn` hooks (focus-based, not mount-based)
+- `keyExtractor` uses entity ID, never array index
+- `StyleSheet.create()` at file bottom (not inline objects)
 
-## 4. Reglas
+### Recommends
+- Staggered animations: `delay: index * 100` for list items
+- `useNativeDriver: true` for all opacity/transform animations
+- `keyboardShouldPersistTaps="handled"` on scrollable lists
+- `showsVerticalScrollIndicator={false}` for cleaner UX
 
-### Listas Eficientes
+### Prevents
+- `FlatList` usage (always use `FlashList`)
+- Anonymous functions in `renderItem` prop
+- Inline style objects in render (re-created every render)
+- `useEffect` for animations (use focus-based hooks)
+- Missing `React.memo` on list item components
+- Index-based `keyExtractor`
 
-1.  **FlashList > FlatList**:
-    -   Preferir `@shopify/flash-list` para listas largas (> 20 items) o complejas.
-    -   Configurar siempre `estimatedItemSize`.
+## 4. Rules
 
-2.  **Memoización de Items**:
-    -   Componentes dentro de listas (`renderItem`) DEBEN estar envueltos en `React.memo`.
-    -   `keyExtractor` debe ser único y estable (ID de base de datos, NO índice del array).
+### List Rendering Pattern (from codebase)
 
-3.  **Funciones Estables**:
-    -   Extraer funciones `renderItem` y `keyExtractor` fuera del componente o usar `useCallback`.
-    -   NUNCA pasar funciones inline a componentes hijos puros (rompe `React.memo`).
+```typescript
+// src/modules/products/ui/components/ProductList.tsx
+import { FlashList, ListRenderItem } from '@shopify/flash-list';
 
-### Imágenes y Assets
+// ✅ renderItem defined OUTSIDE component body — stable reference
+const renderProductItem: ListRenderItem<ProductEntity> = ({ item, index }) => (
+  <ProductItem product={item} index={index} />
+);
 
--   Usar formatos optimizados (WebP/PNG comprimido).
--   Dimensionar imágenes al tamaño de visualización (evitar bajar 4K para mostrar 50px).
--   Cachear imágenes remotas.
+export function ProductList({ searchText }: { searchText: string }) {
+  const { data: products, isLoading, isError, error } = useProducts({ searchText });
 
-### Interacciones y Animaciones
+  // Guard chain (loading → error → empty → success)
+  if (isLoading) return <LoadingState message="Cargando productos..." />;
+  if (isError) return <ErrorState title="Error" message={error?.message} />;
+  if (!products?.length) return <EmptyState title="Sin productos" />;
 
--   Usar `react-native-reanimated` (hilo UI) en lugar de `Animated` (puente JS) para gestos complejos.
--   Evitar cálculos pesados en el hilo JS durante animaciones.
--   Usar `InteractionManager.runAfterInteractions` para tareas costosas post-navegación.
+  return (
+    <FlashList
+      data={products}
+      keyExtractor={item => item.id}       // Entity ID, not index
+      renderItem={renderProductItem}        // Stable reference
+      ItemSeparatorComponent={ItemSeparatorComponent}
+      contentContainerStyle={styles.list}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
+      keyboardDismissMode="on-drag"
+    />
+  );
+}
+```
 
-## 5. Output Esperado
+### List Item Pattern (from codebase)
 
--   **Feedback**: "Estás definiendo 'renderItem' como una función anónima dentro del JSX. Esto crea una nueva función en cada render y fuerza el re-renderizado de toda la lista."
--   **Severidad**: Media (Performance).
--   **Corrección**: Extraer la función y memoizarla.
+```typescript
+// src/modules/products/ui/components/ProductItem.tsx
+export const ProductItem = React.memo(function ProductItem({
+  product,
+  index,
+}: ProductItemProps) {
+  const { navigate } = useNavigationProducts();
+  const { animatedStyle } = useFocusFadeIn({
+    delay: index * 100,                    // Staggered animation
+    duration: ANIMATION_DURATION.normal,
+  });
 
-## 6. Ejemplo Práctico
+  return (
+    <Animated.View style={animatedStyle}>
+      <Card onPress={() => navigate(ProductsRoutes.ProductDetail, { productId: product.id })}>
+        <View style={styles.info}>
+          <Text variant="h3">{product.name}</Text>
+          {product.description ? <Text variant="body">{product.description}</Text> : null}
+          <Text variant="caption" color="primary">${product.price.toFixed(2)}</Text>
+        </View>
+      </Card>
+    </Animated.View>
+  );
+});
+```
 
-### Antes (Lento)
+### Search Debouncing Pattern (from codebase)
 
-```tsx
-const MyList = ({ data }) => (
+```typescript
+// src/modules/products/ui/ProductsListView.tsx
+export function ProductsListView() {
+  const [searchText, setSearchText] = useState('');
+  const debouncedSearch = useDebounce(searchText, 500);  // 500ms debounce
+
+  return (
+    <RootLayout scroll={false} toolbar={false}>
+      <Header title="Productos" searchText={searchText} setSearchText={setSearchText} />
+      <ProductList searchText={debouncedSearch} />  {/* Debounced value triggers query */}
+    </RootLayout>
+  );
+}
+
+// src/modules/core/application/core.hooks.ts
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedValue(value), delay);
+    return () => clearTimeout(handler);
+  }, [value, delay]);
+  return debouncedValue;
+}
+```
+
+### Animation Performance Patterns
+
+```typescript
+// Focus-based animation (replays on screen focus, not just mount)
+import { useFocusFadeIn } from '@theme/hooks';
+
+const { animatedStyle } = useFocusFadeIn({
+  duration: ANIMATION_DURATION.slow,  // Use constants, not raw numbers
+  offset: 20,
+  delay: 300,
+});
+
+// List item stagger pattern
+const { animatedStyle } = useFocusFadeIn({
+  delay: index * 100,  // Each item appears 100ms after previous
+  duration: ANIMATION_DURATION.normal,
+});
+
+// Native driver for opacity/transform animations
+Animated.timing(opacity, {
+  toValue: 1,
+  duration: 400,
+  useNativeDriver: true,  // ALWAYS true for opacity/transform
+});
+```
+
+### Conditional Rendering Pattern
+
+```typescript
+// ✅ Ternary with null for conditional rendering (prevents falsy && issues)
+{product.description ? <Text variant="body">{product.description}</Text> : null}
+
+// ❌ NEVER use falsy && with non-boolean values
+{product.count && <Text>{product.count}</Text>}  // Renders "0" if count is 0
+```
+
+### Prohibited Anti-patterns
+
+| Anti-pattern | Why | Correct |
+|---|---|---|
+| `<FlatList>` | Slower than FlashList | `<FlashList>` |
+| `renderItem={({ item }) => <Item />}` | New function every render | Extract outside component |
+| `keyExtractor={(_, index) => index}` | Breaks reorder/delete | `keyExtractor={item => item.id}` |
+| `style={{ padding: 16 }}` in render | New object every render | `StyleSheet.create()` |
+| `useEffect(() => animate())` | Doesn't replay on focus | `useFocusFadeIn()` hook |
+| Missing `React.memo` on list item | Re-renders all items on any change | Wrap with `React.memo` |
+| `{count && <Text />}` | Renders `0` when falsy | `{count ? <Text /> : null}` |
+
+## 5. Expected Output
+
+| Aspect | Detail |
+|---|---|
+| **Feedback type** | Performance audit |
+| **Severity: error** | FlatList used, inline renderItem, missing React.memo on list item |
+| **Severity: warning** | Missing debounce on search, inline styles, index keyExtractor |
+| **Severity: info** | Could add estimatedItemSize, could extract animation hook |
+
+## 6. Practical Example
+
+### Before — Slow list rendering
+```typescript
+const ProductList = ({ data }) => (
   <FlatList
     data={data}
-    renderItem={({ item }) => <Item title={item.title} onPress={() => console.log(item.id)} />} // ❌ Función anónima + objeto nuevo
-    keyExtractor={(item, index) => index.toString()} // ❌ Índice como key (malo para reordenar)
+    renderItem={({ item }) => (
+      <View style={{ padding: 16, marginBottom: 8 }}>
+        <Text>{item.name}</Text>
+      </View>
+    )}
+    keyExtractor={(_, index) => String(index)}
   />
 );
 ```
 
-### Después (Rápido)
+### After — Optimized list rendering (actual project pattern)
+```typescript
+const renderProductItem: ListRenderItem<ProductEntity> = ({ item, index }) => (
+  <ProductItem product={item} index={index} />
+);
 
-```tsx
-import { FlashList } from '@shopify/flash-list';
-import React, { useCallback } from 'react';
+export function ProductList({ searchText }: ProductListProps) {
+  const { data: products, isLoading, isError } = useProducts({ searchText });
 
-const MyList = ({ data }) => {
-  const renderItem = useCallback(({ item }) => (
-    <MemoizedItem title={item.title} id={item.id} />
-  ), []);
-
-  const keyExtractor = useCallback((item) => item.id, []);
+  if (isLoading) return <LoadingState message="Cargando..." />;
+  if (isError) return <ErrorState />;
+  if (!products?.length) return <EmptyState />;
 
   return (
     <FlashList
-      data={data}
-      renderItem={renderItem}
-      keyExtractor={keyExtractor}
-      estimatedItemSize={50} // ✅ Ayuda al layout
+      data={products}
+      keyExtractor={item => item.id}
+      renderItem={renderProductItem}
+      ItemSeparatorComponent={ItemSeparatorComponent}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled"
     />
   );
-};
+}
 
-const MemoizedItem = React.memo(Item); // ✅ Previene re-renders innecesarios
+// Memoized item with staggered animation
+export const ProductItem = React.memo(function ProductItem({ product, index }) {
+  const { animatedStyle } = useFocusFadeIn({ delay: index * 100 });
+  return (
+    <Animated.View style={animatedStyle}>
+      <Card onPress={() => navigate(ProductsRoutes.ProductDetail, { productId: product.id })}>
+        <Text variant="h3">{product.name}</Text>
+      </Card>
+    </Animated.View>
+  );
+});
 ```
+
+**Explanation**: FlashList replaces FlatList for better performance. `renderItem` is stable (defined outside). Items are `React.memo`'d with staggered fade-in animations. Search is debounced at 500ms. Guard chain prevents rendering empty/error states as list data.

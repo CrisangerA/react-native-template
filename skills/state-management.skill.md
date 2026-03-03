@@ -1,104 +1,226 @@
-# Skill: Estrategia de Gestión de Estado
+# State Management Skill — State Strategy Enforcer
 
 ## 1. Metadata
 
--   **Nombre**: `state-management-strategy`
--   **Descripción**: Define cómo y dónde debe almacenarse el estado de la aplicación.
--   **Propósito**: Evitar la complejidad accidental, problemas de sincronización y código "spaghetti".
--   **Categoría**: Arquitectura, Performance, DX
+| Field | Value |
+|---|---|
+| **Name** | `state-management` |
+| **Description** | Enforces the correct tool for each type of state: TanStack React Query for server data, Zustand for global client state, Zustand + MMKV for persistent state, react-hook-form for forms, and `useState` for ephemeral UI. |
+| **Purpose** | Eliminate accidental complexity from manual data synchronization, prevent state management sprawl, and ensure predictable data flow. |
+| **Category** | Architecture, Performance, DX |
 
 ## 2. Trigger
 
--   **Cuándo**: Al añadir lógica de estado a componentes, crear stores, o integrar APIs.
--   **Contexto**: Hooks personalizados, componentes, y stores globales.
--   **Observa**: Uso de `useState`, `useEffect`, `useContext`, `zustand`, `react-query`.
+| Condition | Detail |
+|---|---|
+| **Activated when** | Adding state logic, creating stores, integrating API data, managing global UI state |
+| **Context** | Any file using `useState`, `useEffect`, `useQuery`, `useMutation`, `create()` (Zustand) |
+| **Observed paths** | `src/modules/*/application/`, `src/modules/*/infrastructure/*.storage.ts`, `src/theme/providers/theme.storage.ts` |
 
-## 3. Responsabilidades
+## 3. Responsibilities
 
--   **Valida**: La separación correcta entre Estado del Servidor (Server State) y Estado del Cliente (Client State).
--   **Recomienda**: Usar `react-query` para datos asíncronos y `zustand` para UI global.
--   **Previene**: Sincronización manual de datos (`useEffect` para fetch), props drilling excesivo, y estado global innecesario.
--   **Optimiza**: El re-renderizado mediante selectores en Zustand y claves de query estables.
+### Validates
+- Server data uses React Query (never `useState` + `useEffect`)
+- Global ephemeral UI state uses Zustand without persistence (toast, modal)
+- Persistent client state uses Zustand + MMKV (theme mode)
+- Form state uses react-hook-form (never manual `useState` per field)
+- Local UI state uses `useState` only for truly ephemeral concerns
 
-## 4. Reglas
+### Recommends
+- Zustand selectors for granular subscriptions: `useAppStorage(s => s.toast)`
+- Query key pattern: `['{entities}']` for lists, `['{entities}', 'detail', id]` for details
+- Cache invalidation in mutation `onSuccess` callbacks
 
-### Clasificación de Estado
+### Prevents
+- `useEffect` → `fetch` → `setState` pattern (use `useQuery`)
+- Storing server data in Zustand/Context
+- Props drilling more than 2 levels (use Zustand or query hooks)
+- Multiple `useState` calls for form fields (use `useForm`)
 
-1.  **Server State (Datos de API/DB)**:
-    -   **Herramienta**: `TanStack Query` (React Query).
-    -   **Regla**: NUNCA guardar datos de la API en Redux/Zustand/Context manualmente. Dejar que RQ maneje caché, reintentos y invalidación.
-    -   **Ubicación**: `src/modules/*/application/*.queries.ts`.
+## 4. Rules
 
-2.  **Client Global State (UI Transversal)**:
-    -   **Herramienta**: `Zustand`.
-    -   **Casos de uso**: Tema actual, Usuario autenticado (sesión), Carrito de compras, Modales globales.
-    -   **Ubicación**: `src/modules/*/infrastructure/*.storage.ts` o `src/store`.
+### State Decision Matrix
 
-3.  **Form State (Formularios)**:
-    -   **Herramienta**: `React Hook Form` + `Zod`.
-    -   **Regla**: Componentes controlados solo cuando sea estrictamente necesario. Validaciones en esquema Zod.
-    -   **Ubicación**: `src/modules/*/ui/components/*Form.tsx`.
+| State Type | Tool | Location | Example |
+|---|---|---|---|
+| **Server data** (API/DB) | TanStack React Query | `application/*.queries.ts` | Product list, user details |
+| **Server mutations** | TanStack React Query | `application/*.mutations.ts` | Create/update/delete product |
+| **Global UI (ephemeral)** | Zustand (no persistence) | `infrastructure/app.storage.ts` | Toast, delete confirmation modal |
+| **Global UI (persistent)** | Zustand + MMKV | `theme/providers/theme.storage.ts` | Theme mode (light/dark) |
+| **Form state** | react-hook-form + Zod | `ui/components/*Form.tsx` | Product form, sign-in form |
+| **Local UI (ephemeral)** | `useState` | Component file | Search text, expanded toggle |
 
-4.  **Local UI State (Efímero)**:
-    -   **Herramienta**: `useState`, `useReducer`.
-    -   **Casos de uso**: Toggle de acordeón, input de búsqueda temporal, pestañas activas.
+### React Query Patterns (from codebase)
 
-### Anti-patrones Prohibidos
+```typescript
+// Queries — src/modules/products/application/product.queries.ts
+export function useProducts(params?: { searchText?: string }) {
+  return useQuery({
+    queryKey: ['products', params],  // Includes params for cache partitioning
+    queryFn: async () => {
+      const result = await productService.getAll(params);
+      if (result instanceof Error) throw result;
+      return result;
+    },
+  });
+}
 
--   ❌ Usar `useEffect` para llamar a la API y setear un `useState`. (Usar `useQuery`).
--   ❌ Guardar todo en un store global "por si acaso".
--   ❌ Mutar el estado directamente (en React/Zustand sin Immer).
--   ❌ Prop drilling de más de 3 niveles para pasar estado y callbacks.
+export function useProduct(id: string) {
+  return useQuery({
+    queryKey: ['products', 'detail', id],  // Nested key for detail
+    queryFn: async () => {
+      const result = await productService.getById(id);
+      if (result instanceof Error) throw result;
+      return result;
+    },
+  });
+}
 
-## 5. Output Esperado
+// Mutations — invalidate related queries on success
+export function useProductCreate() {
+  const queryClient = useQueryClient();
+  const { show } = useAppStorage(s => s.toast);
 
--   **Feedback**: "Estás usando `useEffect` para cargar la lista de usuarios. Refactoriza usando `useQuery` en la capa de aplicación para manejar caché y estados de carga automáticamente."
--   **Severidad**: Alta (Performance/Mantenibilidad).
--   **Corrección**: Implementar custom hook con `useQuery`.
+  return useMutation({
+    mutationFn: async (data: CreateProductPayload) => {
+      const result = await productService.create(data);
+      if (result instanceof Error) throw result;
+      return result;
+    },
+    onSuccess: () => {
+      show({ message: 'Producto creado exitosamente', type: 'success', position: 'bottom' });
+      queryClient.invalidateQueries({ queryKey: ['products'] });
+    },
+  });
+}
+```
 
-## 6. Ejemplo Práctico
+### Zustand Patterns (from codebase)
 
-### Antes (Incorrecto)
+```typescript
+// Ephemeral global UI state — src/modules/core/infrastructure/app.storage.ts
+export const useAppStorage = create<State>()(set => ({
+  modal: {
+    visible: false,
+    entityName: '',
+    entityType: '',
+    onConfirm: null,
+    open: ({ entityName, entityType, onConfirm }) =>
+      set(state => ({ modal: { ...state.modal, visible: true, entityName, entityType, onConfirm } })),
+    close: () =>
+      set(state => ({ modal: { ...state.modal, visible: false, entityName: '', entityType: '', onConfirm: null } })),
+  },
+  toast: {
+    visible: false,
+    message: '',
+    type: 'info',
+    show: ({ message, type, duration, position }) =>
+      set(state => ({ toast: { ...state.toast, visible: true, message, type, duration, position } })),
+    hide: () =>
+      set(state => ({ toast: { ...state.toast, visible: false } })),
+  },
+}));
 
-```tsx
-// src/modules/products/ui/ProductList.tsx
-const ProductList = () => {
+// Persistent state — src/theme/providers/theme.storage.ts
+export const useThemeStorage = create<ThemeState>()(
+  persist(
+    (set) => ({
+      mode: 'light',
+      setTheme: (mode) => set({ mode }),
+    }),
+    { name: 'theme-storage', storage: createJSONStorage(() => mmkvStorage) }
+  )
+);
+```
+
+### MMKV Storage Configuration (from codebase)
+
+```typescript
+// src/config/storage.ts — custom Date reviver for JSON parsing
+import { MMKV } from 'react-native-mmkv';
+const mmkv = new MMKV();
+
+// Custom StateStorage for Zustand persist middleware
+export const mmkvStorage = {
+  getItem: (name: string) => mmkv.getString(name) ?? null,
+  setItem: (name: string, value: string) => mmkv.set(name, value),
+  removeItem: (name: string) => mmkv.delete(name),
+};
+```
+
+### Prohibited Anti-patterns
+
+| Anti-pattern | Why | Correct |
+|---|---|---|
+| `useEffect` + `fetch` + `setState` | Manual sync, no cache, no loading/error | `useQuery` in application layer |
+| Server data in Zustand store | Duplicates cache, manual invalidation | React Query manages server data |
+| `useState` for each form field | Verbose, no validation, no error state | `useForm` with Zod resolver |
+| `useContext` for global state | Re-renders entire tree | Zustand with selectors |
+| Props drilling callbacks 3+ levels | Fragile, hard to trace | Zustand store or query hook |
+| `AsyncStorage` for persistence | Slower, no encryption | MMKV via `react-native-mmkv` |
+
+## 5. Expected Output
+
+| Aspect | Detail |
+|---|---|
+| **Feedback type** | State strategy audit |
+| **Severity: error** | Server data in Zustand, `useEffect`+`fetch` pattern, missing query invalidation |
+| **Severity: warning** | Missing Zustand selector (subscribing to entire store), excessive `useState` |
+| **Severity: info** | Could add `staleTime` to query, could memoize selector |
+
+## 6. Practical Example
+
+### Before — Manual sync with useState + useEffect
+```typescript
+// ❌ Manual state management for server data
+export function ProductsScreen() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetch('/api/products')
-      .then(res => res.json())
-      .then(data => {
-        setProducts(data);
-        setLoading(false);
-      });
+    productService.getAll()
+      .then(data => setProducts(data))
+      .catch(err => setError(err))
+      .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <Spinner />;
-  return <List data={products} />;
-};
-```
-
-### Después (Correcto)
-
-```tsx
-// 1. Application Layer: src/modules/products/application/product.queries.ts
-export const useProducts = () => {
-  return useQuery({
-    queryKey: ['products'],
-    queryFn: productRepository.getAll,
-    staleTime: 1000 * 60 * 5, // 5 minutos de caché
-  });
-};
-
-// 2. UI Layer
-const ProductList = () => {
-  const { data: products, isLoading, error } = useProducts();
-
-  if (isLoading) return <Spinner />;
+  if (loading) return <LoadingState />;
   if (error) return <ErrorState />;
-  
-  return <List data={products} />;
-};
+  return <FlatList data={products} />;
+}
 ```
+
+### After — React Query + Zustand (actual project pattern)
+```typescript
+// ✅ Server state via React Query
+// application/product.queries.ts
+export function useProducts(params?: { searchText?: string }) {
+  return useQuery({
+    queryKey: ['products', params],
+    queryFn: async () => {
+      const result = await productService.getAll(params);
+      if (result instanceof Error) throw result;
+      return result;
+    },
+  });
+}
+
+// ✅ Global UI state via Zustand (toast notifications)
+// infrastructure/app.storage.ts
+const { show } = useAppStorage(s => s.toast);
+show({ message: 'Producto creado', type: 'success', position: 'bottom' });
+
+// ✅ Thin UI layer consumes both
+export function ProductList({ searchText }: { searchText: string }) {
+  const { data: products, isLoading, isError, error } = useProducts({ searchText });
+
+  if (isLoading) return <LoadingState message="Cargando productos..." />;
+  if (isError) return <ErrorState title="Error" message={error?.message} />;
+  if (!products?.length) return <EmptyState title="Sin productos" />;
+
+  return <FlashList data={products} renderItem={renderProductItem} />;
+}
+```
+
+**Explanation**: React Query handles caching, loading states, error states, and background refetching automatically. Zustand handles ephemeral global UI (toasts, modals) with granular selectors that prevent unnecessary re-renders. The UI layer just reads and renders — zero data management logic.

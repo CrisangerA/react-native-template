@@ -1,119 +1,227 @@
-# Skill: Componentes de UI y Sistema de Temas
+# Components Skill — UI Component System Enforcer
 
 ## 1. Metadata
 
--   **Nombre**: `ui-components-theme`
--   **Descripción**: Define cómo crear, estructurar y estilizar componentes de UI reutilizables y consistentes.
--   **Propósito**: Asegurar la consistencia visual, accesibilidad y facilidad de mantenimiento.
--   **Categoría**: UI/UX, Calidad, Performance
+| Field | Value |
+|---|---|
+| **Name** | `ui-components` |
+| **Description** | Enforces the 3-tier component system (core, form, layout), theme token usage, component style factories, and consistent API patterns across all shared components. |
+| **Purpose** | Maintain visual consistency, prevent style drift, and ensure all components integrate with the 5-mode theme system. |
+| **Category** | UI/UX, Quality, Performance |
 
 ## 2. Trigger
 
--   **Cuándo**: Al crear o modificar un componente en `src/components/*` o `src/modules/*/ui/*`.
--   **Contexto**: Carpetas de componentes y estilos.
--   **Observa**: Uso de tokens de tema, accesibilidad, tipado de props, y estructura de archivos.
+| Condition | Detail |
+|---|---|
+| **Activated when** | Creating or modifying components in `src/components/` or `src/modules/*/ui/components/` |
+| **Context** | New component creation, style changes, theme integration, component refactoring |
+| **Observed paths** | `src/components/core/`, `src/components/form/`, `src/components/layout/`, `src/theme/components/` |
 
-## 3. Responsabilidades
+## 3. Responsibilities
 
--   **Valida**: Que los componentes sigan el patrón de diseño atómico.
--   **Recomienda**: Usar hooks del tema (`useTheme`) en lugar de valores hardcodeados.
--   **Previene**: Estilos inline complejos, falta de props de accesibilidad, y componentes monolíticos.
--   **Optimiza**: El re-renderizado mediante `React.memo` cuando sea necesario.
+### Validates
+- Components are placed in the correct tier (core/form/layout)
+- All spacing uses `spacing` tokens, never raw pixel values
+- All text uses `<Text variant="...">`, never raw `<RNText>`
+- Colors come from `useTheme()` or style factory, never hardcoded hex
+- Style factories accept `mode`/`variant`/`size` parameters
+- New components are registered in their tier's `index.ts` barrel export
 
-## 4. Reglas
+### Recommends
+- Use existing core components (`Button`, `Card`, `Text`, `TextInput`) before creating new ones
+- Style factories in `src/theme/components/` for theme-dependent styles
+- `React.memo` for list item components
+- `forwardRef` for input components
 
-### Convenciones Obligatorias
+### Prevents
+- Hardcoded colors (`#hex`, `rgb()`, color strings)
+- Raw pixel values for spacing (`padding: 16`)
+- Raw `<Text>` from react-native (use `@components/core` `Text`)
+- Complex inline styles (use `StyleSheet.create`)
+- Components defined inside other components
 
-1.  **Atomic Design**:
-    -   `src/components/core/`: Átomos/Moléculas genéricas (Botones, Inputs, Textos).
-    -   `src/components/layout/`: Estructuras de página (Headers, Containers).
-    -   `src/modules/*/ui/components/`: Organismos específicos del dominio (Listas de Productos, Formularios de Login).
+## 4. Rules
 
-2.  **Theming First**:
-    -   ❌ Prohibido: `color: '#FF0000'`, `padding: 16`.
-    -   ✅ Obligatorio: `color: theme.colors.error`, `padding: theme.spacing.m`.
-    -   Usar `src/theme/components/*.styles.ts` para estilos complejos que dependan del tema.
+### Component Tier System
 
-3.  **Accesibilidad (A11y)**:
-    -   Todo elemento interactivo DEBE tener `accessible={true}` y `accessibilityLabel` (o `accessibilityRole`).
-    -   Los textos deben escalar con las preferencias del usuario (`allowFontScaling={true}` por defecto).
+| Tier | Path | Purpose | Examples |
+|---|---|---|---|
+| **Core** | `src/components/core/` | Atomic UI primitives, theme-aware | `Button`, `Text`, `Card`, `TextInput`, `Modal`, `Toast`, `Avatar`, `Badge`, `Checkbox`, `Select`, `DatePicker`, `AnimatedPressable` |
+| **Form** | `src/components/form/` | react-hook-form wrappers around core | `TextInput` (with `useController`), `Select`, `Checkbox`, `DatePicker` |
+| **Layout** | `src/components/layout/` | Screen-level structural components | `RootLayout`, `Header`, `Toolbar`, `LoadingState`, `ErrorState`, `EmptyState`, `DeleteConfirmationSheet`, `ItemSeparatorComponent` |
+| **Module** | `src/modules/*/ui/components/` | Feature-specific composed components | `ProductList`, `ProductItem`, `ProductForm`, `UserItem`, `SignInForm` |
 
-4.  **Tipado de Props**:
-    -   Interfaces explícitas para props.
-    -   Usar `React.FC<Props>` o definir props directamente en la función.
-    -   Evitar `any` en los estilos.
+### Core Component API Pattern (from codebase)
 
-### Anti-patrones Prohibidos
+```typescript
+// src/components/core/Button.tsx — theme-aware with variants
+interface ButtonProps {
+  children: React.ReactNode;
+  onPress: () => void;
+  variant?: 'primary' | 'secondary' | 'outlined' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  loading?: boolean;
+  disabled?: boolean;
+  fullWidth?: boolean;
+  style?: StyleProp<ViewStyle>;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+}
 
--   ❌ Definir componentes dentro de otros componentes (causa re-mounts).
--   ❌ Props drilling excesivo (más de 3 niveles). Usar Context o Zustand.
--   ❌ Lógica de negocio compleja dentro de componentes presentacionales.
+// Style factory: src/theme/components/Button.styles.ts
+export function getButtonStyle(
+  mode: ThemeMode,
+  variant: ButtonVariant,
+  size: ButtonSize,
+  options?: { disabled?: boolean; fullWidth?: boolean }
+) { ... }
+```
 
-## 5. Output Esperado
+### Form Component Pattern (from codebase)
 
--   **Feedback**: "El componente 'Button' tiene colores hardcodeados ('#007AFF'). Usa 'theme.colors.primary' para mantener la consistencia con el modo oscuro."
--   **Severidad**: Media (Mantenibilidad/UI).
--   **Corrección**: Reemplazar valores fijos por tokens del tema.
+```typescript
+// src/components/form/TextInput.tsx — wraps core with react-hook-form
+interface FormTextInputProps extends Omit<CoreTextInputProps, 'value' | 'onChangeText'> {
+  name: string;
+  control: Control<any>;
+}
 
-## 6. Ejemplo Práctico
+export function TextInput({ name, control, ...props }: FormTextInputProps) {
+  const { field } = useController({ name, control });
+  return (
+    <CoreTextInput
+      {...props}
+      value={String(field.value ?? '')}
+      onChangeText={field.onChange}
+    />
+  );
+}
+```
 
-### Antes (Incorrecto)
+### Layout Component Pattern (from codebase)
 
-```tsx
-// src/components/MyButton.tsx
-import { TouchableOpacity, Text } from 'react-native';
+```typescript
+// src/components/layout/RootLayout.tsx — screen wrapper
+interface RootLayoutProps {
+  children: React.ReactNode;
+  scroll?: boolean;        // ScrollView vs View
+  padding?: 'sm' | 'md' | 'lg';
+  toolbar?: boolean;       // Show back button toolbar
+  title?: string;
+  onPress?: () => void;    // Toolbar back action
+}
+```
 
-export const MyButton = ({ title, onPress }) => (
-  <TouchableOpacity 
-    onPress={onPress} 
-    style={{ backgroundColor: 'blue', padding: 10, borderRadius: 5 }} // ❌ Estilos inline y hardcodeados
+### Style Factory Pattern
+
+```typescript
+// src/theme/components/Card.styles.ts
+export function getCardStyle(
+  mode: ThemeMode,
+  variant: 'elevated' | 'outlined' | 'filled' | 'ghost',
+  size: 'sm' | 'md' | 'lg'
+) {
+  const theme = getTheme(mode);
+  return StyleSheet.create({
+    container: {
+      backgroundColor: theme.colors.surface,
+      borderRadius: borderRadius.md,
+      padding: size === 'sm' ? spacing.sm : size === 'lg' ? spacing.lg : spacing.md,
+      ...getShadow(mode, variant === 'elevated' ? 'md' : 'none'),
+    },
+  });
+}
+```
+
+### Barrel Export Registration
+
+```typescript
+// src/components/core/index.ts — every core component exported here
+export { Button } from './Button';
+export { Text } from './Text';
+export { Card } from './Card';
+export { TextInput } from './TextInput';
+export { Modal } from './Modal';
+export { Toast } from './Toast';
+// ... all core components
+```
+
+### Prohibited Anti-patterns
+
+| Anti-pattern | Why | Correct |
+|---|---|---|
+| `color: '#FF5733'` | Breaks theme modes | `color: colors.primary` via `useTheme()` |
+| `padding: 16` | Not responsive, breaks token system | `padding: spacing.md` |
+| `<Text>Hello</Text>` (RN) | No theme integration | `<Text variant="body">Hello</Text>` (core) |
+| `style={{ ... complex }}` | Not cacheable | `StyleSheet.create()` at file bottom |
+| `const Child = () => ...` inside parent | Re-mounts on every render | Extract to separate file/const |
+| Missing `index.ts` export | Import paths break conventions | Add to tier's barrel export |
+
+## 5. Expected Output
+
+| Aspect | Detail |
+|---|---|
+| **Feedback type** | Component audit report |
+| **Severity: error** | Hardcoded color, raw RN `Text` in feature code, component defined inside component |
+| **Severity: warning** | Missing barrel export, inline styles, missing variant prop |
+| **Severity: info** | Could use `React.memo`, could extract style factory |
+
+## 6. Practical Example
+
+### Before — Non-themed, non-composable component
+```typescript
+import { View, Text, TouchableOpacity } from 'react-native';
+
+export const ProductCard = ({ product, onPress }) => (
+  <TouchableOpacity
+    onPress={onPress}
+    style={{ backgroundColor: 'white', padding: 16, borderRadius: 8, marginBottom: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1 }}
   >
-    <Text style={{ color: 'white' }}>{title}</Text>
+    <Text style={{ fontSize: 18, fontWeight: 'bold', color: '#333' }}>{product.name}</Text>
+    <Text style={{ fontSize: 14, color: '#666' }}>${product.price}</Text>
   </TouchableOpacity>
 );
 ```
 
-### Después (Correcto)
-
-```tsx
-// src/components/core/Button.tsx
+### After — Themed, composable, following project patterns
+```typescript
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { useTheme } from '@/theme';
+import { View, StyleSheet, Animated } from 'react-native';
+import { Text, Card } from '@components/core';
+import type { ProductEntity } from '../../domain/product.model';
+import { useFocusFadeIn } from '@theme/hooks';
+import { ANIMATION_DURATION, spacing } from '@theme/index';
+import { ProductsRoutes } from '@navigation/routes';
+import { useNavigationProducts } from '@navigation/hooks';
 
-interface ButtonProps {
-  title: string;
-  onPress: () => void;
-  variant?: 'primary' | 'secondary';
+interface ProductItemProps {
+  product: ProductEntity;
+  index: number;
 }
 
-export const Button: React.FC<ButtonProps> = ({ title, onPress, variant = 'primary' }) => {
-  const { theme } = useTheme();
-  const styles = getStyles(theme, variant);
+export const ProductItem = React.memo(function ProductItem({ product, index }: ProductItemProps) {
+  const { navigate } = useNavigationProducts();
+  const { animatedStyle } = useFocusFadeIn({
+    delay: index * 100,
+    duration: ANIMATION_DURATION.normal,
+  });
 
   return (
-    <TouchableOpacity 
-      onPress={onPress} 
-      style={styles.container}
-      accessible={true}
-      accessibilityRole="button"
-      accessibilityLabel={title}
-    >
-      <Text style={styles.text}>{title}</Text>
-    </TouchableOpacity>
+    <Animated.View style={animatedStyle}>
+      <Card onPress={() => navigate(ProductsRoutes.ProductDetail, { productId: product.id })}>
+        <View style={styles.info}>
+          <Text variant="h3">{product.name}</Text>
+          {product.description ? <Text variant="body">{product.description}</Text> : null}
+          <Text variant="caption" color="primary">${product.price.toFixed(2)}</Text>
+        </View>
+      </Card>
+    </Animated.View>
   );
-};
+});
 
-const getStyles = (theme: Theme, variant: 'primary' | 'secondary') => StyleSheet.create({
-  container: {
-    backgroundColor: variant === 'primary' ? theme.colors.primary : theme.colors.secondary,
-    padding: theme.spacing.m,
-    borderRadius: theme.borders.radius.m,
-    alignItems: 'center',
-  },
-  text: {
-    color: theme.colors.text.inverse,
-    ...theme.typography.button,
-  },
+const styles = StyleSheet.create({
+  info: { flex: 1, gap: spacing.xs },
 });
 ```
+
+**Explanation**: Uses `Card` and `Text` from core components (theme-aware). `React.memo` prevents unnecessary re-renders in lists. Spacing uses tokens. Animations use focus-based hooks with staggered delay. Styles use `StyleSheet.create` at file bottom. Props are typed with explicit interface.
