@@ -9,6 +9,6 @@ These skills provide deep domain knowledge and patterns for specific technologie
 
 ## Available Skills
 
-| Skill                                                   | Layer          | Priority | Description                                                           |
-| ------------------------------------------------------- | -------------- | -------- | --------------------------------------------------------------------- |
-| [React Native Firebase](react-native-firebase/SKILL.md) | infrastructure | medium   | Patterns and best practices for Firebase integration in React Native. |
+| Skill                                                   | Layer          | Priority | Description                                                                                                                                                                                                                                                         |
+| ------------------------------------------------------- | -------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [React Native Firebase](react-native-firebase/SKILL.md) | infrastructure | medium   | Deep integration patterns for Firebase services in React Native: Authentication (email/password, Google, Apple), Firestore CRUD operations with real-time listeners, Cloud Storage file uploads, Push Notifications (FCM), Analytics, Crashlytics, and Remote Config. Includes error handling, offline persistence, security rules, and migration from HTTP to Firebase. |
