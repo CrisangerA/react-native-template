@@ -12,8 +12,8 @@ import { render, fireEvent, waitFor } from '@utils/test-utils';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { TextInput } from '../TextInput';
-import { Button } from '../Button';
+import { TextInput } from '@components/core/TextInput';
+import { Button } from '@components/core/Button';
 import { View } from 'react-native';
 
 // Schema de validación
@@ -170,7 +170,7 @@ describe('LoginForm - Ejemplo Avanzado', () => {
   it('debe mostrar estado de loading durante el submit', async () => {
     // Crear un submit que tarda un poco
     const onSubmitMock = jest.fn(
-      () => new Promise((resolve) => setTimeout(resolve, 100))
+      () => new Promise<void>((resolve) => setTimeout(resolve, 100))
     );
 
     const { getByTestId, UNSAFE_getByType } = render(

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@utils/test-utils';
-import { Button } from '../Button';
+import { Button } from '@components/core/Button';
 
 describe('Button', () => {
   it('debe renderizar correctamente con texto', () => {

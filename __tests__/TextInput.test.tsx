@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@utils/test-utils';
-import { TextInput } from '../TextInput';
+import { TextInput } from '@components/core/TextInput';
 
 describe('TextInput', () => {
   it('debe renderizar correctamente', () => {
