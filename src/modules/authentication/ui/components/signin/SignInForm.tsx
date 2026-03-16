@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 // Components
 import { Button, Text } from '@components/core';
@@ -20,7 +20,7 @@ import { spacing } from '@theme/spacing';
  */
 export default function SignInForm() {
   const { control, handleSubmit } = useForm<SignInFormData>({
-    resolver: zodResolver(signInSchema),
+    resolver: yupResolver(signInSchema),
     defaultValues: {
       email: '',
       password: '',

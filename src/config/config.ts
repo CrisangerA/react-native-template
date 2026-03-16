@@ -9,7 +9,7 @@ interface Config {
 }
 
 export const CONFIG: Config = {
-  SERVICE_PROVIDER: 'firebase',
+  SERVICE_PROVIDER: 'mock',
   ROOT_CREDENTIALS: {
     // Root credentials for mock service
     USERNAME: '',

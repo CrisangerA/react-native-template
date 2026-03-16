@@ -1,22 +1,23 @@
-import z from 'zod';
+import * as yup from 'yup';
+import type { InferType } from 'yup';
 
-export const userSchema = z.object({
-  name: z
+export const userSchema = yup.object({
+  name: yup
     .string()
-    .min(1, 'El nombre es requerido')
+    .required('El nombre es requerido')
     .max(100, 'El nombre debe tener máximo 100 caracteres'),
-  email: z
+  email: yup
     .string()
-    .min(1, 'El email es requerido')
+    .required('El email es requerido')
     .email('Debe ser un email válido'),
-  phone: z
+  phone: yup
     .string()
-    .min(1, 'El teléfono es requerido')
+    .required('El teléfono es requerido')
     .max(20, 'El teléfono debe tener máximo 20 caracteres'),
-  role: z
+  role: yup
     .string()
-    .min(1, 'El rol es requerido')
+    .required('El rol es requerido')
     .max(50, 'El rol debe tener máximo 50 caracteres'),
 });
 
-export type UserFormData = z.infer<typeof userSchema>;
+export type UserFormData = InferType<typeof userSchema>;

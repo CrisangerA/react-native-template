@@ -1,4 +1,4 @@
-package com.rncatemplate
+package com.alejandrotechnology.rncatemplate
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

@@ -9,7 +9,7 @@ module.exports = {
     '__tests__/App.test.tsx', // App.test.tsx tiene dependencias complejas, usar tests de componentes individuales
   ],
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|@react-navigation|react-native-gesture-handler|react-native-reanimated|react-native-screens|react-native-safe-area-context|@react-native-firebase|react-native-mmkv|jail-monkey|@react-native-community)/)',
+    'node_modules/(?!(react-native|@react-native|@react-navigation|react-native-gesture-handler|react-native-screens|react-native-safe-area-context|@react-native-firebase|react-native-mmkv|jail-monkey|@react-native-community)/)',
   ],
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',

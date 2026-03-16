@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { View, StyleSheet } from 'react-native';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { yupResolver } from '@hookform/resolvers/yup';
 // Components
 import { spacing } from '@theme/index';
 import { Button } from '@components/core';
@@ -26,7 +26,7 @@ export function UserForm({
     handleSubmit,
     formState: { errors },
   } = useForm<UserFormData>({
-    resolver: zodResolver(userSchema) as any,
+    resolver: yupResolver(userSchema),
     defaultValues: {
       name: initialData?.name || '',
       email: initialData?.email || '',

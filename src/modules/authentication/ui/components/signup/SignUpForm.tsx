@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { StyleSheet, View } from 'react-native';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { yupResolver } from '@hookform/resolvers/yup';
 // Components
 import { Button, Text } from '@components/core';
 import { Checkbox, DatePicker, Select, TextInput } from '@components/form';
@@ -15,7 +15,7 @@ import { spacing } from '@theme/spacing';
 
 export default function SignUpForm() {
   const { control, handleSubmit } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
+    resolver: yupResolver(registerSchema),
     defaultValues: {
       nombreCompleto: '',
       email: '',

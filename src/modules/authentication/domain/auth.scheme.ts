@@ -1,66 +1,73 @@
-import z from 'zod';
+import * as yup from 'yup';
+import type { InferType } from 'yup';
 
-export const registerSchema = z
-  .object({
-    nombreCompleto: z
-      .string()
-      .min(1, 'El nombre es requerido')
-      .min(2, 'El nombre debe tener al menos 2 caracteres'),
-    email: z
-      .string()
-      .min(1, 'El email es requerido')
-      .email('Ingrese un email válido'),
-    password: z
-      .string()
-      .min(1, 'La contraseña es requerida')
-      .min(8, 'La contraseña debe tener al menos 8 caracteres')
-      .regex(/[A-Z]/, 'Debe contener al menos una mayúscula')
-      .regex(/[0-9]/, 'Debe contener al menos un número'),
-    confirmPassword: z.string().min(1, 'Confirme su contraseña'),
-    fechaNacimiento: z
-      .date({ message: 'La fecha de nacimiento es requerida' })
-      .refine(
-        date => {
-          const today = new Date();
-          const birthDate = new Date(date);
-          let age = today.getFullYear() - birthDate.getFullYear();
-          const monthDiff = today.getMonth() - birthDate.getMonth();
-          if (
-            monthDiff < 0 ||
-            (monthDiff === 0 && today.getDate() < birthDate.getDate())
-          ) {
-            age--;
-          }
-          return age >= 18;
-        },
-        { message: 'Debe ser mayor de 18 años' },
-      ),
-    pais: z
-      .object({
-        label: z.string(),
-        value: z.string(),
-      })
-      .refine(val => val.value !== '', { message: 'Seleccione un país' }),
-    aceptaTerminos: z.boolean().refine(val => val === true, {
-      message: 'Debe aceptar los términos y condiciones',
-    }),
-    recibirNewsletter: z.boolean(),
-  })
-  .refine(data => data.password === data.confirmPassword, {
-    message: 'Las contraseñas no coinciden',
-    path: ['confirmPassword'],
-  });
-
-export const signInSchema = z.object({
-  email: z
+export const registerSchema = yup.object({
+  nombreCompleto: yup
     .string()
-    .min(1, 'El email es requerido')
+    .required('El nombre es requerido')
+    .min(2, 'El nombre debe tener al menos 2 caracteres'),
+  email: yup
+    .string()
+    .required('El email es requerido')
     .email('Ingrese un email válido'),
-  password: z
+  password: yup
     .string()
-    .min(1, 'La contraseña es requerida')
+    .required('La contraseña es requerida')
+    .min(8, 'La contraseña debe tener al menos 8 caracteres')
+    .matches(/[A-Z]/, 'Debe contener al menos una mayúscula')
+    .matches(/[0-9]/, 'Debe contener al menos un número'),
+  confirmPassword: yup
+    .string()
+    .required('Confirme su contraseña')
+    .oneOf([yup.ref('password')], 'Las contraseñas no coinciden'),
+  fechaNacimiento: yup
+    .date()
+    .typeError('La fecha de nacimiento es requerida')
+    .required('La fecha de nacimiento es requerida')
+    .test('is-adult', 'Debe ser mayor de 18 años', (value?: Date) => {
+      if (!value) {
+        return false;
+      }
+      const today = new Date();
+      const birthDate = new Date(value);
+      let age = today.getFullYear() - birthDate.getFullYear();
+      const monthDiff = today.getMonth() - birthDate.getMonth();
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birthDate.getDate())
+      ) {
+        age--;
+      }
+      return age >= 18;
+    }),
+  pais: yup
+    .object({
+      label: yup.string().required(),
+      value: yup.string().required(),
+    })
+    .required('Seleccione un país')
+    .test(
+      'country-selected',
+      'Seleccione un país',
+      (value?: { label: string; value: string }) => Boolean(value?.value),
+    ),
+  aceptaTerminos: yup
+    .boolean()
+    .oneOf([true], 'Debe aceptar los términos y condiciones')
+    .required('Debe aceptar los términos y condiciones'),
+  recibirNewsletter: yup.boolean().required(),
+});
+
+export const signInSchema = yup.object({
+  email: yup
+    .string()
+    .required('El email es requerido')
+    .email('Ingrese un email válido'),
+  password: yup
+    .string()
+    .required('La contraseña es requerida')
     .min(8, 'La contraseña debe tener al menos 8 caracteres'),
 });
 
-export type RegisterFormData = z.infer<typeof registerSchema>;
-export type SignInFormData = z.infer<typeof signInSchema>;
+export type RegisterFormData = InferType<typeof registerSchema>;
+export type SignInFormData = InferType<typeof signInSchema>;

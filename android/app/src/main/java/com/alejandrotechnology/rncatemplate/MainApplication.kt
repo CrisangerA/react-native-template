@@ -1,4 +1,4 @@
-package com.rncatemplate
+package com.alejandrotechnology.rncatemplate
 
 import android.app.Application
 import com.facebook.react.PackageList

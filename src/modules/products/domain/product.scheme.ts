@@ -1,15 +1,23 @@
-import z from 'zod';
+import * as yup from 'yup';
+import type { InferType } from 'yup';
 
-export const productSchema = z.object({
-  name: z
+export const productSchema = yup.object({
+  name: yup
     .string()
-    .min(1, 'El nombre es requerido')
+    .required('El nombre es requerido')
     .max(100, 'El nombre debe tener máximo 100 caracteres'),
-  description: z
+  description: yup
     .string()
     .max(500, 'La descripción debe tener máximo 500 caracteres')
-    .optional(),
-  price: z.coerce.number().min(1, 'El precio debe ser mayor a 0'),
+    .defined(),
+  price: yup
+    .number()
+    .transform((value: number, originalValue: unknown) =>
+      originalValue === '' || originalValue === null ? NaN : value,
+    )
+    .typeError('El precio debe ser mayor a 0')
+    .min(1, 'El precio debe ser mayor a 0')
+    .required('El precio debe ser mayor a 0'),
 });
 
-export type ProductFormData = z.infer<typeof productSchema>;
+export type ProductFormData = InferType<typeof productSchema>;

@@ -1,6 +1,9 @@
 import React, { PropsWithChildren } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import {
+  SafeAreaProvider,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 // Providers
 import SecureProvider from './SecureProvider';
 import NavigationProvider from './NavigationProvider';
@@ -10,6 +13,7 @@ import { GlobalDeleteConfirmation, GlobalToast } from '@modules/core/ui';
 // Styles
 import { useTheme, commonStyles } from '@theme/index';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { View } from 'react-native';
 
 const queryClient = new QueryClient();
 export default function AppProvider({ children }: PropsWithChildren) {
@@ -20,7 +24,9 @@ export default function AppProvider({ children }: PropsWithChildren) {
           <SafeAreaProvider>
             <GestureHandlerProvider>
               <NavigationProvider>
-                {children}
+                <SafeAreaView>
+                  {children}
+                </SafeAreaView>
                 <GlobalDeleteConfirmation />
                 <GlobalToast />
               </NavigationProvider>
@@ -46,5 +52,22 @@ function GestureHandlerProvider({ children }: PropsWithChildren) {
     >
       {children}
     </GestureHandlerRootView>
+  );
+}
+
+function SafeAreaView({ children }: PropsWithChildren) {
+  const insets = useSafeAreaInsets();
+  return (
+    <View
+      style={{
+        ...commonStyles.flex,
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom,
+        left: insets.left,
+        right: insets.right,
+      }}
+    >
+      {children}
+    </View>
   );
 }
