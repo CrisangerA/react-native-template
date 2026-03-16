@@ -1,7 +1,12 @@
 import React, { PropsWithChildren } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { Animated, StyleSheet, View } from 'react-native';
 // Theme
-import { SpacingToken, useTheme } from '@theme/index';
+import {
+  ANIMATION_DURATION,
+  SpacingToken,
+  useFocusFadeIn,
+  useTheme,
+} from '@theme/index';
 import { Toolbar } from './Toolbar';
 
 interface Props {
@@ -23,6 +28,11 @@ export function RootLayout({
   const { colors, spacing } = useTheme();
   const { background: backgroundColor } = colors;
 
+  const { animatedStyle: contentStyle } = useFocusFadeIn({
+    duration: ANIMATION_DURATION.slow,
+    offset: spacing.xl,
+  });
+
   const style = [
     styles.container,
     { backgroundColor, padding: padding && spacing[padding] },
@@ -30,18 +40,21 @@ export function RootLayout({
 
   if (scroll) {
     return (
-      <ScrollView keyboardShouldPersistTaps="handled">
+      <Animated.ScrollView
+        keyboardShouldPersistTaps="handled"
+        style={contentStyle}
+      >
         {toolbar && <Toolbar onPress={onPress} title={title} />}
         <View style={style}>{children}</View>
-      </ScrollView>
+      </Animated.ScrollView>
     );
   }
 
   return (
-    <View style={style}>
+    <Animated.View style={[style, contentStyle]}>
       {toolbar && <Toolbar onPress={onPress} title={title} />}
       <View style={style}>{children}</View>
-    </View>
+    </Animated.View>
   );
 }
 

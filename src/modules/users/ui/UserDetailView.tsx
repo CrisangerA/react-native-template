@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Animated } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 // Components
 import { Text, Card, Button } from '@components/core';
 import {
@@ -15,8 +15,7 @@ import { useUserDelete } from '../application/user.mutations';
 import { UsersRoutes, UsersScreenProps } from '@navigation/routes';
 import { useNavigationUsers } from '@navigation/hooks';
 // Theme
-import { useFocusFadeIn } from '@theme/hooks';
-import { ANIMATION_DURATION, spacing } from '@theme/index';
+import { spacing } from '@theme/index';
 // Store
 import { useAppStorage } from '@modules/core/infrastructure/app.storage';
 
@@ -26,16 +25,6 @@ export function UserDetailView({
   },
 }: UsersScreenProps<UsersRoutes.UserDetail>) {
   const { goBack, navigate } = useNavigationUsers();
-
-  const { animatedStyle: contentStyle } = useFocusFadeIn({
-    duration: ANIMATION_DURATION.slow,
-    offset: 20,
-  });
-  const { animatedStyle: buttonsStyle } = useFocusFadeIn({
-    duration: ANIMATION_DURATION.slow,
-    delay: 300,
-    offset: 20,
-  });
 
   const { data: user, isLoading, isError, error } = useUser(userId);
   const { mutateAsync: deleteUserAsync } = useUserDelete();
@@ -74,7 +63,7 @@ export function UserDetailView({
 
   return (
     <RootLayout padding="md" onPress={goBack} title="Detalle de Usuario">
-      <Animated.View style={[styles.content, contentStyle]}>
+      <View style={styles.content}>
         <Card style={styles.card}>
           <Text variant="h2">{user.name}</Text>
 
@@ -104,7 +93,7 @@ export function UserDetailView({
           </Text>
         </Card>
 
-        <Animated.View style={buttonsStyle}>
+        <View>
           <Button variant="secondary" onPress={handleEdit} style={styles.button}>
             Editar Usuario
           </Button>
@@ -125,8 +114,8 @@ export function UserDetailView({
           >
             Eliminar Usuario
           </Button>
-        </Animated.View>
-      </Animated.View>
+        </View>
+      </View>
     </RootLayout>
   );
 }

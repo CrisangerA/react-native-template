@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Animated } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 // Components
 import { Text, Card, Button } from '@components/core';
 import {
@@ -15,8 +15,7 @@ import { useProductDelete } from '../application/product.mutations';
 import { ProductsRoutes, ProductsScreenProps } from '@navigation/routes';
 import { useNavigationProducts } from '@navigation/hooks';
 // Theme
-import { useFocusFadeIn } from '@theme/hooks';
-import { ANIMATION_DURATION, spacing } from '@theme/index';
+import { spacing } from '@theme/index';
 // Store
 import { useAppStorage } from '@modules/core/infrastructure/app.storage';
 
@@ -26,17 +25,6 @@ export function ProductDetailView({
   },
 }: ProductsScreenProps<ProductsRoutes.ProductDetail>) {
   const { goBack, navigate } = useNavigationProducts();
-
-  const { animatedStyle: contentStyle } = useFocusFadeIn({
-    duration: ANIMATION_DURATION.slow,
-    offset: 20,
-  });
-  const { animatedStyle: buttonsStyle } = useFocusFadeIn({
-    duration: ANIMATION_DURATION.slow,
-    delay: 300,
-    offset: 20,
-  });
-
   const { data: product, isLoading, isError, error } = useProduct(productId);
   const { mutateAsync: deleteProductAsync } = useProductDelete();
   const { open, close } = useAppStorage(state => state.modal);
@@ -73,7 +61,7 @@ export function ProductDetailView({
   }
   return (
     <RootLayout padding="md" onPress={goBack} title="Detalle de Producto">
-      <Animated.View style={[styles.content, contentStyle]}>
+      <View style={styles.content}>
         <Card style={styles.card}>
           <Text variant="h2">{product.name}</Text>
 
@@ -94,7 +82,7 @@ export function ProductDetailView({
           </Text>
         </Card>
 
-        <Animated.View style={buttonsStyle}>
+        <View>
           <Button variant="secondary" onPress={handleEdit} style={styles.button}>
             Editar Producto
           </Button>
@@ -115,8 +103,8 @@ export function ProductDetailView({
           >
             Eliminar Producto
           </Button>
-        </Animated.View>
-      </Animated.View>
+        </View>
+      </View>
     </RootLayout>
   );
 }
