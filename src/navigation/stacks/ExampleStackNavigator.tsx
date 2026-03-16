@@ -9,6 +9,9 @@ import TextInputsView from '@modules/examples/ui/TextInputsView';
 import CardsView from '@modules/examples/ui/CardsView';
 import CheckboxesView from '@modules/examples/ui/CheckboxesView';
 import ModalsView from '@modules/examples/ui/ModalsView';
+import AvatarsView from '@modules/examples/ui/AvatarsView';
+import BadgesView from '@modules/examples/ui/BadgesView';
+import ToastsView from '@modules/examples/ui/ToastsView';
 import SignInView from '@modules/authentication/ui/SignInView';
 // Routes
 import {
@@ -40,6 +43,9 @@ export default function ExamplesNavigator() {
         component={CheckboxesView}
       />
       <Stack.Screen name={ExamplesRoutes.Modals} component={ModalsView} />
+      <Stack.Screen name={ExamplesRoutes.Avatars} component={AvatarsView} />
+      <Stack.Screen name={ExamplesRoutes.Badges} component={BadgesView} />
+      <Stack.Screen name={ExamplesRoutes.Toasts} component={ToastsView} />
       <Stack.Screen name={ExamplesRoutes.SignIn} component={SignInView} />
       <Stack.Screen
         name={ExamplesRoutes.AnimationExample}

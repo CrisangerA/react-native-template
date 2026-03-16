@@ -9,6 +9,9 @@ export enum ExamplesRoutes {
   Cards = 'Cards',
   Checkboxes = 'Checkboxes',
   Modals = 'Modals',
+  Avatars = 'Avatars',
+  Badges = 'Badges',
+  Toasts = 'Toasts',
   SignIn = 'SignIn',
 }
 
@@ -21,6 +24,9 @@ export type ExamplesStackParamList = {
   [ExamplesRoutes.Cards]: undefined;
   [ExamplesRoutes.Checkboxes]: undefined;
   [ExamplesRoutes.Modals]: undefined;
+  [ExamplesRoutes.Avatars]: undefined;
+  [ExamplesRoutes.Badges]: undefined;
+  [ExamplesRoutes.Toasts]: undefined;
   [ExamplesRoutes.SignIn]: undefined;
 };
 

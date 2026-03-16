@@ -61,7 +61,7 @@ function LandingView() {
       <View style={styles.statsContainer}>
         <View style={styles.statItem}>
           <Text variant="h3" color="primary">
-            6
+            9
           </Text>
           <Text variant="caption" color="textSecondary">
             Components
