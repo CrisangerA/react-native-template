@@ -1,47 +1,86 @@
-# React Native Clean Architecture Template 🚀
+# React Native Clean Architecture Starter 🚀
 
-A robust, production-ready React Native template built with **Clean Architecture**, **TypeScript**, and **AI-First** principles. This project serves as a foundational starting point for scalable mobile applications, featuring a modular structure and pre-configured essential libraries.
+![React Native](https://img.shields.io/badge/react--native-0.83.4-blue)
+![TypeScript](https://img.shields.io/badge/typescript-5.8.3-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Node](https://img.shields.io/badge/node-%3E%3D22-brightgreen)
+![Platform](https://img.shields.io/badge/platform-ios%20%7C%20android-lightgrey)
 
-> **Tip:** This template is designed to work seamlessly with a companion **CLI tool** that extracts modular pieces (Theme, Components, Navigation, Network, Firebase, etc.) to jumpstart your development.
 
-## 📂 Project Structure
+A **production-ready React Native starter** built with **Clean Architecture**, **TypeScript**, and **AI-First principles**.
 
-The project follows a **Modular Architecture**. Each feature is a self-contained module in `src/modules/` containing its own layers:
+Designed to help developers build **scalable mobile applications** with a modular architecture, real-world examples, and preconfigured tooling.
 
+Perfect for:
+
+- production apps
+- scalable React Native projects
+- teams adopting Clean Architecture
+- AI-assisted development workflows
+
+---
+
+## 🎥 Demo
+
+> Screenshots / GIFs coming soon
+
+## ✨ Features
+
+- 🧱 Clean Architecture modular structure
+- 🔒 Authentication module (Firebase ready)
+- 🗂 Feature-based folder architecture
+- ⚡ Zustand + React Query state management
+- 🎨 Design System with theme tokens
+- 🧩 Reusable UI components
+- 🔄 Example CRUD module
+- 🧪 Jest testing setup
+- 🧹 ESLint + Prettier
+- 🤖 AI-friendly architecture for code agents
+
+## 🤔 Why this template?
+
+Most React Native starters are either:
+
+- too minimal
+- too opinionated
+- missing real-world examples
+
+This template focuses on:
+
+✔ scalable architecture  
+✔ modular feature development  
+✔ production-ready setup  
+✔ real example modules  
+✔ compatibility with AI developer tools
+
+# ⚡ Quick Start (CLI Tool)
+
+This template will have a companion CLI to extract modules:
+
+```bash
+npm init react-native-init-app
 ```
-src/
-├── components/       # Shared UI components (Core & Form)
-├── config/           # App-wide configuration (API, Storage)
-├── modules/          # Feature Modules
-│   ├── authentication/
-│   ├── products/     # Example CRUD module
-│   └── examples/     # UI Component Showcase
-├── navigation/       # Root navigation configuration
-├── providers/        # App-wide providers (Theme, Auth, QueryClient)
-└── theme/            # Design tokens (Colors, Typography, Spacing)
+or
+```bash
+bunx create-react-native-init-app
+# or
+npx create-react-native-init-app
 ```
 
-### Module Anatomy (Clean Architecture)
-Each module (e.g., `src/modules/products/`) is divided into:
-1.  **Domain:** Entities, Repository Interfaces, Errors (Pure TS, no React/Lib dependencies).
-2.  **Application:** Use Cases, State Management (Zustand/Query), Logic.
-3.  **Infrastructure:** API calls, Database implementation, Third-party adapters.
-4.  **UI:** Screens, Components, Navigation.
+# 🚀 Manual Installation
 
-## 🚀 Getting Started
-
-### Prerequisites
+## Prerequisites
 - Node.js (v22+ recommended)
 - Ruby (for CocoaPods)
 - JDK 17+
 - Android Studio & Xcode (for iOS)
 
-### Installation
+## Installation
 
 1.  **Clone the repository:**
     ```bash
     git clone https://github.com/alejandro-technology/react-native-template.git
-    cd rncatemplate
+    cd react-native-template
     ```
 
 2.  **Install dependencies:**
@@ -56,7 +95,7 @@ Each module (e.g., `src/modules/products/`) is divided into:
     npm run pod-cocoa && npm run pod-install
     ```
 
-### Running the App
+## Running the App
 
 - **Start Metro Bundler:**
   ```bash
@@ -73,7 +112,32 @@ Each module (e.g., `src/modules/products/`) is divided into:
   npm run android
   ```
 
-## 🛠 Available Scripts
+
+# 📂 Project Structure
+
+The project follows a **Modular Architecture**. Each feature is a self-contained module in `src/modules/` containing its own layers:
+
+```
+src/
+├── components/       # Shared UI components (Core & Form)
+├── config/           # App-wide configuration (API, Storage)
+├── modules/          # Feature Modules
+│   ├── authentication/
+│   ├── products/     # Example CRUD module
+│   └── examples/     # UI Component Showcase
+├── navigation/       # Root navigation configuration
+├── providers/        # App-wide providers (Theme, Auth, QueryClient)
+└── theme/            # Design tokens (Colors, Typography, Spacing)
+```
+
+## 🧠 Module Anatomy (Clean Architecture)
+Each module (e.g., `src/modules/products/`) is divided into:
+1.  **Domain:** Entities, Repository Interfaces, Errors (Pure TS, no React/Lib dependencies).
+2.  **Application:** Use Cases, State Management (Zustand/Query), Logic.
+3.  **Infrastructure:** API calls, Database implementation, Third-party adapters.
+4.  **UI:** Screens, Components, Navigation.
+
+# 🛠 Available Scripts
 
 - `npm run lint`: Run ESLint.
 - `npm run test`: Run Jest tests.
@@ -81,11 +145,22 @@ Each module (e.g., `src/modules/products/`) is divided into:
 - `npm run clean-ios`: Deep clean iOS build (DerivedData + Pods).
 - `npm run clean-watch`: Reset Watchman (fixes Metro issues).
 
-## 🧩 Included Modules
+# 🧩 Included Modules
 
 - **Authentication:** Complete Sign In / Sign Up flow with Firebase integration.
 - **Products:** A full CRUD example demonstrating the 4-layer architecture with listing, details, and creation forms.
 - **Users:** A module for user profile management.
 - **Examples:** A gallery of UI components to visualize the design system.
 
----
+# 🤝 Contributing
+
+Contributions are welcome!
+
+1. Fork the repository
+2. Create your feature branch
+3. Commit changes
+4. Open a Pull Request
+
+# 📄 License
+
+MIT
