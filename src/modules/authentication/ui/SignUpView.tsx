@@ -1,15 +1,20 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 // Components
-import { Text } from '@components/core';
+import { Text, Button } from '@components/core';
 import { RootLayout } from '@components/layout';
 import SignUpForm from './components/signup/SignUpForm';
+// Navigation
+import { useNavigationAuthentication } from '@navigation/hooks';
+import { AuthenticationRoutes } from '@navigation/routes';
 // Theme
 import { spacing } from '@theme/index';
 
-export default function UserSignInView() {
+export default function SignUpView() {
+  const { navigate } = useNavigationAuthentication();
+
   return (
-    <RootLayout>
+    <RootLayout padding='md'>
       <View style={styles.container}>
         <View style={styles.header}>
           <Text variant="h1">Registro de Usuario</Text>
@@ -19,6 +24,19 @@ export default function UserSignInView() {
         </View>
 
         <SignUpForm />
+
+        <View style={styles.footer}>
+          <Text variant="body" color="textSecondary">
+            ¿Ya tienes cuenta?
+          </Text>
+          <Button
+            variant="ghost"
+            size="sm"
+            onPress={() => navigate(AuthenticationRoutes.SignIn)}
+          >
+            Iniciar sesión
+          </Button>
+        </View>
       </View>
     </RootLayout>
   );
@@ -31,5 +49,12 @@ const styles = StyleSheet.create({
   header: {
     gap: spacing.xs,
     marginBottom: spacing.sm,
+  },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    marginTop: spacing.md,
   },
 });

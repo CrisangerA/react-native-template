@@ -1,4 +1,4 @@
-import { ProductsRoutes } from '@navigation/routes';
+import { AuthenticationRoutes, ProductsRoutes } from '@navigation/routes';
 import { ExamplesRoutes } from '@navigation/routes/examples.routes';
 import { UsersRoutes } from '@navigation/routes/users.routes';
 
@@ -13,7 +13,8 @@ export interface ComponentConfig {
 type Screens =
   | Exclude<ExamplesRoutes, ExamplesRoutes.Landing>
   | ProductsRoutes
-  | UsersRoutes;
+  | UsersRoutes
+  | AuthenticationRoutes;
 export const COMPONENTS_CONFIG: ComponentConfig[] = [
   {
     title: 'Text',
@@ -84,6 +85,13 @@ export const COMPONENTS_CONFIG: ComponentConfig[] = [
     icon: '\uD83D\uDD10',
     color: '#EC4899',
     screen: ExamplesRoutes.SignIn,
+  },
+  {
+    title: 'Authentication',
+    description: 'Sign in & sign up flow with form validation',
+    icon: '\uD83D\uDD11',
+    color: '#A855F7',
+    screen: AuthenticationRoutes.SignUp,
   },
   {
     title: 'Products',
