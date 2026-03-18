@@ -5,7 +5,8 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Node](https://img.shields.io/badge/node-%3E%3D22-brightgreen)
 ![Platform](https://img.shields.io/badge/platform-ios%20%7C%20android-lightgrey)
-[![CI](https://github.com/alejandro-technology/react-native-template/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/alejandro-technology/react-native-template/actions/workflows/ci.yml)
+[![Unit Tests](https://github.com/alejandro-technology/react-native-template/actions/workflows/unit-test.yml/badge.svg?branch=main)](https://github.com/alejandro-technology/react-native-template/actions/workflows/unit-test.yml)
+[![APK Build](https://github.com/alejandro-technology/react-native-template/actions/workflows/android-apk.yml/badge.svg?branch=main)](https://github.com/alejandro-technology/react-native-template/actions/workflows/android-apk.yml)
 
 
 A **production-ready React Native starter** built with **Clean Architecture**, **TypeScript**, and **AI-First principles**.
