@@ -9,6 +9,7 @@ export interface ComponentConfig {
   icon: IconName;
   color: string;
   screen: Screens;
+  auth?: boolean;
 }
 
 type Screens =
@@ -85,7 +86,7 @@ export const COMPONENTS_CONFIG: ComponentConfig[] = [
     description: 'Registration form with react-hook-form & Yup validation',
     icon: 'lock',
     color: '#EC4899',
-    screen: ExamplesRoutes.SignIn,
+    screen: AuthenticationRoutes.SignIn,
   },
   {
     title: 'Authentication',
@@ -100,6 +101,7 @@ export const COMPONENTS_CONFIG: ComponentConfig[] = [
     icon: 'package',
     color: '#007AFF',
     screen: ProductsRoutes.ProductList,
+    auth: true,
   },
   {
     title: 'Users',
@@ -107,5 +109,6 @@ export const COMPONENTS_CONFIG: ComponentConfig[] = [
     icon: 'users',
     color: '#16A34A',
     screen: UsersRoutes.UserList,
+    auth: true,
   },
 ];

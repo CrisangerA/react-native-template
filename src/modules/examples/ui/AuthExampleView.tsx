@@ -11,10 +11,9 @@ import { borderRadius } from '@theme/borders';
 
 import { COMPONENTS_CONFIG } from './componentsConfig';
 import { useHeroAnimation } from '../hooks/useHeroAnimation';
-import { PublicRoutes } from '@navigation/routes/public.routes';
-import { AuthenticationRoutes, ExamplesRoutes } from '@navigation/routes';
+import { PrivateRoutes, ProductsRoutes, UsersRoutes } from '@navigation/routes';
 
-function LandingView() {
+function AuthExampleView() {
   const { navigate } = useNavigation();
   const { mode } = useTheme();
 
@@ -90,7 +89,7 @@ function LandingView() {
       </View>
 
       <View style={styles.cardsContainer}>
-        {COMPONENTS_CONFIG.filter(component => !component.auth).map(component => (
+        {COMPONENTS_CONFIG.filter(component => component.auth).slice(-2).map(component => (
           <ComponentCard
             key={component.title}
             title={component.title}
@@ -98,11 +97,11 @@ function LandingView() {
             icon={component.icon}
             color={component.color}
             onPress={() => {
-              if (component.screen in AuthenticationRoutes) {
-                const args = [PublicRoutes.Authentication, { screen: component.screen }] as const;
+              if (component.screen in ProductsRoutes) {
+                const args = [PrivateRoutes.Products, { screen: component.screen }] as const;
                 navigate(...args as never);
-              } else if (component.screen in ExamplesRoutes) {
-                const args = [PublicRoutes.Examples, { screen: component.screen }] as const;
+              } else if (component.screen in UsersRoutes) {
+                const args = [PrivateRoutes.Users, { screen: component.screen }] as const;
                 navigate(...args as never);
               }
             }}
@@ -182,4 +181,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default LandingView;
+export default AuthExampleView;
