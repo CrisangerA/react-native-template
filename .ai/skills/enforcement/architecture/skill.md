@@ -198,10 +198,15 @@ src/modules/orders/
 src/navigation/routes/orders.routes.ts
 src/navigation/stacks/OrdersStackNavigator.tsx
 src/navigation/hooks/useNavigation.ts  # Add useNavigationOrders
+src/navigation/routes/index.ts         # Add export
 
-# 3. Register in root
-src/navigation/routes/root.routes.ts   # Add to RootStackParamList
-src/navigation/RootNavigator.tsx       # Add OrdersNavigator screen
+# 3. Register in Public or Private stack (based on auth requirement)
+# For authenticated features:
+src/navigation/routes/private.routes.ts          # Add to PrivateRoutes enum + PrivateStackParamList
+src/navigation/stacks/PrivateStackNavigator.tsx   # Add OrdersNavigator screen
+# For public features:
+src/navigation/routes/public.routes.ts            # Add to PublicRoutes enum + PublicStackParamList
+src/navigation/stacks/PublicStackNavigator.tsx     # Add OrdersNavigator screen
 
 # 4. Register API route
 src/config/api.routes.ts               # Add ORDERS endpoint

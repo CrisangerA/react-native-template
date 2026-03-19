@@ -76,12 +76,14 @@ Cada módulo tiene un factory `{entity}.service.ts` que resuelve la implementaci
 
 ## Navegación
 
-- **Root**: `RootNavigator` con `createNativeStackNavigator`
+- **Root**: `RootNavigator` renderiza condicionalmente `PublicNavigator` o `PrivateNavigator` según `useAuth().isAuthenticated`
+- **Public stack**: `PublicStackNavigator` con `PublicRoutes` (`Examples | Authentication`)
+- **Private stack**: `PrivateStackNavigator` con `PrivateRoutes` (`Products | Users | Example`)
 - **Stacks por módulo**: `src/navigation/stacks/{Module}StackNavigator.tsx`
 - **Rutas tipadas**: `src/navigation/routes/{module}.routes.ts` con enum + ParamList
-- **Root routes**: Enum `RootRoutes` con `Examples | Products | Users`
-- **Hook de navegación**: `src/navigation/hooks/useNavigation.ts`
-- Pantalla inicial: `Examples` (primer screen en RootNavigator)
+- **Hooks de navegación**: `useNavigationPublic`, `useNavigationPrivate`, `useNavigationProducts`, `useNavigationUsers`, `useNavigationAuthentication`
+- Pantalla inicial (no auth): `Examples` (primer screen en PublicNavigator)
+- Pantalla inicial (auth): `Example` (primer screen en PrivateNavigator)
 
 ## Componentes Disponibles
 

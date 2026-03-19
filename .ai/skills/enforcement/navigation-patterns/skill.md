@@ -30,20 +30,53 @@ Enforces the centralized, type-safe navigation architecture.
 
 ```
 src/navigation/
-├── RootNavigator.tsx              # Top-level stack
+├── RootNavigator.tsx              # Auth-conditional: Public or Private
 ├── routes/
-│   ├── root.routes.ts            # RootStackParamList enum + type
+│   ├── public.routes.ts          # PublicRoutes enum + PublicStackParamList
+│   ├── private.routes.ts         # PrivateRoutes enum + PrivateStackParamList
 │   ├── products.routes.ts        # ProductsStackParamList
 │   ├── users.routes.ts           # UsersStackParamList
 │   ├── examples.routes.ts        # ExamplesStackParamList
+│   ├── authentication.routes.ts  # AuthenticationStackParamList
 │   └── index.ts                  # Barrel re-export
 ├── stacks/
+│   ├── PublicStackNavigator.tsx   # Examples + Authentication
+│   ├── PrivateStackNavigator.tsx  # Products + Users + Example
 │   ├── ProductsStackNavigator.tsx
 │   ├── UsersStackNavigator.tsx
-│   └── ExampleStackNavigator.tsx
+│   ├── ExampleStackNavigator.tsx
+│   └── AuthenticationStackNavigator.tsx
 └── hooks/
     ├── useNavigation.ts          # Typed navigation hooks
     └── index.ts
+```
+
+### Auth-Conditional Root
+
+`RootNavigator` renders `PublicNavigator` or `PrivateNavigator` based on `useAuth().isAuthenticated`:
+
+```typescript
+// src/navigation/RootNavigator.tsx
+import { useAuth } from '@modules/authentication';
+
+export default function RootNavigator() {
+  const { isAuthenticated } = useAuth();
+  if (isAuthenticated) return <PrivateNavigator />;
+  return <PublicNavigator />;
+}
+```
+
+### Stack Composition
+
+```
+RootNavigator (auth state)
+├── PublicNavigator (not authenticated)
+│   ├── Examples → ExamplesStackNavigator
+│   └── Authentication → AuthenticationStackNavigator
+└── PrivateNavigator (authenticated)
+    ├── Example (standalone screen)
+    ├── Products → ProductsStackNavigator
+    └── Users → UsersStackNavigator
 ```
 
 ## Adding a New Feature Stack (Step by Step)
@@ -110,27 +143,60 @@ export const useNavigation{Entities} = useNavigation<
 >;
 ```
 
-### Step 4: Register in Root (`routes/root.routes.ts`)
+### Step 4: Register in Public or Private routes
+
+Choose based on whether the feature requires authentication:
+
+**For authenticated features** (`routes/private.routes.ts`):
 
 ```typescript
-export enum RootRoutes {
+import { {Entities}StackParamList } from './{entities}.routes';
+
+export enum PrivateRoutes {
   // ...existing
   {Entities} = '{Entities}',
 }
 
-export type RootStackParamList = {
+export type PrivateStackParamList = {
   // ...existing
-  [RootRoutes.{Entities}]: NavigatorScreenParams<{Entities}StackParamList>;
+  [PrivateRoutes.{Entities}]: NavigatorScreenParams<{Entities}StackParamList>;
 };
 ```
 
-### Step 5: Add to Root Navigator (`RootNavigator.tsx`)
+**For public features** (`routes/public.routes.ts`):
 
 ```typescript
-import {Entities}Navigator from './stacks/{Entities}StackNavigator';
+import { {Entities}StackParamList } from './{entities}.routes';
+
+export enum PublicRoutes {
+  // ...existing
+  {Entities} = '{Entities}',
+}
+
+export type PublicStackParamList = {
+  // ...existing
+  [PublicRoutes.{Entities}]: NavigatorScreenParams<{Entities}StackParamList>;
+};
+```
+
+### Step 5: Add to the corresponding Stack Navigator
+
+**For authenticated features** (`stacks/PrivateStackNavigator.tsx`):
+
+```typescript
+import {Entities}Navigator from './{Entities}StackNavigator';
 
 // Inside Stack.Navigator:
-<Stack.Screen name={RootRoutes.{Entities}} component={{Entities}Navigator} />
+<Stack.Screen name={PrivateRoutes.{Entities}} component={{Entities}Navigator} />
+```
+
+**For public features** (`stacks/PublicStackNavigator.tsx`):
+
+```typescript
+import {Entities}Navigator from './{Entities}StackNavigator';
+
+// Inside Stack.Navigator:
+<Stack.Screen name={PublicRoutes.{Entities}} component={{Entities}Navigator} />
 ```
 
 ### Step 6: Export from barrel (`routes/index.ts`)
@@ -165,6 +231,16 @@ export function ProductFormView({
 }
 ```
 
+## Available Navigation Hooks
+
+| Hook                          | ParamList                      |
+| ----------------------------- | ------------------------------ |
+| `useNavigationPublic`         | `PublicStackParamList`         |
+| `useNavigationPrivate`        | `PrivateStackParamList`        |
+| `useNavigationProducts`       | `ProductsStackParamList`       |
+| `useNavigationUsers`          | `UsersStackParamList`          |
+| `useNavigationAuthentication` | `AuthenticationStackParamList` |
+
 ## Validation Rules
 
 | Rule | Description                                                                       |
@@ -177,6 +253,8 @@ export function ProductFormView({
 | R6   | Animation: `slide_from_right` with `animationDuration: 2500`                      |
 | R7   | Navigation hooks are typed: `useNavigation<NativeStackNavigationProp<ParamList>>` |
 | R8   | All route files re-exported from `routes/index.ts`                                |
+| R9   | RootNavigator conditionally renders Public or Private based on `useAuth()`        |
+| R10  | New feature stacks register in `private.routes.ts` or `public.routes.ts`         |
 
 ## Anti-Patterns
 

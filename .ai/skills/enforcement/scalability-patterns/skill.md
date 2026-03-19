@@ -157,18 +157,24 @@ When adding module `{Entities}`:
    ```typescript
    // src/navigation/routes/{entities}.routes.ts
    // src/navigation/stacks/{Entities}StackNavigator.tsx
-   // src/navigation/hooks/useNavigation.ts (add hook)
+   // src/navigation/hooks/useNavigation.ts (add useNavigation{Entities} hook)
    // src/navigation/routes/index.ts (add export)
    ```
 
-3. **Root Navigator** — Register the stack:
+3. **Register in Public or Private stack** — Based on auth requirement:
 
    ```typescript
-   // src/navigation/RootNavigator.tsx
-   <Stack.Screen name={RootRoutes.{Entities}} component={{Entities}Navigator} />
+   // For authenticated features:
+   // src/navigation/routes/private.routes.ts
+   [PrivateRoutes.{Entities}]: NavigatorScreenParams<{Entities}StackParamList>;
+   // src/navigation/stacks/PrivateStackNavigator.tsx
+   <Stack.Screen name={PrivateRoutes.{Entities}} component={{Entities}Navigator} />
 
-   // src/navigation/routes/root.routes.ts
-   [RootRoutes.{Entities}]: NavigatorScreenParams<{Entities}StackParamList>;
+   // For public features:
+   // src/navigation/routes/public.routes.ts
+   [PublicRoutes.{Entities}]: NavigatorScreenParams<{Entities}StackParamList>;
+   // src/navigation/stacks/PublicStackNavigator.tsx
+   <Stack.Screen name={PublicRoutes.{Entities}} component={{Entities}Navigator} />
    ```
 
 4. **React Query Keys** — Follow the convention:

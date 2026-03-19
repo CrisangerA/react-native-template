@@ -346,22 +346,67 @@ Para persistencia real, reemplaza `cachedState` por un storage real del proyecto
 
 ### 12) Navegación condicional por autenticación
 
+Patrón implementado en este proyecto:
+
 ```tsx
+// src/navigation/RootNavigator.tsx
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import GuestRoutes from '@navigation/stacks/GuestStackNavigation';
-import PrivateRoutes from '@navigation/stacks/PrivateStackNavigation';
-import { useAuthState } from '@modules/auth/application/useAuthState';
+import PublicNavigator from './stacks/PublicStackNavigator';
+import PrivateNavigator from './stacks/PrivateStackNavigator';
+import { useAuth } from '@modules/authentication';
 
-export default function RootNavigation() {
-  const isAuthenticated = useAuthState(state => state.isAuthenticated);
+export default function RootNavigator() {
+  const { isAuthenticated } = useAuth();
 
-  return (
-    <NavigationContainer>
-      {isAuthenticated ? <PrivateRoutes /> : <GuestRoutes />}
-    </NavigationContainer>
-  );
+  if (isAuthenticated) {
+    return <PrivateNavigator />;
+  }
+
+  return <PublicNavigator />;
 }
+```
+
+Cada stack tiene sus propias rutas tipadas:
+
+```tsx
+// src/navigation/routes/public.routes.ts
+export enum PublicRoutes {
+  Examples = 'Examples',
+  Authentication = 'Authentication',
+}
+
+export type PublicStackParamList = {
+  [PublicRoutes.Examples]: NavigatorScreenParams<ExamplesStackParamList>;
+  [PublicRoutes.Authentication]: NavigatorScreenParams<AuthenticationStackParamList>;
+};
+
+// src/navigation/routes/private.routes.ts
+export enum PrivateRoutes {
+  Products = 'Products',
+  Users = 'Users',
+  Example = 'Example',
+}
+
+export type PrivateStackParamList = {
+  [PrivateRoutes.Products]: NavigatorScreenParams<ProductsStackParamList>;
+  [PrivateRoutes.Users]: NavigatorScreenParams<UsersStackParamList>;
+  [PrivateRoutes.Example]: undefined;
+};
+```
+
+Hooks tipados por stack:
+
+```tsx
+// src/navigation/hooks/useNavigation.ts
+export const useNavigationPrivate = useNavigation<
+  NativeStackNavigationProp<PrivateStackParamList>
+>;
+export const useNavigationPublic = useNavigation<
+  NativeStackNavigationProp<PublicStackParamList>
+>;
+export const useNavigationAuthentication = useNavigation<
+  NativeStackNavigationProp<AuthenticationStackParamList>
+>;
 ```
 
 ### 13) Navegadores anidados
