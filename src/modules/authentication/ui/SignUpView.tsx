@@ -14,7 +14,7 @@ export default function SignUpView() {
   const { navigate } = useNavigationAuthentication();
 
   return (
-    <RootLayout padding='md'>
+    <RootLayout title='Registrarse' padding='lg' rightOptions={[{icon: 'button'}, { icon: 'warning'}]}>
       <View style={styles.container}>
         <View style={styles.header}>
           <Text variant="h1">Registro de Usuario</Text>

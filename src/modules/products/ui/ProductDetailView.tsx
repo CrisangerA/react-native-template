@@ -60,7 +60,7 @@ export function ProductDetailView({
     );
   }
   return (
-    <RootLayout padding="md" onPress={goBack} title="Detalle de Producto">
+    <RootLayout padding="md" title="Detalle de Producto">
       <View style={styles.content}>
         <Card style={styles.card}>
           <Text variant="h2">{product.name}</Text>

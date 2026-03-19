@@ -7,14 +7,17 @@ import {
   useFocusFadeIn,
   useTheme,
 } from '@theme/index';
-import { Toolbar } from './Toolbar';
+import { Toolbar, ToolbarOptions } from './Toolbar';
+import { useNavigation } from '@react-navigation/native';
 
 interface Props {
   scroll?: boolean;
   padding?: SpacingToken;
   toolbar?: boolean;
-  onPress?: () => void;
+  // Toolbar
   title?: string;
+  rightOptions?: ToolbarOptions[];
+  leftOptions?: ToolbarOptions[];
 }
 
 export function RootLayout({
@@ -22,8 +25,9 @@ export function RootLayout({
   scroll = true,
   padding,
   toolbar = true,
-  onPress,
   title,
+  leftOptions,
+  rightOptions,
 }: PropsWithChildren<Props>) {
   const { colors, spacing } = useTheme();
   const { background: backgroundColor } = colors;
@@ -33,6 +37,12 @@ export function RootLayout({
     offset: spacing.xl,
   });
 
+  const { goBack } = useNavigation();
+
+  const defaultLeftOptions: ToolbarOptions[] = [
+    { icon: 'arrow-left', onPress: goBack },
+  ];
+  
   const style = [
     styles.container,
     { backgroundColor, padding: padding && spacing[padding] },
@@ -44,7 +54,13 @@ export function RootLayout({
         keyboardShouldPersistTaps="handled"
         style={contentStyle}
       >
-        {toolbar && <Toolbar onPress={onPress} title={title} />}
+        {toolbar && (
+          <Toolbar
+            title={title}
+            leftOptions={leftOptions || defaultLeftOptions}
+            rightOptions={rightOptions}
+          />
+        )}
         <View style={style}>{children}</View>
       </Animated.ScrollView>
     );
@@ -52,7 +68,7 @@ export function RootLayout({
 
   return (
     <Animated.View style={[style, contentStyle]}>
-      {toolbar && <Toolbar onPress={onPress} title={title} />}
+      {toolbar && <Toolbar title={title} />}
       <View style={style}>{children}</View>
     </Animated.View>
   );

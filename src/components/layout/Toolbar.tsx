@@ -1,58 +1,64 @@
-import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { StyleSheet, View } from 'react-native';
 // Components
-import { Icon, Text } from '@components/core';
+import { AnimatedPressable, Icon, IconName, Text } from '@components/core';
 // Theme
-import { spacing, useTheme } from '@theme/index';
+import { hScale, screenWidth, spacing, useTheme } from '@theme/index';
 
-interface Props {
-  onBack?: () => void;
-  title?: string;
-  left?: React.ReactNode;
-  right?: React.ReactNode;
-  /**
-   * @deprecated Use onBack instead
-   */
+export interface ToolbarOptions {
+  icon: IconName;
   onPress?: () => void;
 }
 
-export function Toolbar({ onBack, onPress, title, left, right }: Props) {
+interface Props {
+  title?: string;
+  rightOptions?: ToolbarOptions[];
+  leftOptions?: ToolbarOptions[];
+}
+
+export function Toolbar({ title, leftOptions, rightOptions }: Props) {
   const {
-    colors: { surface, border, text },
+    colors: { surface, border },
   } = useTheme();
 
-  const handleBack = onBack || onPress;
+  const renderOptions = useCallback((options: ToolbarOptions[]) => {
+    return options?.map(option => (
+      <AnimatedPressable key={option.icon} onPress={option.onPress}>
+        <Icon name={option.icon} size={spacing.lg} />
+      </AnimatedPressable>
+    ));
+  }, []);
 
-  const renderLeft = () => {
-    if (left) return left;
-    if (handleBack) {
-      return (
-        <Pressable onPress={handleBack} hitSlop={8}>
-          <Icon name="arrow-left" size={24} color={text} />
-        </Pressable>
-      );
-    }
+  const renderLeft = useCallback(() => {
+    if (leftOptions) return renderOptions(leftOptions);
     return <View style={styles.placeholder} />;
-  };
+  }, [leftOptions, renderOptions]);
 
-  const renderRight = () => {
-    if (right) return right;
+  const renderRight = useCallback(() => {
+    if (rightOptions) return renderOptions(rightOptions);
     return <View style={styles.placeholder} />;
-  };
+  }, [rightOptions, renderOptions]);
 
   return (
     <View
       style={[
         styles.root,
-        { backgroundColor: surface, borderBottomColor: border },
+        {
+          backgroundColor: surface,
+          borderBottomColor: border,
+        },
       ]}
     >
       <View style={styles.leftContainer}>{renderLeft()}</View>
+
       <View style={styles.titleContainer}>
-        <Text variant="h4" style={styles.title} numberOfLines={1}>
-          {title}
-        </Text>
+        <View style={styles.title}>
+          <Text variant="h4" numberOfLines={1} align='center'>
+            {title}
+          </Text>
+        </View>
       </View>
+
       <View style={styles.rightContainer}>{renderRight()}</View>
     </View>
   );
@@ -66,27 +72,31 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     paddingVertical: spacing.md,
     paddingHorizontal: spacing.lg,
-    height: 56,
+    height: hScale(56),
   },
   leftContainer: {
-    flex: 1,
     alignItems: 'flex-start',
     justifyContent: 'center',
+    flexDirection: 'row',
   },
   titleContainer: {
-    flex: 2,
+    position: 'absolute',
+    width: screenWidth,
     alignItems: 'center',
     justifyContent: 'center',
   },
   title: {
-    textAlign: 'center',
+    width: '55%',
+    alignItems: 'center',
+    alignSelf: 'center'
   },
   rightContainer: {
-    flex: 1,
     alignItems: 'flex-end',
     justifyContent: 'center',
+    flexDirection: 'row',
+    gap: spacing.xs,
   },
   placeholder: {
-    width: 24,
+    width: spacing.lg,
   },
 });

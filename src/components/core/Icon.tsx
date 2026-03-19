@@ -33,6 +33,8 @@ import CardIcon from '../../assets/svg/icons/card.svg';
 import CheckboxIcon from '../../assets/svg/icons/checkbox.svg';
 import ModalIcon from '../../assets/svg/icons/modal.svg';
 import MailboxIcon from '../../assets/svg/icons/mailbox.svg';
+import { ColorVariant, useTheme } from '@theme/index';
+import { getIconStyle } from '@theme/components/Icon.styles';
 
 export type IconName =
   | 'sun'
@@ -72,7 +74,7 @@ export type IconName =
 interface IconProps {
   name: IconName;
   size?: number;
-  color?: string;
+  color?: ColorVariant;
   strokeWidth?: number;
 }
 
@@ -112,13 +114,23 @@ const ICON_COMPONENTS: Record<IconName, React.ComponentType<SvgProps>> = {
   mailbox: MailboxIcon,
 };
 
-export function Icon({
-  name,
-  size = 20,
-  color = '#111827',
-  strokeWidth = 1.8,
-}: IconProps) {
+export function Icon({ name, size = 20, color, strokeWidth = 1.8 }: IconProps) {
   const SvgIcon = ICON_COMPONENTS[name];
+  const theme = useTheme();
 
-  return <SvgIcon width={size} height={size} color={color} strokeWidth={strokeWidth} />;
+  const styles = getIconStyle({
+    size,
+    color,
+    strokeWidth,
+    mode: theme.mode,
+  });
+
+  return (
+    <SvgIcon
+      width={styles.svg.width}
+      height={styles.svg.height}
+      color={styles.svg.color}
+      strokeWidth={styles.svg.strokeWidth}
+    />
+  );
 }
