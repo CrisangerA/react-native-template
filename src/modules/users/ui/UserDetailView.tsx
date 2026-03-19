@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 // Components
-import { Text, Card, Button } from '@components/core';
+import { Text, Card, Button, Icon } from '@components/core';
 import {
   LoadingState,
   ErrorState,
@@ -54,7 +54,7 @@ export function UserDetailView({
       <EmptyState
         title="Usuario no encontrado"
         message="El usuario que buscas no existe o fue eliminado"
-        icon="👤"
+        icon={<Icon name="user" size={42} />}
         onAction={goBack}
         actionLabel="Volver"
       />

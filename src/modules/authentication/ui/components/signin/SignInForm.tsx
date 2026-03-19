@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
 // Components
-import { Button, Text } from '@components/core';
+import { Button, Text, Icon } from '@components/core';
 import { TextInput } from '@components/form';
 // Schema
 import {
@@ -47,7 +47,7 @@ export default function SignInForm() {
             placeholder="correo@ejemplo.com"
             keyboardType="email-address"
             autoCapitalize="none"
-            leftIcon={<Text>📧</Text>}
+            leftIcon={<Icon name="email" size={16} />}
             fullWidth
           />
           <TextInput
@@ -57,7 +57,7 @@ export default function SignInForm() {
             placeholder="Ingrese su contraseña"
             secureTextEntry
             autoCapitalize="none"
-            leftIcon={<Text>🔑</Text>}
+            leftIcon={<Icon name="key" size={16} />}
             fullWidth
           />
         </View>

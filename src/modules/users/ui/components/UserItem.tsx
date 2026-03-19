@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 // Components
-import { Text, Card, Avatar, Badge } from '@components/core';
+import { Text, Card, Avatar, Badge, Icon } from '@components/core';
 // Types
 import type { UserEntity } from '../../domain/user.model';
 // Theme
@@ -42,8 +42,14 @@ export const UserItem = React.memo(function UserItem({
         <Badge label={user.role} variant={getRoleVariant(user.role)} />
       </View>
       <View style={styles.infoRow}>
-        <Text variant="caption">📞 {user.phone}</Text>
-        <Text variant="caption">📅 {formatJoinDate(user.createdAt)}</Text>
+        <View style={styles.infoItem}>
+          <Icon name="phone" size={14} />
+          <Text variant="caption">{user.phone}</Text>
+        </View>
+        <View style={styles.infoItem}>
+          <Icon name="calendar" size={14} />
+          <Text variant="caption">{formatJoinDate(user.createdAt)}</Text>
+        </View>
       </View>
     </Card>
   );
@@ -62,6 +68,11 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   infoRow: {
+    gap: spacing.xs,
+  },
+  infoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: spacing.xs,
   },
 });

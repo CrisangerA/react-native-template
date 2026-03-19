@@ -1,14 +1,14 @@
 import React, { useMemo } from 'react';
 import { StyleSheet, View, Animated } from 'react-native';
 import { useCardAnimation } from '../hooks/useCardAnimation';
-import { Text, Card } from '@components/core';
+import { Text, Card, Icon, IconName } from '@components/core';
 import { spacing } from '@theme/index';
 import { borderRadius } from '@theme/borders';
 
 export interface ComponentCardProps {
   title: string;
   description: string;
-  icon: string;
+  icon: IconName;
   color: string;
   onPress: () => void;
 }
@@ -27,15 +27,13 @@ function ComponentCard({
     transform: [{ translateY: translateYAnim }],
   };
 
-  const { cardStyle, iconContainerStyle, textStyle, arrowStyle } = useMemo(
+  const { cardStyle, iconContainerStyle } = useMemo(
     () => ({
       cardStyle: StyleSheet.flatten([styles.card, { borderLeftColor: color }]),
       iconContainerStyle: StyleSheet.flatten([
         styles.iconContainer,
         { backgroundColor: color + '15' },
       ]),
-      textStyle: StyleSheet.flatten([styles.icon, { color }]),
-      arrowStyle: StyleSheet.flatten([styles.arrow, { color }]),
     }),
     [color],
   );
@@ -44,7 +42,7 @@ function ComponentCard({
     <Animated.View style={animatedStyle}>
       <Card onPress={onPress} style={cardStyle}>
         <View style={iconContainerStyle}>
-          <Text style={textStyle}>{icon}</Text>
+          <Icon name={icon} size={24} color={color} />
         </View>
         <View style={styles.cardContent}>
           <Text variant="h4" style={styles.cardTitle}>
@@ -55,7 +53,7 @@ function ComponentCard({
           </Text>
         </View>
         <View style={styles.arrowContainer}>
-          <Text style={arrowStyle}>→</Text>
+          <Icon name="arrow-right" size={20} color={color} />
         </View>
       </Card>
     </Animated.View>
@@ -76,10 +74,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: spacing.md,
   },
-  icon: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
   cardContent: {
     flex: 1,
   },
@@ -88,10 +82,6 @@ const styles = StyleSheet.create({
   },
   arrowContainer: {
     marginLeft: spacing.sm,
-  },
-  arrow: {
-    fontSize: 24,
-    fontWeight: '400',
   },
 });
 

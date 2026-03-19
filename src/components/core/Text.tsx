@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text as RNText, TextStyle } from 'react-native';
+import { Text as RNText, TextProps as RNTextProps, TextStyle } from 'react-native';
 // Types
 import { ColorVariant } from '@theme/colors';
 import { TypographyVariant } from '@theme/typography';
@@ -7,7 +7,7 @@ import { TypographyVariant } from '@theme/typography';
 import { useTheme } from '@theme/index';
 import { getTextStyle } from '@theme/components/Text.styles';
 
-interface TextProps {
+interface TextProps extends RNTextProps {
   children: React.ReactNode;
   variant?: TypographyVariant;
   color?: ColorVariant;
@@ -18,13 +18,15 @@ interface TextProps {
 }
 
 export function Text(props: TextProps) {
-  const { children, style: customStyle } = props;
   const {
+    children,
+    style: customStyle,
     variant = 'body',
     color = 'text',
     align,
     transform,
     decoration,
+    ...rest
   } = props;
 
   const theme = useTheme();
@@ -38,5 +40,9 @@ export function Text(props: TextProps) {
     decoration,
   });
 
-  return <RNText style={[style, customStyle]}>{children}</RNText>;
+  return (
+    <RNText style={[style, customStyle]} {...rest}>
+      {children}
+    </RNText>
+  );
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
+import { Icon } from '@components/core';
 // Components
 import { ProductItem } from './ProductItem';
 import {
@@ -49,7 +50,7 @@ export function ProductList({ searchText }: ProductListProps) {
       <EmptyState
         title="Producto no encontrado"
         message="El producto que buscas no existe o fue eliminado"
-        icon="📦"
+        icon={<Icon name="package" size={42} />}
       />
     );
   }

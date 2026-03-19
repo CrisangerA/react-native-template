@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, Animated } from 'react-native';
 // Components
-import { Text, Button } from '@components/core';
+import { Text, Button, Icon } from '@components/core';
 // Theme
 import { spacing } from '@theme/index';
 import { useTheme } from '@theme/index';
@@ -12,7 +12,7 @@ import { SPRING_CONFIGS, ANIMATION_DURATION } from '@theme/animations';
 interface EmptyStateProps {
   title?: string;
   message?: string;
-  icon?: string;
+  icon?: React.ReactNode;
   onAction?: () => void;
   actionLabel?: string;
 }
@@ -20,7 +20,7 @@ interface EmptyStateProps {
 export function EmptyState({
   title = 'No encontrado',
   message = 'No se encontró la información solicitada',
-  icon = '📭',
+  icon,
   onAction,
   actionLabel = 'Volver',
 }: EmptyStateProps) {
@@ -56,9 +56,7 @@ export function EmptyState({
           },
         ]}
       >
-        <Text variant="h1" style={styles.icon}>
-          {icon}
-        </Text>
+        {icon || <Icon name="mailbox" size={50} color={theme.colors.textSecondary} />}
       </Animated.View>
 
       <Text variant="h3" style={styles.title}>
@@ -92,9 +90,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing.lg,
-  },
-  icon: {
-    fontSize: 50,
   },
   title: {
     marginBottom: spacing.md,

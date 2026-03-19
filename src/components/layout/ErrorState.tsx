@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { View, StyleSheet, Animated } from 'react-native';
 // Components
-import { Text, Button } from '@components/core';
+import { Text, Button, Icon } from '@components/core';
 // Theme
 import { spacing } from '@theme/index';
 import { useTheme } from '@theme/index';
@@ -72,9 +72,7 @@ export function ErrorState({
           { backgroundColor: theme.colors.error + '20' },
         ]}
       >
-        <Text variant="h1" style={[styles.icon, { color: theme.colors.error }]}>
-          ⚠️
-        </Text>
+        <Icon name="warning" size={40} color={theme.colors.error} />
       </View>
 
       <Text variant="h3" style={[styles.title, { color: theme.colors.error }]}>
@@ -108,9 +106,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: spacing.lg,
-  },
-  icon: {
-    fontSize: 40,
   },
   title: {
     marginBottom: spacing.md,

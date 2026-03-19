@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, ScrollView, Animated } from 'react-native';
 
-import { Text } from '@components/core';
+import { Text, Icon } from '@components/core';
 import { spacing } from '@theme/index';
 import { borderRadius } from '@theme/borders';
 import { useTheme } from '@theme/index';
@@ -23,7 +23,7 @@ function LandingView() {
   const navigation =
     useNavigation<NativeStackNavigationProp<ExamplesStackParamList>>();
   const { navigate } = useNavigationRoot();
-  const { mode } = useTheme();
+  const { mode, colors } = useTheme();
 
   const { opacityAnim, translateYAnim } = useHeroAnimation();
 
@@ -78,9 +78,11 @@ function LandingView() {
         </View>
         <View style={styles.statDivider} />
         <View style={styles.statItem}>
-          <Text variant="h3" color="primary">
-            {mode === 'dark' ? '🌙' : '☀️'}
-          </Text>
+          <Icon
+            name={mode === 'dark' ? 'moon' : 'sun'}
+            size={22}
+            color={colors.primary}
+          />
           <Text variant="caption" color="textSecondary">
             {mode}
           </Text>

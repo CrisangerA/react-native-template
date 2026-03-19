@@ -21,6 +21,7 @@ import {
 import { Text } from './Text';
 import { BorderRadiusToken } from '@theme/borders';
 import { AnimatedPressable } from './AnimatedPressable';
+import { Icon } from './Icon';
 
 export interface DatePickerProps {
   value: Date | null;
@@ -130,7 +131,11 @@ export const DatePicker = forwardRef<RNTextInput, DatePickerProps>(
             value={displayValue}
             pointerEvents="none"
             rightIcon={
-              <Text style={styles.icon}>{mode === 'time' ? '🕐' : '📅'}</Text>
+              <Icon
+                name={mode === 'time' ? 'clock' : 'calendar'}
+                size={18}
+                color={styles.icon.color as string}
+              />
             }
             placeholderTextColor={styles.placeholder.color}
             {...textInputProps}

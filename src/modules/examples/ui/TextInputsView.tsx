@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 
-import { Text, TextInput, DatePicker, Select } from '@components/core';
+import { Text, TextInput, DatePicker, Select, Icon } from '@components/core';
 import { spacing } from '@theme/index';
 
 export default function TextInputsView() {
@@ -78,18 +78,18 @@ export default function TextInputsView() {
           <TextInput
             label="Icono izquierdo"
             placeholder="Buscar..."
-            leftIcon={<Text>🔍</Text>}
+            leftIcon={<Icon name="search" size={16} />}
           />
           <TextInput
             label="Icono derecho"
             placeholder="Verificado"
-            rightIcon={<Text>✓</Text>}
+            rightIcon={<Icon name="check" size={16} />}
           />
           <TextInput
             label="Ambos iconos"
             placeholder="Email"
-            leftIcon={<Text>📧</Text>}
-            rightIcon={<Text>✓</Text>}
+            leftIcon={<Icon name="email" size={16} />}
+            rightIcon={<Icon name="check" size={16} />}
           />
         </View>
       </View>
@@ -170,7 +170,7 @@ export default function TextInputsView() {
             placeholder="Búsqueda avanzada"
             variant="outlined"
             size="lg"
-            leftIcon={<Text>🔍</Text>}
+            leftIcon={<Icon name="search" size={16} />}
             fullWidth
             helperText="Combinación de variantes"
           />
@@ -181,7 +181,7 @@ export default function TextInputsView() {
             size="md"
             rightIcon={
               <Pressable onPress={() => setShowPassword(!showPassword)}>
-                <Text>{showPassword ? '🔒' : '👁️'}</Text>
+                <Icon name={showPassword ? 'lock' : 'eye'} size={16} />
               </Pressable>
             }
             error="Contraseña muy débil"
@@ -190,7 +190,7 @@ export default function TextInputsView() {
             label="Default Medium Deshabilitado con Icono"
             placeholder="No se puede editar"
             size="md"
-            leftIcon={<Text>🔒</Text>}
+            leftIcon={<Icon name="lock" size={16} />}
             editable={false}
             value="Valor bloqueado"
             helperText="Este campo está bloqueado"
@@ -208,22 +208,22 @@ export default function TextInputsView() {
             placeholder="correo@ejemplo.com"
             keyboardType="email-address"
             autoCapitalize="none"
-            leftIcon={<Text>📧</Text>}
+            leftIcon={<Icon name="email" size={16} />}
           />
           <TextInput
             label="Teléfono"
             placeholder="+57 300 123 4567"
             keyboardType="phone-pad"
-            leftIcon={<Text>📱</Text>}
+            leftIcon={<Icon name="mobile" size={16} />}
           />
           <TextInput
             label="Contraseña"
             placeholder="••••••••"
             secureTextEntry={!showPassword}
-            leftIcon={<Text>🔑</Text>}
+            leftIcon={<Icon name="key" size={16} />}
             rightIcon={
               <Pressable onPress={() => setShowPassword(!showPassword)}>
-                <Text>{showPassword ? '🔒' : '👁️'}</Text>
+                <Icon name={showPassword ? 'lock' : 'eye'} size={16} />
               </Pressable>
             }
           />
@@ -231,7 +231,7 @@ export default function TextInputsView() {
             label="Número"
             placeholder="12345"
             keyboardType="numeric"
-            leftIcon={<Text>🔢</Text>}
+            leftIcon={<Icon name="number" size={16} />}
           />
           <TextInput
             label="Multilinea"

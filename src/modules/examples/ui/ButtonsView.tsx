@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 
-import { Button, Text } from '@components/core';
+import { Button, Text, Icon } from '@components/core';
 import { useTheme, spacing } from '@theme/index';
 
 export default function ButtonsView() {
@@ -82,16 +82,19 @@ export default function ButtonsView() {
           Con Iconos
         </Text>
         <View style={styles.buttonColumn}>
-          <Button variant="primary" leftIcon={<Text>⭐</Text>}>
+          <Button variant="primary" leftIcon={<Icon name="star" size={16} />}>
             Left Icon
           </Button>
-          <Button variant="primary" rightIcon={<Text>→</Text>}>
+          <Button
+            variant="primary"
+            rightIcon={<Icon name="arrow-right" size={16} />}
+          >
             Right Icon
           </Button>
           <Button
             variant="primary"
-            leftIcon={<Text>🚀</Text>}
-            rightIcon={<Text>✨</Text>}
+            leftIcon={<Icon name="rocket" size={16} />}
+            rightIcon={<Icon name="sparkles" size={16} />}
           >
             Both Icons
           </Button>
@@ -135,11 +138,11 @@ export default function ButtonsView() {
             variant="primary"
             size="lg"
             fullWidth
-            leftIcon={<Text>🎨</Text>}
+            leftIcon={<Icon name="palette" size={16} />}
           >
             Large Primary with Icon
           </Button>
-          <Button variant="outlined" size="sm" leftIcon={<Text>✏️</Text>}>
+          <Button variant="outlined" size="sm" leftIcon={<Icon name="input" size={16} />}>
             Small Outlined with Icon
           </Button>
           <Button variant="ghost" size="md" disabled>

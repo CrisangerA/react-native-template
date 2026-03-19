@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 // Components
-import { Text, Card, Button } from '@components/core';
+import { Text, Card, Button, Icon } from '@components/core';
 import {
   LoadingState,
   ErrorState,
@@ -53,7 +53,7 @@ export function ProductDetailView({
       <EmptyState
         title="Producto no encontrado"
         message="El producto que buscas no existe o fue eliminado"
-        icon="📦"
+        icon={<Icon name="package" size={42} />}
         onAction={goBack}
         actionLabel="Volver"
       />

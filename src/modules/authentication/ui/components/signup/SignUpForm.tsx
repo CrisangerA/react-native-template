@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { StyleSheet, View } from 'react-native';
 import { yupResolver } from '@hookform/resolvers/yup';
 // Components
-import { Button, Text } from '@components/core';
+import { Button, Text, Icon } from '@components/core';
 import { Checkbox, DatePicker, Select, TextInput } from '@components/form';
 // Schema
 import {
@@ -45,7 +45,7 @@ export default function SignUpForm() {
             label="Nombre completo"
             placeholder="Ingrese su nombre completo"
             autoCapitalize="words"
-            leftIcon={<Text>👤</Text>}
+            leftIcon={<Icon name="user" size={16} />}
             fullWidth
           />
           <TextInput
@@ -55,7 +55,7 @@ export default function SignUpForm() {
             placeholder="correo@ejemplo.com"
             keyboardType="email-address"
             autoCapitalize="none"
-            leftIcon={<Text>📧</Text>}
+            leftIcon={<Icon name="email" size={16} />}
             fullWidth
           />
         </View>
@@ -73,7 +73,7 @@ export default function SignUpForm() {
             placeholder="Mínimo 8 caracteres"
             secureTextEntry
             autoCapitalize="none"
-            leftIcon={<Text>🔑</Text>}
+            leftIcon={<Icon name="key" size={16} />}
             helperText="Debe tener al menos 8 caracteres, una mayúscula y un número"
             fullWidth
           />
@@ -84,7 +84,7 @@ export default function SignUpForm() {
             placeholder="Repita su contraseña"
             secureTextEntry
             autoCapitalize="none"
-            leftIcon={<Text>🔐</Text>}
+            leftIcon={<Icon name="lock" size={16} />}
             fullWidth
           />
         </View>

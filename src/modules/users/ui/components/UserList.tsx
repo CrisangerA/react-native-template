@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
+import { Icon } from '@components/core';
 // Components
 import { UserItem } from './UserItem';
 import {
@@ -45,7 +46,7 @@ export function UserList({ searchText }: UserListProps) {
       <EmptyState
         title="Usuario no encontrado"
         message="El usuario que buscas no existe o fue eliminado"
-        icon="👤"
+        icon={<Icon name="user" size={42} />}
       />
     );
   }
