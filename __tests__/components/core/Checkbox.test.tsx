@@ -43,4 +43,21 @@ describe('Checkbox Component', () => {
     const checkbox = getByRole('checkbox');
     expect(checkbox.props.accessibilityState.checked).toBe(true);
   });
+
+  it('debe ejecutar onPress además de onChange al presionar', () => {
+    const onChangeMock = jest.fn();
+    const onPressMock = jest.fn();
+    const { getByText } = render(
+      <Checkbox
+        label="Con onPress"
+        checked={false}
+        onChange={onChangeMock}
+        onPress={onPressMock}
+      />,
+    );
+
+    fireEvent.press(getByText('Con onPress'));
+    expect(onChangeMock).toHaveBeenCalledWith(true);
+    expect(onPressMock).toHaveBeenCalledTimes(1);
+  });
 });

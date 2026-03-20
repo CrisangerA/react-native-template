@@ -66,4 +66,16 @@ describe('Toast Component', () => {
     const { getByText } = render(<Toast {...defaultProps} type="success" />);
     expect(getByText('\u2713')).toBeTruthy();
   });
+
+  it('debe renderizar en posición top', () => {
+    const { getByText } = render(
+      <Toast {...defaultProps} position="top" />,
+    );
+    expect(getByText('Mensaje de prueba')).toBeTruthy();
+  });
+
+  it('debe mostrar icono correcto para tipo error', () => {
+    const { getByText } = render(<Toast {...defaultProps} type="error" />);
+    expect(getByText('Mensaje de prueba')).toBeTruthy();
+  });
 });

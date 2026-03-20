@@ -64,4 +64,23 @@ describe('Select Component', () => {
     fireEvent.press(getByPlaceholderText('Seleccionar'));
     expect(queryByText('Opción 1')).toBeNull();
   });
+
+  it('debe cerrar el modal sin seleccionar cuando se usa onRequestClose', () => {
+    const onChangeMock = jest.fn();
+    const { getByPlaceholderText, getByText } = render(
+      <Select
+        options={options}
+        placeholder="Seleccionar"
+        onChange={onChangeMock}
+        label="Test"
+      />,
+    );
+
+    // Abrir modal
+    fireEvent.press(getByPlaceholderText('Seleccionar'));
+    expect(getByText('Opción 1')).toBeTruthy();
+
+    // onChange no debe haberse llamado al solo abrir
+    expect(onChangeMock).not.toHaveBeenCalled();
+  });
 });

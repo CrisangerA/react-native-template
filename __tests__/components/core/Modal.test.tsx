@@ -50,4 +50,27 @@ describe('Modal Component', () => {
     fireEvent.press(getByText('X'));
     expect(onPressIconMock).toHaveBeenCalledTimes(1);
   });
+
+  it('debe aplicar estilos personalizados de header y título', () => {
+    const { getByText } = render(
+      <Modal
+        visible={true}
+        title="Styled"
+        headerStyle={{ paddingTop: 10 }}
+        titleStyle={{ fontSize: 30 }}
+      >
+        <Text>Contenido</Text>
+      </Modal>,
+    );
+    expect(getByText('Styled')).toBeTruthy();
+  });
+
+  it('debe renderizar contenido sin header cuando no hay title ni icon', () => {
+    const { getByText, queryByText } = render(
+      <Modal visible={true}>
+        <Text>Solo contenido</Text>
+      </Modal>,
+    );
+    expect(getByText('Solo contenido')).toBeTruthy();
+  });
 });

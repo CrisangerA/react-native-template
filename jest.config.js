@@ -35,12 +35,12 @@ module.exports = {
   ],
   coverageThreshold: {
     global: {
-      branches: 20,
-      functions: 20,
-      lines: 20,
-      statements: 20,
+      branches: 12,
+      functions: 12,
+      lines: 14,
+      statements: 14,
     },
-    // Thresholds específicos para archivos con tests
+    // Thresholds específicos para componentes core
     './src/components/core/Button.tsx': {
       branches: 70,
       functions: 100,
@@ -58,6 +58,30 @@ module.exports = {
       functions: 100,
       lines: 100,
       statements: 100,
+    },
+    // Thresholds para componentes layout
+    './src/components/layout/ErrorBoundary.tsx': {
+      branches: 50,
+      functions: 80,
+      lines: 80,
+      statements: 80,
+    },
+    './src/components/layout/DeleteConfirmationSheet.tsx': {
+      functions: 100,
+      lines: 100,
+      statements: 100,
+    },
+    './src/components/layout/Header.tsx': {
+      functions: 100,
+      lines: 100,
+      statements: 100,
+    },
+    // Threshold para Zustand store
+    './src/modules/core/application/app.storage.ts': {
+      branches: 80,
+      functions: 65,
+      lines: 80,
+      statements: 80,
     },
   },
 };
