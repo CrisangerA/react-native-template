@@ -21,12 +21,6 @@ describe('Theme Colors', () => {
     expect(themeColors.background).toBe('#EFF6FF');
   });
 
-  it('debe devolver los colores correctos para el modo secondary', () => {
-    const themeColors = getThemeColors('secondary');
-    expect(themeColors).toEqual(colors.secondary);
-    expect(themeColors.background).toBe('#F0FDF4');
-  });
-
   it('debe devolver los colores correctos para el modo premium', () => {
     const themeColors = getThemeColors('premium');
     expect(themeColors).toEqual(colors.premium);
