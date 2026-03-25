@@ -21,8 +21,10 @@ export function ProductFormView({
   route: { params },
   navigation: { goBack },
 }: ProductsScreenProps<ProductsRoutes.ProductForm>) {
-  const { mutate: createProduct, isPending: isCreating } = useProductCreate();
-  const { mutate: updateProduct, isPending: isUpdating } = useProductUpdate();
+  const { mutateAsync: createProduct, isPending: isCreating } =
+    useProductCreate();
+  const { mutateAsync: updateProduct, isPending: isUpdating } =
+    useProductUpdate();
 
   const isLoading = isCreating || isUpdating;
 
@@ -38,9 +40,9 @@ export function ProductFormView({
     const payload = productFormToPayloadAdapter(data);
 
     if (isEditing) {
-      updateProduct({ id: product.id, data: payload }, {});
+      updateProduct({ id: product.id, data: payload });
     } else {
-      createProduct(payload, {});
+      createProduct(payload);
     }
     goBack();
   };

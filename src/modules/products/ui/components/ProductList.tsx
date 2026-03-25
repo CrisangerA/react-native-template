@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
+import { RefreshControl, StyleSheet } from 'react-native';
 import { FlashList, ListRenderItem } from '@shopify/flash-list';
 import { Icon } from '@components/core';
 // Components
@@ -29,8 +29,10 @@ export function ProductList({ searchText }: ProductListProps) {
   const {
     data: products,
     isLoading,
+    isRefetching,
     isError,
     error,
+    refetch,
   } = useProducts({ searchText });
   if (isLoading) {
     return <LoadingState message="Cargando productos..." />;
@@ -65,6 +67,10 @@ export function ProductList({ searchText }: ProductListProps) {
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
+      refreshing={isRefetching}
+      refreshControl={
+        <RefreshControl refreshing={isRefetching} onRefresh={refetch} />
+      }
     />
   );
 }

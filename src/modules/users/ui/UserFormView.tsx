@@ -18,8 +18,8 @@ export function UserFormView({
   route: { params },
   navigation: { goBack },
 }: UsersScreenProps<UsersRoutes.UserForm>) {
-  const { mutate: createUser, isPending: isCreating } = useUserCreate();
-  const { mutate: updateUser, isPending: isUpdating } = useUserUpdate();
+  const { mutateAsync: createUser, isPending: isCreating } = useUserCreate();
+  const { mutateAsync: updateUser, isPending: isUpdating } = useUserUpdate();
 
   const isLoading = isCreating || isUpdating;
 
@@ -35,9 +35,9 @@ export function UserFormView({
     const payload = userFormToPayloadAdapter(data);
 
     if (isEditing) {
-      updateUser({ id: user.id, data: payload }, {});
+      updateUser({ id: user.id, data: payload });
     } else {
-      createUser(payload, {});
+      createUser(payload);
     }
     goBack();
   };

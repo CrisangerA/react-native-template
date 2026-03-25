@@ -1,6 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+// Services
 import userService from '../infrastructure/user.service';
+// Core
 import { useAppStorage } from '@modules/core/application/app.storage';
+// Config
+import { QUERY_KEYS } from '@config/query.keys';
 
 export function useUserCreate() {
   const queryClient = useQueryClient();
@@ -19,7 +23,14 @@ export function useUserCreate() {
         type: 'success',
         position: 'bottom',
       });
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USERS() });
+    },
+    onError: (error: Error) => {
+      show({
+        message: error.message,
+        type: 'error',
+        position: 'bottom',
+      });
     },
   });
 }
@@ -47,9 +58,16 @@ export function useUserUpdate() {
         type: 'success',
         position: 'bottom',
       });
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USERS() });
       queryClient.invalidateQueries({
-        queryKey: ['users', 'detail', variables.id],
+        queryKey: QUERY_KEYS.USER_DETAIL(variables.id),
+      });
+    },
+    onError: (error: Error) => {
+      show({
+        message: error.message,
+        type: 'error',
+        position: 'bottom',
       });
     },
   });
@@ -71,7 +89,14 @@ export function useUserDelete() {
         type: 'success',
         position: 'bottom',
       });
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USERS() });
+    },
+    onError: (error: Error) => {
+      show({
+        message: error.message,
+        type: 'error',
+        position: 'bottom',
+      });
     },
   });
 }

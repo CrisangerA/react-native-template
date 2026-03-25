@@ -1,6 +1,10 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+// Services
 import productService from '../infrastructure/product.service';
+// Core
 import { useAppStorage } from '@modules/core/application/app.storage';
+// Config
+import { QUERY_KEYS } from '@config/query.keys';
 
 export function useProductCreate() {
   const queryClient = useQueryClient();
@@ -20,7 +24,14 @@ export function useProductCreate() {
         type: 'success',
         position: 'bottom',
       });
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PRODUCTS() });
+    },
+    onError: (error: Error) => {
+      show({
+        message: error.message,
+        type: 'error',
+        position: 'bottom',
+      });
     },
   });
 }
@@ -49,9 +60,16 @@ export function useProductUpdate() {
         type: 'success',
         position: 'bottom',
       });
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PRODUCTS() });
       queryClient.invalidateQueries({
-        queryKey: ['products', 'detail', variables.id],
+        queryKey: QUERY_KEYS.PRODUCT_DETAIL(variables.id),
+      });
+    },
+    onError: (error: Error) => {
+      show({
+        message: error.message,
+        type: 'error',
+        position: 'bottom',
       });
     },
   });
@@ -74,7 +92,14 @@ export function useProductDelete() {
         type: 'success',
         position: 'bottom',
       });
-      queryClient.invalidateQueries({ queryKey: ['products'] });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PRODUCTS() });
+    },
+    onError: (error: Error) => {
+      show({
+        message: error.message,
+        type: 'error',
+        position: 'bottom',
+      });
     },
   });
 }

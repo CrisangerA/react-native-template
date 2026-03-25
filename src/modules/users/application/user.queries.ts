@@ -1,10 +1,14 @@
 import { useQuery } from '@tanstack/react-query';
+// Services
 import userService from '../infrastructure/user.service';
+// Types
 import type { UserFilter } from '../domain/user.repository';
+// COnfig
+import { QUERY_KEYS } from '@config/query.keys';
 
 export function useUsers(filter?: UserFilter, enabled = true) {
   return useQuery({
-    queryKey: ['users', 'list', filter?.searchText],
+    queryKey: QUERY_KEYS.USERS(filter?.searchText),
     queryFn: async () => {
       const result = await userService.getAll(filter);
       if (result instanceof Error) {
@@ -18,7 +22,7 @@ export function useUsers(filter?: UserFilter, enabled = true) {
 
 export function useUser(id: string, enabled = true) {
   return useQuery({
-    queryKey: ['users', 'detail', id],
+    queryKey: QUERY_KEYS.USER_DETAIL(id),
     queryFn: async () => {
       const result = await userService.getById(id);
       if (result instanceof Error) {
