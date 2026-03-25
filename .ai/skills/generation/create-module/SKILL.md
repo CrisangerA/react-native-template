@@ -3,6 +3,7 @@ name: create-module
 category: generation
 layer: cross-cutting
 priority: high
+last_updated: 2026-03-25
 tags:
   - clean-architecture
   - module-scaffold
@@ -11,7 +12,7 @@ tags:
 triggers:
   - 'Creating new feature'
   - 'Adding new entity'
-description: Create new feature modules following Clean Architecture. Use when creating a new feature with domain, infrastructure, application, and UI layers.
+description: Create new feature modules following Clean Architecture with 4 layers. Generates domain (models, repository, schemas, adapters), infrastructure (3-provider service factory), application (queries, mutations with QUERY_KEYS), and UI (views, components).
 ---
 
 # Create Module
@@ -20,87 +21,89 @@ Create feature modules following Clean Architecture with four layers.
 
 ## When to Use
 
-- Creating new features (authentication, profile, settings, etc.)
+- Creating new features (orders, payments, settings, etc.)
 - Adding major functionality that needs separation of concerns
+- Copy `products` module as reference implementation
 
 ## Module Structure
 
 ```
 src/modules/{feature}/
 ├── domain/
-│   ├── {feature}.model.ts       # Data types and interfaces
-│   ├── {feature}.repository.ts  # Repository interface (contract)
-│   ├── {feature}.adapter.ts     # Data transformers between layers
-│   └── {feature}.scheme.ts      # Yup validation schemas
+│   ├── {feature}.model.ts           # Entity + Payload types
+│   ├── {feature}.repository.ts      # Repository interface (contract)
+│   ├── {feature}.adapter.ts         # Data transformers
+│   └── {feature}.scheme.ts          # Yup validation schemas + FormData
 ├── infrastructure/
-│   └── {feature}.service.ts     # API/external service implementation
+│   ├── {feature}.service.ts         # Factory (switches http/firebase/mock)
+│   ├── {feature}.http.service.ts    # HTTP implementation (Axios)
+│   ├── {feature}.firebase.service.ts # Firebase implementation
+│   └── {feature}.mock.service.ts    # Mock implementation
 ├── application/
-│   ├── {feature}.mutations.ts   # React Query mutations
-│   └── {feature}.queries.ts     # React Query queries
+│   ├── {feature}.queries.ts         # React Query queries
+│   └── {feature}.mutations.ts       # React Query mutations
 └── ui/
-    ├── {Feature}View.tsx        # Main view component
+    ├── {Feature}ListView.tsx        # List view
+    ├── {Feature}DetailView.tsx      # Detail view
+    ├── {Feature}FormView.tsx        # Form view (create/edit)
     └── components/
-        └── {Feature}Form.tsx    # View-specific components
+        ├── {Feature}Form.tsx        # Form component
+        ├── {Feature}Item.tsx        # List item component
+        └── {Feature}List.tsx        # List component with FlashList
 ```
 
 ## Layer Responsibilities
 
 ### Domain Layer
 
-Business logic, independent of frameworks.
+Business logic, independent of frameworks. Pure TypeScript only.
 
 **Model** (`{feature}.model.ts`):
 
 ```typescript
-export interface UserEntity {
+export interface {Feature}Entity {
   id: string;
-  email: string;
+  name: string;
+  description: string;
+  price: number;
+  createdAt: string;
+  updatedAt: string;
 }
 
-export interface CreateUserPayload {
-  email: string;
-  password: string;
+export interface Create{Feature}Payload {
+  name: string;
+  description?: string;
+  price: number;
 }
 
-export interface CreateUserResponse {
-  user: UserEntity;
-  token: string;
+export interface Update{Feature}Payload {
+  name?: string;
+  description?: string;
+  price?: number;
+}
+
+export interface {Feature}Filter {
+  searchText?: string;
 }
 ```
 
 **Repository** (`{feature}.repository.ts`):
 
 ```typescript
-import { CreateUserPayload, CreateUserResponse } from './user.model';
-
-export interface UserRepository {
-  create(data: CreateUserPayload): Promise<CreateUserResponse | Error>;
-}
-```
-
-**Adapter** (`{feature}.adapter.ts`):
-
-```typescript
 import {
-  CreateUserPayload,
-  CreateUserResponse,
-  UserEntity,
-} from './user.model';
-import { RegisterFormData } from './user.scheme';
+  Create{Feature}Payload,
+  {Feature}Entity,
+  {Feature}Filter,
+  Update{Feature}Payload,
+} from './{feature}.model';
 
-export function createUserPayloadAdapter(
-  form: RegisterFormData,
-): CreateUserPayload {
-  return {
-    email: form.email,
-    password: form.password,
-  };
-}
-
-export function createUserResponseAdapter(
-  response: CreateUserResponse,
-): UserEntity {
-  return response.user;
+export type { {Feature}Filter };
+export interface {Feature}Repository {
+  getAll(filter?: {Feature}Filter): Promise<{Feature}Entity[] | Error>;
+  getById(id: string): Promise<{Feature}Entity | Error>;
+  create(data: Create{Feature}Payload): Promise<{Feature}Entity | Error>;
+  update(id: string, data: Update{Feature}Payload): Promise<{Feature}Entity | Error>;
+  delete(id: string): Promise<void | Error>;
 }
 ```
 
@@ -108,35 +111,132 @@ export function createUserResponseAdapter(
 
 ```typescript
 import * as yup from 'yup';
+import type { InferType } from 'yup';
 
-export const registerSchema = yup.object({
-  email: yup.string().required('El email es requerido').email('Email inválido'),
-  password: yup
+export const {feature}Schema = yup.object({
+  name: yup
     .string()
-    .required('La contraseña debe tener al menos 8 caracteres')
-    .min(8, 'La contraseña debe tener al menos 8 caracteres'),
+    .required('El nombre es requerido')
+    .max(100, 'El nombre debe tener maximo 100 caracteres'),
+  description: yup
+    .string()
+    .max(500, 'La descripcion debe tener maximo 500 caracteres')
+    .defined(),
+  price: yup
+    .number()
+    .transform((value: number, originalValue: unknown) =>
+      originalValue === '' || originalValue === null ? NaN : value,
+    )
+    .typeError('El precio debe ser mayor a 0')
+    .min(1, 'El precio debe ser mayor a 0')
+    .required('El precio debe ser mayor a 0'),
 });
 
-export type RegisterFormData = yup.InferType<typeof registerSchema>;
+export type {Feature}FormData = InferType<typeof {feature}Schema>;
+```
+
+**Adapter** (`{feature}.adapter.ts`):
+
+```typescript
+import { Create{Feature}Payload, {Feature}Entity } from './{feature}.model';
+import type { {Feature}FormData } from './{feature}.scheme';
+
+export function {feature}FormToPayloadAdapter(
+  form: {Feature}FormData,
+): Create{Feature}Payload {
+  return {
+    name: form.name,
+    description: form.description,
+    price: form.price,
+  };
+}
+
+export function {feature}EntityAdapter(data: {Feature}Entity): {Feature}Entity {
+  return {
+    id: data.id,
+    name: data.name,
+    description: data.description,
+    price: data.price,
+    createdAt: data.createdAt,
+    updatedAt: data.updatedAt,
+  };
+}
 ```
 
 ### Infrastructure Layer
 
-External services implementation.
+3-provider service pattern: HTTP, Firebase, and Mock.
+
+**Factory** (`{feature}.service.ts`):
 
 ```typescript
-// See create-service skill for full pattern
+import { {Feature}Repository } from '../domain/{feature}.repository';
+import {feature}HttpService from './{feature}.http.service';
+import {feature}FirebaseService from './{feature}.firebase.service';
+import {feature}MockService from './{feature}.mock.service';
+import { CONFIG } from '@config/config';
+
+function create{Feature}Service(): {Feature}Repository {
+  switch (CONFIG.SERVICE_PROVIDER) {
+    case 'http':
+      return {feature}HttpService;
+    case 'firebase':
+      return {feature}FirebaseService;
+    case 'mock':
+      return {feature}MockService;
+    default:
+      throw new Error(
+        `Unknown service provider: ${CONFIG.SERVICE_PROVIDER}`,
+      );
+  }
+}
+
+export default create{Feature}Service();
+```
+
+**HTTP Service** (`{feature}.http.service.ts`):
+
+```typescript
 import axiosService from '@modules/network/infrastructure/axios.service';
-import { CreateUserPayload, CreateUserResponse } from '../domain/user.model';
-import { UserRepository } from '../domain/user.repository';
 import { manageAxiosError } from '@modules/network/domain/network.error';
 import { API_ROUTES } from '@config/api.routes';
+import { {Feature}Repository } from '../domain/{feature}.repository';
+import type {
+  Create{Feature}Payload,
+  {Feature}Entity,
+  {Feature}Filter,
+  Update{Feature}Payload,
+} from '../domain/{feature}.model';
 
-class UserService implements UserRepository {
-  async create(data: CreateUserPayload) {
+class {Feature}HttpService implements {Feature}Repository {
+  async getAll(filter?: {Feature}Filter): Promise<{Feature}Entity[] | Error> {
     try {
-      const response = await axiosService.post<CreateUserResponse>(
-        API_ROUTES.CREATE_USER,
+      const params = filter?.searchText ? { search: filter.searchText } : {};
+      const response = await axiosService.get<{Feature}Entity[]>(
+        API_ROUTES.{FEATURES},
+        { params },
+      );
+      return response.data;
+    } catch (error) {
+      return manageAxiosError(error);
+    }
+  }
+
+  async getById(id: string): Promise<{Feature}Entity | Error> {
+    try {
+      const response = await axiosService.get<{Feature}Entity>(
+        `${API_ROUTES.{FEATURES}}/${id}`,
+      );
+      return response.data;
+    } catch (error) {
+      return manageAxiosError(error);
+    }
+  }
+
+  async create(data: Create{Feature}Payload): Promise<{Feature}Entity | Error> {
+    try {
+      const response = await axiosService.post<{Feature}Entity>(
+        API_ROUTES.{FEATURES},
         data,
       );
       return response.data;
@@ -144,137 +244,253 @@ class UserService implements UserRepository {
       return manageAxiosError(error);
     }
   }
+
+  async update(
+    id: string,
+    data: Update{Feature}Payload,
+  ): Promise<{Feature}Entity | Error> {
+    try {
+      const response = await axiosService.put<{Feature}Entity>(
+        `${API_ROUTES.{FEATURES}}/${id}`,
+        data,
+      );
+      return response.data;
+    } catch (error) {
+      return manageAxiosError(error);
+    }
+  }
+
+  async delete(id: string): Promise<void | Error> {
+    try {
+      await axiosService.delete(`${API_ROUTES.{FEATURES}}/${id}`);
+      return;
+    } catch (error) {
+      return manageAxiosError(error);
+    }
+  }
 }
 
-function createUserService(): UserRepository {
-  return new UserService();
+function create{Feature}HttpService(): {Feature}Repository {
+  return new {Feature}HttpService();
 }
 
-export default createUserService();
+export default create{Feature}HttpService();
 ```
 
 ### Application Layer
 
-React Query hooks for state management.
-
-**Mutations** (`{feature}.mutations.ts`):
-
-```typescript
-import { useMutation } from '@tanstack/react-query';
-import { RegisterFormData } from '../domain/user.scheme';
-import {
-  createUserPayloadAdapter,
-  createUserResponseAdapter,
-} from '../domain/user.adapter';
-import userService from '../infrastructure/user.service';
-
-export function useCreateUserMutation() {
-  return useMutation({
-    mutationFn: async (data: RegisterFormData) => {
-      const payload = createUserPayloadAdapter(data);
-      const result = await userService.create(payload);
-      if (result instanceof Error) {
-        throw result;
-      }
-      return createUserResponseAdapter(result);
-    },
-  });
-}
-```
+React Query hooks with centralized QUERY_KEYS and toast notifications.
 
 **Queries** (`{feature}.queries.ts`):
 
 ```typescript
 import { useQuery } from '@tanstack/react-query';
-import userService from '../infrastructure/user.service';
+import {feature}Service from '../infrastructure/{feature}.service';
+import type { {Feature}Filter } from '../domain/{feature}.repository';
+import { QUERY_KEYS } from '@config/query.keys';
 
-export function useUserQuery(userId: string) {
+export function use{Feature}s(filter?: {Feature}Filter, enabled = true) {
   return useQuery({
-    queryKey: ['user', userId],
+    queryKey: QUERY_KEYS.{FEATURES}(filter?.searchText),
     queryFn: async () => {
-      const result = await userService.getById(userId);
+      const result = await {feature}Service.getAll(filter);
       if (result instanceof Error) {
         throw result;
       }
       return result;
     },
+    enabled,
+  });
+}
+
+export function use{Feature}(id: string, enabled = true) {
+  return useQuery({
+    queryKey: QUERY_KEYS.{FEATURE}_DETAIL(id),
+    queryFn: async () => {
+      const result = await {feature}Service.getById(id);
+      if (result instanceof Error) {
+        throw result;
+      }
+      return result;
+    },
+    enabled: enabled && Boolean(id),
   });
 }
 ```
 
-### UI Layer
-
-React components and views.
+**Mutations** (`{feature}.mutations.ts`):
 
 ```typescript
-import React from 'react';
-import { StyleSheet, View } from 'react-native';
-import { Text } from '@components/core';
-import { spacing } from '@theme/index';
-import { RootLayout } from '@components/layout';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {feature}Service from '../infrastructure/{feature}.service';
+import { useAppStorage } from '@modules/core/application/app.storage';
+import { QUERY_KEYS } from '@config/query.keys';
 
-interface UserViewProps {
-  onBack?: () => void;
+export function use{Feature}Create() {
+  const queryClient = useQueryClient();
+  const { show } = useAppStorage(s => s.toast);
+
+  return useMutation({
+    mutationFn: async (data: Parameters<typeof {feature}Service.create>[0]) => {
+      const result = await {feature}Service.create(data);
+      if (result instanceof Error) {
+        throw result;
+      }
+      return result;
+    },
+    onSuccess: () => {
+      show({
+        message: '{Feature} creado exitosamente',
+        type: 'success',
+      });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.{FEATURES}() });
+    },
+    onError: (error: Error) => {
+      show({
+        message: error.message,
+        type: 'error',
+      });
+    },
+  });
 }
 
-export default function UserView({ onBack }: UserViewProps) {
-  return (
-    <RootLayout onBack={onBack}>
-      <View style={styles.container}>
-        <Text variant="h1">User Profile</Text>
-      </View>
-    </RootLayout>
-  );
+export function use{Feature}Update() {
+  const queryClient = useQueryClient();
+  const { show } = useAppStorage(s => s.toast);
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Parameters<typeof {feature}Service.update>[1];
+    }) => {
+      const result = await {feature}Service.update(id, data);
+      if (result instanceof Error) {
+        throw result;
+      }
+      return result;
+    },
+    onSuccess: (_, variables) => {
+      show({
+        message: '{Feature} actualizado exitosamente',
+        type: 'success',
+      });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.{FEATURES}() });
+      queryClient.invalidateQueries({
+        queryKey: QUERY_KEYS.{FEATURE}_DETAIL(variables.id),
+      });
+    },
+    onError: (error: Error) => {
+      show({
+        message: error.message,
+        type: 'error',
+      });
+    },
+  });
 }
 
-const styles = StyleSheet.create({
-  container: {
-    padding: spacing.md,
-  },
-});
+export function use{Feature}Delete() {
+  const queryClient = useQueryClient();
+  const { show } = useAppStorage(s => s.toast);
+
+  return useMutation({
+    mutationFn: async (id: string) => {
+      const result = await {feature}Service.delete(id);
+      if (result instanceof Error) {
+        throw result;
+      }
+    },
+    onSuccess: () => {
+      show({
+        message: '{Feature} eliminado exitosamente',
+        type: 'success',
+      });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.{FEATURES}() });
+    },
+    onError: (error: Error) => {
+      show({
+        message: error.message,
+        type: 'error',
+      });
+    },
+  });
+}
 ```
 
-## Best Practices
+**Register QUERY_KEYS** in `src/config/query.keys.ts`:
 
-1. **Dependency Injection** - Domain layer should not depend on infrastructure
-2. **Single Responsibility** - Each file has one purpose
-3. **Repository Pattern** - Abstract data sources behind repository interfaces
-4. **Adapter Pattern** - Transform data between layers
-5. **Query Keys** - Use consistent query key structure for cache management
+```typescript
+export const QUERY_KEYS = {
+  // ... existing keys
+  {FEATURES}: (search = '') => ['{features}', 'search', search],
+  {FEATURE}_DETAIL: (id: string) => ['{features}', 'detail', id],
+};
+```
+
+### UI Layer
+
+See `create-screen` and `create-form` skills for detailed view patterns.
+
+## Configuration Steps
+
+After creating the module:
+
+1. **API Routes** — Add endpoint to `src/config/api.routes.ts`:
+   ```typescript
+   {FEATURES}: '/{features}',
+   ```
+
+2. **Collections** — Add to `src/config/collections.routes.ts`:
+   ```typescript
+   {FEATURES}: '{features}',
+   ```
+
+3. **Query Keys** — Add to `src/config/query.keys.ts` (see above)
+
+4. **Navigation** — See `create-navigation` skill for route setup
+
+## Mutation Naming Convention
+
+| Operation | Hook Name | Example |
+|-----------|-----------|---------|
+| Create | `use{Feature}Create` | `useProductCreate` |
+| Update | `use{Feature}Update` | `useProductUpdate` |
+| Delete | `use{Feature}Delete` | `useProductDelete` |
+
+## Query Naming Convention
+
+| Operation | Hook Name | Example |
+|-----------|-----------|---------|
+| List | `use{Feature}s` | `useProducts` |
+| Detail | `use{Feature}` | `useProduct` |
 
 ## Checklist
 
-1. Create module directory structure
-2. Define models in `domain/{feature}.model.ts`
+1. Create module directory structure (4 layers)
+2. Define entity + payload types in `domain/{feature}.model.ts`
 3. Define repository interface in `domain/{feature}.repository.ts`
-4. Create Yup schemas in `domain/{feature}.scheme.ts`
+4. Create Yup schema in `domain/{feature}.scheme.ts`
 5. Create adapters in `domain/{feature}.adapter.ts`
-6. Implement service in `infrastructure/{feature}.service.ts`
-7. Create React Query hooks in `application/`
-8. Create UI components in `ui/`
+6. Implement HTTP service in `infrastructure/{feature}.http.service.ts`
+7. Implement Firebase service in `infrastructure/{feature}.firebase.service.ts`
+8. Implement Mock service in `infrastructure/{feature}.mock.service.ts`
+9. Create service factory in `infrastructure/{feature}.service.ts`
+10. Register API route in `src/config/api.routes.ts`
+11. Register collection in `src/config/collections.routes.ts`
+12. Register query keys in `src/config/query.keys.ts`
+13. Create queries in `application/{feature}.queries.ts`
+14. Create mutations in `application/{feature}.mutations.ts` (with toast + invalidation)
+15. Create UI views and components in `ui/`
+16. Setup navigation (see create-navigation skill)
 
----
+## References
 
-# Project Specific (edit for other projects)
-
-## Stack
-
-- Validation: Yup
-- Data fetching: @tanstack/react-query
-- HTTP: Axios
-- Error pattern: `manageAxiosError` (returns Error, no throw)
-
-## Path Aliases
-
-- `@modules` - Feature modules
-- `@components` - Shared components
-- `@theme` - Theme tokens and hooks
-- `@config` - App configuration
-
-## Validation Messages
-
-Use Spanish for validation messages:
-
-- `'El campo es requerido'`
-- `'Email inválido'`
-- `'Mínimo {min} caracteres'`
+- Reference module: `src/modules/products/` (copy this)
+- Users module: `src/modules/users/`
+- Config files: `src/config/`
+- Create Service skill: `.ai/skills/generation/create-service/skill.md`
+- Create Form skill: `.ai/skills/generation/create-form/skill.md`
+- Create Screen skill: `.ai/skills/generation/create-screen/skill.md`
+- Create Navigation skill: `.ai/skills/generation/create-navigation/skill.md`

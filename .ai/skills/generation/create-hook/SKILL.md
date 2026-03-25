@@ -3,6 +3,7 @@ name: create-hook
 category: generation
 layer: application
 priority: medium
+last_updated: 2026-03-25
 tags:
   - custom-hooks
   - react-hooks
@@ -10,7 +11,7 @@ tags:
 triggers:
   - 'Creating reusable logic'
   - 'Extracting hook logic'
-description: Create custom React hooks following project conventions. Use when creating reusable logic hooks, not React Query or Zustand.
+description: Create custom React hooks following project conventions. Use when creating reusable logic hooks, not React Query hooks or Zustand stores.
 ---
 
 # Create Hook
@@ -19,22 +20,30 @@ Create custom React hooks following this project's conventions.
 
 ## When to Use
 
-- Creating custom logic hooks (useForm, useDebounce, useAnimation)
+- Creating custom logic hooks (useDebounce, useAnimation, useForm logic)
 - Extracting reusable component logic
 - Any `use*` function that encapsulates stateful logic
-- NOT for React Query hooks (those are in application layer)
+- NOT for React Query hooks (those are in `application/{feature}.queries.ts`)
 - NOT for Zustand stores (use create-store skill)
 
-## Hook Types
+## Hook Locations
 
-### Simple Hook (`src/modules/{feature}/ui/hooks/`)
+| Type | Location | Example |
+|------|----------|---------|
+| Feature hooks | `src/modules/{feature}/application/` | `core.hooks.ts` |
+| Theme hooks | `src/theme/hooks/` | `useFocusFadeIn`, `useFocusSlideIn` |
+| Navigation hooks | `src/navigation/hooks/` | `useNavigationProducts` |
+
+## Hook Templates
+
+### Simple State Hook
 
 ```typescript
+// src/modules/{feature}/application/{feature}.hooks.ts
 import { useState, useCallback } from 'react';
 
 interface UseSomethingOptions {
   initialValue?: string;
-  debounceMs?: number;
 }
 
 interface UseSomethingReturn {
@@ -61,7 +70,30 @@ export function useSomething(
 }
 ```
 
-### Hook with Dependencies
+### Debounce Hook (Actual Pattern)
+
+```typescript
+// src/modules/core/application/core.hooks.ts
+import { useEffect, useState } from 'react';
+
+export function useDebounce<T>(value: T, delay: number): T {
+  const [debouncedValue, setDebouncedValue] = useState<T>(value);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
+```
+
+### Effect-based Hook
 
 ```typescript
 import { useEffect, useRef } from 'react';
@@ -83,18 +115,8 @@ export function usePrevious<T>(value: T): T | undefined {
 2. Export as named export: `export function useSomething()`
 3. Use `useCallback` for functions to maintain referential equality
 4. Use `useMemo` for expensive computations
-5. Place in `src/modules/{feature}/ui/hooks/` directory
-6. Create barrel export in `index.ts` if needed
-
-## File Structure
-
-```
-src/modules/{feature}/
-└── ui/
-    └── hooks/
-        ├── useSomething.ts
-        └── index.ts          # Barrel export
-```
+5. Place in appropriate location (see table above)
+6. Group related hooks in a single file: `{feature}.hooks.ts`
 
 ## Import Order
 
@@ -108,12 +130,14 @@ import { useTheme } from '@theme/index';
 
 ---
 
-# Project Specific (edit for other projects)
+# Project Specific
 
-## Location
+## Existing Hooks
 
-- Feature-specific hooks: `src/modules/{feature}/ui/hooks/`
-- Global hooks: `src/hooks/` (if needed)
+- `useDebounce` — `src/modules/core/application/core.hooks.ts`
+- `useFocusFadeIn` — `src/theme/hooks/`
+- `useFocusSlideIn` — `src/theme/hooks/`
+- `useNavigationProducts`, `useNavigationUsers`, etc. — `src/navigation/hooks/`
 
 ## NOT for Server State
 
@@ -126,5 +150,5 @@ For server state, use React Query hooks in `application/` layer:
 
 For global state, use Zustand stores:
 
-- Location: `src/modules/{feature}/application/{feature}.store.ts`
+- Location: `src/modules/core/application/app.storage.ts`
 - See: `create-store` skill

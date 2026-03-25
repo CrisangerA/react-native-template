@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+> **Last updated:** 2026-03-25
+
 Template React Native con Clean Architecture. Las reglas arquitectónicas y de diseño están en `.claude/rules/`. Los skills de enforcement, generación y especialidad están en `.claude/skills/`. Los agentes están en `.claude/agents/`. Este archivo documenta **solo lo que no está en esos archivos**.
 
 ## Stack y Versiones
@@ -95,7 +97,7 @@ Cada módulo tiene un factory `{entity}.service.ts` que resuelve la implementaci
 
 ## Estado Global (Zustand)
 
-`useAppStorage` en `src/modules/core/infrastructure/app.storage.ts` expone:
+`useAppStorage` en `src/modules/core/application/app.storage.ts` expone:
 
 - **modal**: `open({entityName, entityType, onConfirm})` / `close()` / `visible`
 - **toast**: `show({message, type, duration?, position?})` / `hide()` / `visible`

@@ -3,6 +3,7 @@ name: create-store
 category: generation
 layer: application
 priority: medium
+last_updated: 2026-03-25
 tags:
   - zustand
   - global-state
@@ -20,159 +21,219 @@ Create Zustand stores following this project's patterns.
 
 ## When to Use
 
-- Creating global state (auth, user preferences, theme)
+- Creating global state (auth, user preferences, app-wide UI state)
 - Needing client-side state that persists across app restarts
 - Sharing state between multiple components
-- NOT for server state (use React Query in application layer)
+- NOT for server state (use React Query in `{feature}.queries.ts`)
 
 ## Store Types
 
 ### Basic Store (No Persistence)
 
+Used for transient UI state (toasts, modals, etc.).
+
 ```typescript
-// src/modules/{feature}/application/{feature}.store.ts
+// src/modules/{feature}/application/{feature}.storage.ts
 import { create } from 'zustand';
-import { UserEntity } from '../domain/{feature}.model';
 
 interface {Feature}State {
-  user: UserEntity | null;
-  isAuthenticated: boolean;
-  setUser: (user: UserEntity | null) => void;
-  logout: () => void;
+  someValue: string;
+  setSomeValue: (value: string) => void;
+  reset: () => void;
 }
 
-export const use{Feature}Store = create<{Feature}State>((set) => ({
-  user: null,
-  isAuthenticated: false,
-  setUser: (user) => set({ user, isAuthenticated: !!user }),
-  logout: () => set({ user: null, isAuthenticated: false }),
+export const use{Feature}Storage = create<{Feature}State>()(set => ({
+  someValue: '',
+  setSomeValue: (value) => set({ someValue: value }),
+  reset: () => set({ someValue: '' }),
 }));
 ```
 
 ### Persistent Store (With MMKV)
 
+Used for data that survives app restarts.
+
 ```typescript
-// src/modules/{feature}/application/{feature}.store.ts
+// src/modules/{feature}/application/{feature}.storage.ts
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { mmkvStorage } from '@config/storage';
-import { UserEntity } from '../domain/{feature}.model';
 
 interface {Feature}State {
-  user: UserEntity | null;
-  isAuthenticated: boolean;
-  setUser: (user: UserEntity | null) => void;
-  logout: () => void;
+  preference: string;
+  setPreference: (value: string) => void;
 }
 
-export const use{Feature}Store = create<{Feature}State>()(
+export const use{Feature}Storage = create<{Feature}State>()(
   persist(
-    (set) => ({
-      user: null,
-      isAuthenticated: false,
-      setUser: (user) => set({ user, isAuthenticated: !!user }),
-      logout: () => set({ user: null, isAuthenticated: false }),
+    set => ({
+      preference: 'default',
+      setPreference: (preference) => set({ preference }),
     }),
     {
       name: '{feature}-storage',
-      storage: createJSONStorage(() => mmkvStorage),
-    }
-  )
-);
-```
-
-### Store with Actions
-
-```typescript
-// src/modules/{feature}/application/{feature}.store.ts
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { mmkvStorage } from '@config/storage';
-
-interface ThemeState {
-  mode: 'light' | 'dark';
-  primaryColor: string;
-  setMode: (mode: 'light' | 'dark') => void;
-  setPrimaryColor: (color: string) => void;
-}
-
-export const useThemeStore = create<ThemeState>()(
-  persist(
-    set => ({
-      mode: 'light',
-      primaryColor: '#007AFF',
-      setMode: mode => set({ mode }),
-      setPrimaryColor: primaryColor => set({ primaryColor }),
-    }),
-    {
-      name: 'theme-storage',
       storage: createJSONStorage(() => mmkvStorage),
     },
   ),
 );
 ```
 
+### Nested Slice Pattern (Actual App Storage)
+
+The project's main store uses nested objects for related state:
+
+```typescript
+// src/modules/core/application/app.storage.ts
+import { create } from 'zustand';
+import type {
+  ModalOpenParams,
+  ToastShowParams,
+  ToastType,
+  ToastPosition,
+} from '../domain/app.model';
+
+interface State {
+  modal: {
+    visible: boolean;
+    entityName: string;
+    entityType: string;
+    onConfirm: (() => Promise<void>) | null;
+    open: (params: ModalOpenParams) => void;
+    close: () => void;
+  };
+  toast: {
+    visible: boolean;
+    message: string;
+    type: ToastType;
+    duration: number;
+    position: ToastPosition;
+    show: (params: ToastShowParams) => void;
+    hide: () => void;
+  };
+}
+
+export const useAppStorage = create<State>()(set => ({
+  modal: {
+    visible: false,
+    entityName: '',
+    entityType: '',
+    onConfirm: null,
+    open: ({ entityName, entityType, onConfirm }: ModalOpenParams) =>
+      set(state => ({
+        modal: { ...state.modal, visible: true, entityName, entityType, onConfirm },
+      })),
+    close: () =>
+      set(state => ({
+        modal: { ...state.modal, visible: false, entityName: '', entityType: '', onConfirm: null },
+      })),
+  },
+  toast: {
+    visible: false,
+    message: '',
+    type: 'info',
+    duration: 3000,
+    position: 'bottom',
+    show: ({ message, type, duration = 3000, position = 'bottom' }: ToastShowParams) =>
+      set(state => ({
+        toast: { ...state.toast, visible: true, message, type, duration, position },
+      })),
+    hide: () =>
+      set(state => ({
+        toast: { ...state.toast, visible: false, message: '', type: 'info' },
+      })),
+  },
+}));
+```
+
 ## Usage in Components
 
 ```typescript
-import { useAuthStore } from '@modules/auth/application/auth.store';
+// Select specific slice to avoid unnecessary re-renders
+const { show } = useAppStorage(s => s.toast);
 
-function ProfileScreen() {
-  const { user, logout } = useAuthStore();
-
-  return (
-    <View>
-      <Text>{user?.email}</Text>
-      <Button title="Logout" onPress={logout} />
-    </View>
-  );
-}
+show({ message: 'Creado exitosamente', type: 'success' });
 ```
+
+```typescript
+// Select specific fields
+const { open, close } = useAppStorage(state => state.modal);
+
+open({
+  entityName: product.name,
+  entityType: 'producto',
+  onConfirm: async () => {
+    await deleteProduct(id);
+    close();
+    goBack();
+  },
+});
+```
+
+## MMKV Storage Options
+
+The project provides two MMKV instances:
+
+| Storage | Import | Use For |
+|---------|--------|---------|
+| `mmkvStorage` | `@config/storage` | General persistent data |
+| `secureMMKVStorage` | `@config/storage` | Sensitive data (tokens, credentials) |
 
 ## Checklist
 
-1. Import `create` from 'zustand'
-2. Import `persist` and `createJSONStorage` from 'zustand/middleware' if needed
-3. Import `mmkvStorage` from `@config/storage` for persistence
+1. Import `create` from `'zustand'`
+2. For persistence: import `persist`, `createJSONStorage` from `'zustand/middleware'`
+3. For persistence: import `mmkvStorage` or `secureMMKVStorage` from `@config/storage`
 4. Define state interface with TypeScript
 5. Create store with `create<StateInterface>()`
-6. Use named export: `export const use{Feature}Store`
-7. Storage key should be unique: `{feature}-storage`
+6. Use named export: `export const use{Feature}Storage`
+7. Storage key must be unique: `{feature}-storage`
 8. Place in `src/modules/{feature}/application/`
+9. Use selectors for optimal re-renders: `useStore(s => s.specificSlice)`
+
+## Naming Convention
+
+| Element | Pattern | Example |
+|---------|---------|---------|
+| Store hook | `use{Feature}Storage` | `useAppStorage` |
+| State interface | `{Feature}State` or `State` | `State` |
+| Location | `application/{feature}.storage.ts` | `application/app.storage.ts` |
 
 ## File Structure
 
 ```
 src/modules/{feature}/
 ├── domain/
-│   └── {feature}.model.ts
+│   └── {feature}.model.ts         # State types (ModalOpenParams, ToastShowParams, etc.)
 └── application/
-    └── {feature}.store.ts
+    └── {feature}.storage.ts       # Zustand store
 ```
 
 ## Best Practices
 
-- Use slices for large stores: `create<State>()((...a) =>(...sliceA, ...sliceB))`
+- Use selectors to pick specific slices: `useStore(s => s.toast)`
 - Keep stores focused on single responsibility
-- Use selectors for optimized re-renders: `useStore((state) => state.specificField)`
+- Define types for action params in domain layer
+- Group related state in nested objects (modal, toast, etc.)
+- For large stores, use nested slices pattern (not Zustand slice middleware)
 
 ---
 
-# Project Specific (edit for other projects)
+# Project Specific
 
-## Store Location
+## Existing Stores
 
-- Feature stores: `src/modules/{feature}/application/{feature}.store.ts`
-- Global stores: `src/stores/` (if needed)
-
-## Persistence
-
-- Storage: react-native-mmkv
-- Import from: `@config/storage`
+- `useAppStorage` — `src/modules/core/application/app.storage.ts` (modal + toast)
+- Theme persistence — handled by `ThemeProvider` via MMKV directly
 
 ## NOT for Server State
 
-For server state (API data), use React Query in `application/` layer:
+For server state (API data), use React Query:
 
 - Queries: `{feature}.queries.ts`
 - Mutations: `{feature}.mutations.ts`
+
+## References
+
+- App storage: `src/modules/core/application/app.storage.ts`
+- App model types: `src/modules/core/domain/app.model.ts`
+- MMKV config: `src/config/storage.ts`

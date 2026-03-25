@@ -3,6 +3,7 @@ name: create-provider
 category: generation
 layer: ui
 priority: medium
+last_updated: 2026-03-25
 tags:
   - react-context
   - providers
@@ -10,7 +11,7 @@ tags:
 triggers:
   - 'Creating context providers'
   - 'Adding feature providers'
-description: Create React context providers following project conventions. Use when creating context providers for dependency injection or feature-specific providers.
+description: Create React context providers following project conventions. Use when creating context providers for dependency injection or feature-specific state.
 ---
 
 # Create Provider
@@ -67,7 +68,7 @@ export function useFeature() {
 }
 ```
 
-### Provider with Dependencies
+### Provider with Memoized Value
 
 ```typescript
 // src/providers/NetworkProvider.tsx
@@ -77,10 +78,9 @@ import React, {
   useContext,
   useMemo,
 } from 'react';
-import axiosService from '@modules/network/infrastructure/axios.service';
 
 interface NetworkContextValue {
-  api: typeof axiosService;
+  baseUrl: string;
 }
 
 const NetworkContext = createContext<NetworkContextValue | null>(null);
@@ -89,7 +89,7 @@ NetworkContext.displayName = 'NetworkContext';
 export default function NetworkProvider({ children }: PropsWithChildren) {
   const value = useMemo(
     () => ({
-      api: axiosService,
+      baseUrl: 'https://api.example.com',
     }),
     [],
   );
@@ -110,17 +110,39 @@ export function useNetwork() {
 
 ## Registering in AppProvider
 
-After creating a provider, register it in the main AppProvider:
+After creating a provider, register it in `AppProvider`. The current provider order (outermost to innermost):
 
 ```typescript
 // src/providers/AppProvider.tsx
-import React, { PropsWithChildren } from 'react';
-import { FeatureProvider } from './FeatureProvider';
-
-export default function AppProvider({ children }: PropsWithChildren) {
-  return <FeatureProvider>{children}</FeatureProvider>;
-}
+<ErrorBoundary>
+  <SecureProvider>              {/* Blocks rooted devices */}
+    <QueryClientProvider>       {/* React Query */}
+      <ThemeProvider>            {/* Theme context with MMKV persistence */}
+        <SafeAreaProvider>       {/* Safe area insets */}
+          <GestureHandlerProvider> {/* Uses theme.colors.background */}
+            <AuthProvider>        {/* Authentication state */}
+              <NavigationProvider>  {/* NavigationContainer */}
+                <SafeAreaView>      {/* Inset padding */}
+                  {children}
+                </SafeAreaView>
+                <GlobalDeleteConfirmation />
+                <GlobalToast />
+              </NavigationProvider>
+            </AuthProvider>
+          </GestureHandlerProvider>
+        </SafeAreaProvider>
+      </ThemeProvider>
+    </QueryClientProvider>
+  </SecureProvider>
+</ErrorBoundary>
 ```
+
+**Important:** The order matters:
+- `ThemeProvider` must wrap anything that uses `useTheme()`
+- `QueryClientProvider` must wrap anything using React Query
+- `NavigationProvider` wraps the app content (NavigationContainer)
+- `AuthProvider` must be inside `QueryClientProvider` (may use queries)
+- Global UI components (Toast, DeleteConfirmation) are mounted inside NavigationProvider
 
 ## Checklist
 
@@ -130,47 +152,27 @@ export default function AppProvider({ children }: PropsWithChildren) {
 4. Create custom hook with context error guard
 5. Throw error in hook if used outside provider
 6. Use `useMemo` for expensive computations in value
-7. Register in `AppProvider.tsx`
-8. Place in `src/providers/`
+7. Register in `AppProvider.tsx` at appropriate nesting level
+8. Default export for provider, named export for hook
 
 ## File Structure
 
 ```
 src/
-└── providers/
-    ├── AppProvider.tsx       # Main provider
-    ├── FeatureProvider.tsx   # New provider
-    └── index.ts              # Barrel exports
+├── providers/
+│   ├── AppProvider.tsx          # Main provider composition
+│   ├── SecureProvider.tsx       # Root/jailbreak detection
+│   └── NavigationProvider.tsx   # NavigationContainer
+└── theme/
+    └── providers/
+        └── ThemeProvider.tsx     # Theme context (in theme dir)
 ```
 
-## Import Order
+**Note:** ThemeProvider lives in `src/theme/providers/` (not in `src/providers/`) because it's part of the theme system.
 
-```typescript
-import React, { createContext, useContext, useState } from 'react';
-// External
-import { someExternal } from 'some-package';
-// Internal
-import { useAuthStore } from '@modules/auth/application/auth.store';
-```
+## References
 
----
-
-# Project Specific (edit for other projects)
-
-## Provider Location
-
-All providers in: `src/providers/`
-
-## Main Providers
-
-- `AppProvider.tsx` - Main wrapper combining all providers
-- `ThemeProvider.tsx` - Theme context with useTheme hook
-
-## Provider Order
-
-In AppProvider, wrap in this order (innermost first):
-
-1. NavigationContainer
-2. ThemeProvider
-3. QueryClientProvider
-4. SafeAreaProvider
+- AppProvider: `src/providers/AppProvider.tsx`
+- ThemeProvider: `src/theme/providers/ThemeProvider.tsx`
+- SecureProvider: `src/providers/SecureProvider.tsx`
+- NavigationProvider: `src/providers/NavigationProvider.tsx`
