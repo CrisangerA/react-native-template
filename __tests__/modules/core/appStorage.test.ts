@@ -66,7 +66,7 @@ describe('useAppStorage - Zustand Store', () => {
       expect(toast.message).toBe('');
       expect(toast.type).toBe('info');
       expect(toast.duration).toBe(3000);
-      expect(toast.position).toBe('top');
+      expect(toast.position).toBe('bottom');
     });
 
     it('debe mostrar toast con parámetros obligatorios', () => {
@@ -82,7 +82,7 @@ describe('useAppStorage - Zustand Store', () => {
       expect(toast.message).toBe('Guardado exitosamente');
       expect(toast.type).toBe('success');
       expect(toast.duration).toBe(3000);
-      expect(toast.position).toBe('top');
+      expect(toast.position).toBe('bottom');
     });
 
     it('debe mostrar toast con parámetros opcionales', () => {
@@ -120,7 +120,7 @@ describe('useAppStorage - Zustand Store', () => {
       expect(toast.message).toBe('');
       expect(toast.type).toBe('info');
       expect(toast.duration).toBe(3000);
-      expect(toast.position).toBe('top');
+      expect(toast.position).toBe('bottom');
     });
 
     it('debe soportar los tres tipos de toast', () => {

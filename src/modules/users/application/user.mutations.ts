@@ -21,7 +21,6 @@ export function useUserCreate() {
       show({
         message: 'Usuario creado exitosamente',
         type: 'success',
-        position: 'bottom',
       });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USERS() });
     },
@@ -29,7 +28,6 @@ export function useUserCreate() {
       show({
         message: error.message,
         type: 'error',
-        position: 'bottom',
       });
     },
   });
@@ -56,7 +54,6 @@ export function useUserUpdate() {
       show({
         message: 'Usuario actualizado exitosamente',
         type: 'success',
-        position: 'bottom',
       });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USERS() });
       queryClient.invalidateQueries({
@@ -67,7 +64,6 @@ export function useUserUpdate() {
       show({
         message: error.message,
         type: 'error',
-        position: 'bottom',
       });
     },
   });
@@ -87,7 +83,6 @@ export function useUserDelete() {
       show({
         message: 'Usuario eliminado exitosamente',
         type: 'success',
-        position: 'bottom',
       });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.USERS() });
     },
@@ -95,7 +90,6 @@ export function useUserDelete() {
       show({
         message: error.message,
         type: 'error',
-        position: 'bottom',
       });
     },
   });

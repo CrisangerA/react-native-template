@@ -5,10 +5,7 @@ import { useTheme, spacing } from '@theme/index';
 import { getToastStyle } from '@theme/components/Toast.styles';
 import { useFadeSlide } from '@theme/hooks';
 
-import type {
-  ToastType,
-  ToastPosition,
-} from '@modules/core/application/app.storage';
+import type { ToastType, ToastPosition } from '@modules/core/domain/app.model';
 
 interface ToastProps {
   message: string;

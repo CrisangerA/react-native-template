@@ -1,7 +1,9 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { mmkvStorage } from '@config/storage';
-import { getTheme, Theme, ThemeMode } from '..';
+
+import { getTheme } from '../index';
+import type { Theme, ThemeMode } from '../index';
 
 interface State {
   theme: Theme;

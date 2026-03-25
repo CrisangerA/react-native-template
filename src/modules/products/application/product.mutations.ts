@@ -22,7 +22,6 @@ export function useProductCreate() {
       show({
         message: 'Producto creado exitosamente',
         type: 'success',
-        position: 'bottom',
       });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PRODUCTS() });
     },
@@ -30,7 +29,6 @@ export function useProductCreate() {
       show({
         message: error.message,
         type: 'error',
-        position: 'bottom',
       });
     },
   });
@@ -58,7 +56,6 @@ export function useProductUpdate() {
       show({
         message: 'Producto actualizado exitosamente',
         type: 'success',
-        position: 'bottom',
       });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PRODUCTS() });
       queryClient.invalidateQueries({
@@ -69,7 +66,6 @@ export function useProductUpdate() {
       show({
         message: error.message,
         type: 'error',
-        position: 'bottom',
       });
     },
   });
@@ -90,7 +86,6 @@ export function useProductDelete() {
       show({
         message: 'Producto eliminado exitosamente',
         type: 'success',
-        position: 'bottom',
       });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.PRODUCTS() });
     },
@@ -98,7 +93,6 @@ export function useProductDelete() {
       show({
         message: error.message,
         type: 'error',
-        position: 'bottom',
       });
     },
   });

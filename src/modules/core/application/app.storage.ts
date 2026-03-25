@@ -1,20 +1,10 @@
 import { create } from 'zustand';
-
-type ModalOpenParams = {
-  entityName: string;
-  entityType: string;
-  onConfirm: () => Promise<void>;
-};
-
-export type ToastType = 'success' | 'error' | 'info';
-export type ToastPosition = 'top' | 'bottom';
-
-type ToastShowParams = {
-  message: string;
-  type: ToastType;
-  duration?: number;
-  position?: ToastPosition;
-};
+import type {
+  ModalOpenParams,
+  ToastPosition,
+  ToastShowParams,
+  ToastType,
+} from '../domain/app.model';
 
 interface State {
   modal: {
@@ -50,7 +40,7 @@ const initialState: State = {
     message: '',
     type: 'info',
     duration: 3000,
-    position: 'top',
+    position: 'bottom',
     show: () => {},
     hide: () => {},
   },
@@ -86,8 +76,8 @@ export const useAppStorage = create<State>()(set => ({
     show: ({
       message,
       type,
-      duration = 3000,
-      position = 'top',
+      duration = initialState.toast.duration,
+      position = initialState.toast.position,
     }: ToastShowParams) =>
       set(state => ({
         toast: {
@@ -105,9 +95,9 @@ export const useAppStorage = create<State>()(set => ({
           ...state.toast,
           visible: false,
           message: '',
-          type: 'info',
-          duration: 3000,
-          position: 'top',
+          type: initialState.toast.type,
+          duration: initialState.toast.duration,
+          position: initialState.toast.position,
         },
       })),
   },
