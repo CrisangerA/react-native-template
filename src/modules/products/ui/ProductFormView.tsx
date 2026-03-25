@@ -10,7 +10,6 @@ import {
 } from '../application/product.mutations';
 // Domain
 import type { ProductFormData } from '../domain/product.scheme';
-import { productFormToPayloadAdapter } from '../domain/product.adapter';
 // Navigation
 import { ProductsRoutes, ProductsScreenProps } from '@navigation/routes';
 // Theme
@@ -36,16 +35,14 @@ export function ProductFormView({
     duration: ANIMATION_DURATION.slow,
   });
 
-  const handleSubmit = (data: ProductFormData) => {
-    const payload = productFormToPayloadAdapter(data);
-
+  function handleSubmit(form: ProductFormData) {
     if (isEditing) {
-      updateProduct({ id: product.id, data: payload });
+      updateProduct({ id: product.id, form });
     } else {
-      createProduct(payload);
+      createProduct(form);
     }
     goBack();
-  };
+  }
 
   return (
     <RootLayout

@@ -21,12 +21,14 @@ Quick lookup for path aliases and naming conventions. For commands and architect
 ## Path Aliases
 
 ```typescript
+@assets/*       → src/assets/*
 @components/*  → src/components/*
-@modules/*     → src/modules/*
-@theme/*       → src/theme/*
 @config/*      → src/config/*
+@modules/*     → src/modules/*
 @navigation/*  → src/navigation/*
-@hooks/*       → src/hooks/*
+@providers/*  → src/providers/*
+@theme/*       → src/theme/*
+@utils/*  → src/utils/*
 ```
 
 ## Naming Conventions

@@ -1,4 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+// Domain
+import { UserFormData } from '../domain/user.scheme';
+import { userFormToPayloadAdapter } from '../domain/user.adapter';
 // Services
 import userService from '../infrastructure/user.service';
 // Core
@@ -10,8 +13,9 @@ export function useUserCreate() {
   const queryClient = useQueryClient();
   const { show } = useAppStorage(s => s.toast);
   return useMutation({
-    mutationFn: async (data: Parameters<typeof userService.create>[0]) => {
-      const result = await userService.create(data);
+    mutationFn: async (form: UserFormData) => {
+      const payload = userFormToPayloadAdapter(form);
+      const result = await userService.create(payload);
       if (result instanceof Error) {
         throw result;
       }
@@ -37,14 +41,9 @@ export function useUserUpdate() {
   const queryClient = useQueryClient();
   const { show } = useAppStorage(s => s.toast);
   return useMutation({
-    mutationFn: async ({
-      id,
-      data,
-    }: {
-      id: string;
-      data: Parameters<typeof userService.update>[1];
-    }) => {
-      const result = await userService.update(id, data);
+    mutationFn: async ({ id, form }: { id: string; form: UserFormData }) => {
+      const payload = userFormToPayloadAdapter(form);
+      const result = await userService.update(id, payload);
       if (result instanceof Error) {
         throw result;
       }

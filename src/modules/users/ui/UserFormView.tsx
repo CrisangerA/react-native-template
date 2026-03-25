@@ -7,7 +7,6 @@ import { UserForm } from './components/UserForm';
 import { useUserCreate, useUserUpdate } from '../application/user.mutations';
 // Domain
 import type { UserFormData } from '../domain/user.scheme';
-import { userFormToPayloadAdapter } from '../domain/user.adapter';
 // Navigation
 import { UsersRoutes, UsersScreenProps } from '@navigation/routes';
 // Theme
@@ -31,16 +30,14 @@ export function UserFormView({
     duration: ANIMATION_DURATION.slow,
   });
 
-  const handleSubmit = (data: UserFormData) => {
-    const payload = userFormToPayloadAdapter(data);
-
+  function handleSubmit(form: UserFormData) {
     if (isEditing) {
-      updateUser({ id: user.id, data: payload });
+      updateUser({ id: user.id, form });
     } else {
-      createUser(payload);
+      createUser(form);
     }
     goBack();
-  };
+  }
 
   return (
     <RootLayout

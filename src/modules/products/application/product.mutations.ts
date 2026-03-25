@@ -1,4 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+// Domain
+import { ProductFormData } from '../domain/product.scheme';
+import { productFormToPayloadAdapter } from '../domain/product.adapter';
 // Services
 import productService from '../infrastructure/product.service';
 // Core
@@ -11,8 +14,9 @@ export function useProductCreate() {
   const { show } = useAppStorage(s => s.toast);
 
   return useMutation({
-    mutationFn: async (data: Parameters<typeof productService.create>[0]) => {
-      const result = await productService.create(data);
+    mutationFn: async (form: ProductFormData) => {
+      const payload = productFormToPayloadAdapter(form);
+      const result = await productService.create(payload);
       if (result instanceof Error) {
         throw result;
       }
@@ -39,14 +43,9 @@ export function useProductUpdate() {
   const { show } = useAppStorage(s => s.toast);
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      data,
-    }: {
-      id: string;
-      data: Parameters<typeof productService.update>[1];
-    }) => {
-      const result = await productService.update(id, data);
+    mutationFn: async ({ id, form }: { id: string; form: ProductFormData }) => {
+      const payload = productFormToPayloadAdapter(form);
+      const result = await productService.update(id, payload);
       if (result instanceof Error) {
         throw result;
       }
